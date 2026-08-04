@@ -8,6 +8,7 @@ use Modules\Auth\Actions\RegisterUser;
 use Modules\Auth\Actions\LoginUser;
 use Modules\Auth\Http\Requests\StoreUserRequest;
 use Modules\Auth\Http\Requests\LoginRequest;
+use Modules\Auth\Transformers\UserResource;
 
 class AuthController extends Controller
 {
@@ -25,6 +26,11 @@ class AuthController extends Controller
     public function login(LoginRequest $request, LoginUser $loginUser)
     {
         return $loginUser($request->validated());
+    }
+
+    public function me(Request $request)
+    {
+        return new UserResource($request->user());
     }
 
     /**
