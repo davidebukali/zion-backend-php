@@ -5,7 +5,9 @@ namespace Modules\Auth\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Auth\Actions\RegisterUser;
+use Modules\Auth\Actions\LoginUser;
 use Modules\Auth\Http\Requests\StoreUserRequest;
+use Modules\Auth\Http\Requests\LoginRequest;
 
 class AuthController extends Controller
 {
@@ -14,16 +16,15 @@ class AuthController extends Controller
      */
     public function register(StoreUserRequest $request, RegisterUser $registerUser)
     {
-        $user = $registerUser($request->validated());
-        return $user;
+        return $registerUser($request->validated());
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Handle user login and return an API token.
      */
-    public function create()
+    public function login(LoginRequest $request, LoginUser $loginUser)
     {
-        return view('auth::create');
+        return $loginUser($request->validated());
     }
 
     /**

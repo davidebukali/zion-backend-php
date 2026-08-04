@@ -4,6 +4,7 @@ namespace Modules\Auth\Actions;
 
 use Illuminate\Http\Request;
 use Modules\Auth\Models\User;
+use Modules\Auth\Transformers\UserResource;
 
 class RegisterUser
 {
@@ -15,6 +16,6 @@ class RegisterUser
             'password' => $data['password'],
         ]);
 
-        return $user;
+        return new UserResource($user);
     }
 }

@@ -11,9 +11,14 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Model
+class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasUlids, Notifiable;
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
     /**
      * Get the attributes that should be cast.
