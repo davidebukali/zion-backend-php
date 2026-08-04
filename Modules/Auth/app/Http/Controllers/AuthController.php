@@ -4,15 +4,18 @@ namespace Modules\Auth\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Auth\Actions\RegisterUser;
 
 class AuthController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function register(Request $request, RegisterUser $registerUser)
     {
-        return view('auth::index');
+        //call register action
+        $user = $registerUser($request->all());
+        return $user;
     }
 
     /**
