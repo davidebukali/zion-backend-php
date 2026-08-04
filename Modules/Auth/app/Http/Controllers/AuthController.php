@@ -5,16 +5,16 @@ namespace Modules\Auth\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Auth\Actions\RegisterUser;
+use Modules\Auth\Http\Requests\StoreUserRequest;
 
 class AuthController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function register(Request $request, RegisterUser $registerUser)
+    public function register(StoreUserRequest $request, RegisterUser $registerUser)
     {
-        //call register action
-        $user = $registerUser($request->all());
+        $user = $registerUser($request->validated());
         return $user;
     }
 
