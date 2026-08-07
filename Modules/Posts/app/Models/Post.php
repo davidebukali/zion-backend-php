@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Auth\Models\User;
+use Modules\Posts\Enums\PostVisibility;
 // use Modules\Posts\Database\Factories\PostFactory;
 
 class Post extends Model
@@ -19,6 +20,13 @@ class Post extends Model
         'content',
         'visibility'
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'visibility' => PostVisibility::class,
+        ];
+    }
 
     // protected static function newFactory(): PostFactory
     // {
