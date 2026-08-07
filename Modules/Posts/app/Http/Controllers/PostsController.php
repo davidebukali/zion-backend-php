@@ -4,6 +4,8 @@ namespace Modules\Posts\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Posts\Http\Requests\StorePostRequest;
+use Modules\Posts\Actions\CreatePost;
 
 class PostsController extends Controller
 {
@@ -16,17 +18,12 @@ class PostsController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('posts::create');
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {}
+    public function store(StorePostRequest $request, CreatePost $createPost) {
+        $post = $createPost($request->user(), $request->validated());
+        return response()->json($post, 201);
+    }
 
     /**
      * Show the specified resource.
