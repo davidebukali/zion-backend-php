@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Modules\Posts\Models\Post;
 
 class User extends Authenticatable
 {
@@ -46,4 +47,9 @@ class User extends Authenticatable
     // {
     //     // return UserFactory::new();
     // }
+    
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
 }
