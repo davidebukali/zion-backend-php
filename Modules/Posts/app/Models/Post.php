@@ -28,4 +28,12 @@ class Post extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function scopeFeed($query)
+    {
+        return $query
+            ->with('user')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id');
+    }
 }

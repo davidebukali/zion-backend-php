@@ -6,15 +6,18 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Posts\Http\Requests\StorePostRequest;
 use Modules\Posts\Actions\CreatePost;
+use Modules\Posts\Actions\ListPosts;
+use Modules\Posts\Transformers\PostResource;
 
 class PostsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request, ListPosts $listPosts)
     {
-        return view('posts::index');
+        $posts = $listPosts($request->integer('per_page', 15));
+        return PostResource::collection($posts);
     }
 
     /**
