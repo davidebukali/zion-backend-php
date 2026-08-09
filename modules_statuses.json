@@ -1,4 +1,5 @@
 {
     "Auth": true,
-    "Posts": true
+    "Posts": true,
+    "Comments": true
 }

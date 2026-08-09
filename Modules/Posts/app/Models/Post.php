@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Auth\Models\User;
 use Modules\Posts\Enums\PostVisibility;
+use Modules\Comments\Models\Comment;
 // use Modules\Posts\Database\Factories\PostFactory;
 
 class Post extends Model
@@ -43,5 +44,10 @@ class Post extends Model
             ->with('user')
             ->orderByDesc('created_at')
             ->orderByDesc('id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }
