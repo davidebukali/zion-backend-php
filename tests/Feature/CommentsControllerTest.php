@@ -269,4 +269,69 @@ class CommentsControllerTest extends TestCase
 
         $response->assertStatus(403);
     }
+
+    public function test_can_create_reply_on_comment(): void
+    {
+        $parentComment = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+            'content' => 'This is the parent comment.',
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->postJson(route('api.comments.reply.store', ['comment' => $parentComment->id]), [
+            'content' => 'This is a reply to the parent comment.',
+        ]);
+
+        $response->assertStatus(201);
+        $response->assertJsonStructure([
+            'success',
+            'message',
+            'data' => [
+                'id',
+                'post_id',
+                'user_id',
+                'parent_comment_id',
+                'content',
+                'likes_count',
+                'replies_count',
+                'created_at',
+                'updated_at',
+            ],
+            'meta'
+        ]);
+
+        $response->assertJsonPath('data.content', 'This is a reply to the parent comment.');
+        $response->assertJsonPath('data.parent_comment_id', $parentComment->id);
+        $response->assertJsonPath('data.post_id', $this->post->id);
+
+        $this->assertDatabaseHas('comments', [
+            'content' => 'This is a reply to the parent comment.',
+            'parent_comment_id' => $parentComment->id,
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+        ]);
+
+        // Check parent comment replies_count was incremented to 1
+        $this->assertEquals(1, $parentComment->refresh()->replies_count);
+    }
+
+    public function test_cannot_create_reply_without_content(): void
+    {
+        $parentComment = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+            'content' => 'This is the parent comment.',
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->postJson(route('api.comments.reply.store', ['comment' => $parentComment->id]), [
+            'content' => '',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['content']);
+    }
 }
