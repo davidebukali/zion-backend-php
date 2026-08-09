@@ -3,6 +3,7 @@
 namespace Modules\Posts\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Concerns\RespondsWithApi;
 use Illuminate\Http\Request;
 use Modules\Posts\Http\Requests\StorePostRequest;
 use Modules\Posts\Actions\CreatePost;
@@ -14,13 +15,22 @@ use Illuminate\Support\Facades\Auth;
 
 class PostsController extends Controller
 {
+    use RespondsWithApi;
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request, ListPosts $listPosts)
     {
         $posts = $listPosts($request->integer('per_page', 15));
-        return PostResource::collection($posts);
+        $paginated = PostResource::collection($posts)->toResponse($request)->getData(true);
+        return $this->success(
+            data: $paginated['data'],
+            meta: [
+                'links' => $paginated['links'],
+                'meta' => $paginated['meta'],
+            ]
+        );
     }
 
     /**
@@ -28,15 +38,15 @@ class PostsController extends Controller
      */
     public function store(StorePostRequest $request, CreatePost $createPost) {
         $post = $createPost($request->user(), $request->validated());
-        return response()->json($post, 201);
+        return $this->success($post, 'Post created successfully', 201);
     }
 
     /**
      * Show the specified resource.
      */
-    public function show($id)
+    public function show(Post $post)
     {
-        return view('posts::show');
+        return $this->success(new PostResource($post));
     }
 
     /**
@@ -63,6 +73,6 @@ class PostsController extends Controller
 
         $deletePost($post);
 
-        return response()->noContent();
+        return $this->success(message: 'Post deleted successfully');
     }
 }

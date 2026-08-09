@@ -43,4 +43,18 @@ class PostsServiceProvider extends ModuleServiceProvider
     // {
     //     $schedule->command('inspire')->hourly();
     // }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        parent::boot();
+
+        \Illuminate\Support\Facades\Gate::policy(
+            \Modules\Posts\Models\Post::class,
+            \Modules\Posts\Policies\PostPolicy::class
+        );
+    }
 }
+
