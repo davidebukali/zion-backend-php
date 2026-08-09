@@ -229,4 +229,44 @@ class CommentsControllerTest extends TestCase
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['content']);
     }
+
+    public function test_can_delete_own_comment(): void
+    {
+        $comment = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+            'content' => 'Delete me comment',
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->deleteJson(route('api.comments.destroy', ['comment' => $comment->id]));
+
+        $response->assertStatus(200);
+
+        $this->assertSoftDeleted('comments', [
+            'id' => $comment->id,
+        ]);
+    }
+
+    public function test_cannot_delete_other_user_comment(): void
+    {
+        $otherUser = User::create([
+            'name' => 'Other User',
+            'email' => 'other@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $comment = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $otherUser->id,
+            'content' => 'Cannot delete me comment',
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->deleteJson(route('api.comments.destroy', ['comment' => $comment->id]));
+
+        $response->assertStatus(403);
+    }
 }

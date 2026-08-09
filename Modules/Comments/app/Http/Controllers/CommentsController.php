@@ -12,6 +12,7 @@ use Modules\Comments\Actions\ListComments;
 use Modules\Comments\Http\Requests\UpdateCommentRequest;
 use Modules\Comments\Actions\UpdateComment;
 use Modules\Comments\Models\Comment;
+use Modules\Comments\Actions\DeleteComment;
 use Illuminate\Http\Request;
 
 class CommentsController extends Controller
@@ -75,5 +76,14 @@ class CommentsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id) {}
+    public function destroy(Comment $comment, Request $request, DeleteComment $action)
+    {
+        if ($request->user()->cannot('delete', $comment)) {
+            abort(403);
+        }
+
+        $action($comment);
+
+        return $this->success(message: 'Comment deleted successfully');
+    }
 }
