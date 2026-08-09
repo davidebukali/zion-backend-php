@@ -43,4 +43,17 @@ class CommentsServiceProvider extends ModuleServiceProvider
     // {
     //     $schedule->command('inspire')->hourly();
     // }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        parent::boot();
+
+        \Illuminate\Support\Facades\Gate::policy(
+            \Modules\Comments\Models\Comment::class,
+            \Modules\Comments\Policies\CommentPolicy::class
+        );
+    }
 }

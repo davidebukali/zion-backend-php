@@ -9,6 +9,9 @@ use Modules\Comments\Actions\CreateComment;
 use Modules\Posts\Models\Post;
 use Modules\Comments\Transformers\CommentResource;
 use Modules\Comments\Actions\ListComments;
+use Modules\Comments\Http\Requests\UpdateCommentRequest;
+use Modules\Comments\Actions\UpdateComment;
+use Modules\Comments\Models\Comment;
 use Illuminate\Http\Request;
 
 class CommentsController extends Controller
@@ -28,14 +31,6 @@ class CommentsController extends Controller
                 'meta' => $paginated['meta'],
             ]
         );
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('comments::create');
     }
 
     /**
@@ -66,7 +61,16 @@ class CommentsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id) {}
+    public function update(Comment $comment, UpdateCommentRequest $request, UpdateComment $updateComment)
+    {
+        if ($request->user()->cannot('update', $comment)) {
+            abort(403);
+        }
+
+        $updatedComment = $updateComment($comment, $request->validated());
+
+        return $this->success(new CommentResource($updatedComment), 'Comment updated successfully');
+    }
 
     /**
      * Remove the specified resource from storage.

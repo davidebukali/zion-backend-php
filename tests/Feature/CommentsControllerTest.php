@@ -165,4 +165,68 @@ class CommentsControllerTest extends TestCase
         $response->assertJsonPath('data.0.id', $comment2->id);
         $response->assertJsonPath('data.1.id', $comment1->id);
     }
+
+    public function test_can_update_own_comment(): void
+    {
+        $comment = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+            'content' => 'Old content',
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->patchJson(route('api.comments.update', ['comment' => $comment->id]), [
+            'content' => 'Updated content',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('data.content', 'Updated content');
+
+        $this->assertDatabaseHas('comments', [
+            'id' => $comment->id,
+            'content' => 'Updated content',
+        ]);
+    }
+
+    public function test_cannot_update_other_user_comment(): void
+    {
+        $otherUser = User::create([
+            'name' => 'Other User',
+            'email' => 'other@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $comment = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $otherUser->id,
+            'content' => 'Other content',
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->patchJson(route('api.comments.update', ['comment' => $comment->id]), [
+            'content' => 'Attempted update',
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_cannot_update_comment_with_invalid_data(): void
+    {
+        $comment = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+            'content' => 'Original content',
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->patchJson(route('api.comments.update', ['comment' => $comment->id]), [
+            'content' => '',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['content']);
+    }
 }
