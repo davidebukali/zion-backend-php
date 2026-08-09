@@ -8,6 +8,7 @@ use Modules\Comments\Http\Requests\StoreCommentRequest;
 use Modules\Comments\Actions\CreateComment;
 use Modules\Posts\Models\Post;
 use Modules\Comments\Transformers\CommentResource;
+use Modules\Comments\Actions\ListComments;
 use Illuminate\Http\Request;
 
 class CommentsController extends Controller
@@ -16,9 +17,17 @@ class CommentsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Post $post, Request $request, ListComments $listComments)
     {
-        return view('comments::index');
+        $comments = $listComments($post, $request->integer('per_page', 15));
+        $paginated = CommentResource::collection($comments)->toResponse($request)->getData(true);
+        return $this->success(
+            data: $paginated['data'],
+            meta: [
+                'links' => $paginated['links'],
+                'meta' => $paginated['meta'],
+            ]
+        );
     }
 
     /**

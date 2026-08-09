@@ -93,4 +93,76 @@ class CommentsControllerTest extends TestCase
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['parent_comment_id']);
     }
+
+    public function test_can_list_comments_for_post(): void
+    {
+        // 1. Create a top-level comment on our target post
+        $comment1 = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+            'content' => 'First top-level comment',
+        ]);
+
+        // 2. Create another top-level comment on our target post
+        $comment2 = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+            'content' => 'Second top-level comment',
+        ]);
+
+        // 3. Create a reply comment (parent_comment_id is NOT null)
+        Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+            'parent_comment_id' => $comment1->id,
+            'content' => 'A reply to first comment',
+        ]);
+
+        // 4. Create a comment on a different post
+        $otherPost = $this->user->posts()->create([
+            'content' => 'Other Post',
+            'visibility' => 'public',
+        ]);
+        Comment::create([
+            'post_id' => $otherPost->id,
+            'user_id' => $this->user->id,
+            'content' => 'Comment on other post',
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->getJson(route('api.comments.index', ['post' => $this->post->id]));
+
+        $response->assertStatus(200);
+
+        // Assert response structure matching RespondsWithApi + Paginated resource format
+        $response->assertJsonStructure([
+            'success',
+            'message',
+            'data' => [
+                '*' => [
+                    'id',
+                    'post_id',
+                    'user_id',
+                    'parent_comment_id',
+                    'content',
+                    'likes_count',
+                    'replies_count',
+                    'created_at',
+                    'updated_at',
+                ]
+            ],
+            'meta' => [
+                'links' => ['first', 'last', 'prev', 'next'],
+                'meta' => ['path', 'per_page', 'next_cursor', 'prev_cursor']
+            ]
+        ]);
+
+        // Assert only top-level comments for our post are returned (count = 2)
+        $response->assertJsonCount(2, 'data');
+
+        // Assert order (newest first)
+        $response->assertJsonPath('data.0.id', $comment2->id);
+        $response->assertJsonPath('data.1.id', $comment1->id);
+    }
 }
