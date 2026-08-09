@@ -1,58 +1,272 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Zion Backend (PHP)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Zion Backend is a clean, modular REST API built with Laravel 13 and PHP 8.3+. It leverages a modular architecture to group features into decoupled packages, ensuring scalability and ease of maintenance.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Key Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Modular Architecture**: Built using `nwidart/laravel-modules` to isolate distinct logic modules (e.g. `Auth`, `Posts`).
+- **Standardized API Responses**: Employs a unified response envelope via the `RespondsWithApi` trait and `ApiResponse` support classes.
+- **Global Error Handling**: Integrated error handling inside `bootstrap/app.php` that transforms standard exceptions (e.g., validation errors, auth failures, resource not found) into uniform API error response envelopes.
+- **Implicit Route Model Binding**: Utilizes native Laravel route model binding mapped to modular schemas.
+- **Cursor Pagination**: Employs performant, cursor-based pagination for feeds.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Technology Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Framework**: Laravel 13
+- **Language**: PHP 8.3+
+- **Authentication**: Laravel Sanctum (token-based)
+- **Database**: SQLite (default configuration)
+- **Modularity**: `nwidart/laravel-modules`
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## API Standard Response Formats
 
-## Agentic Development
+All APIs conform to consistent JSON envelopes.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### Success Envelope
 
-```bash
-composer require laravel/boost --dev
+Returned for successful requests (2xx status codes).
 
-php artisan boost:install
+```json
+{
+  "success": true,
+  "message": "Detailed success message",
+  "data": {
+    "key": "value"
+  },
+  "meta": null
+}
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+*Note: For paginated responses, metadata including links and cursor tokens are embedded inside the `meta` key:*
 
-## Contributing
+```json
+{
+  "success": true,
+  "message": "Success",
+  "data": [ ... ],
+  "meta": {
+    "links": {
+      "first": "...",
+      "last": "...",
+      "prev": "...",
+      "next": "..."
+    },
+    "meta": {
+      "path": "https://...",
+      "per_page": 15,
+      "next_cursor": "...",
+      "prev_cursor": "..."
+    }
+  }
+}
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Error Envelope
 
-## Code of Conduct
+Returned for failed requests (4xx or 5xx status codes).
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```json
+{
+  "success": false,
+  "message": "Reason for the error",
+  "errors": {
+    "field_name": [
+      "Validation or processing error details"
+    ]
+  }
+}
+```
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## API Documentation
 
-## License
+### Auth Module (Prefix: `/api/v1`)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| Method | Endpoint | Authentication | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/v1/register` | None | Register a new user |
+| `POST` | `/api/v1/login` | None | Authenticate credentials and get Sanctum token |
+| `GET` | `/api/v1/me` | Bearer Token | Retrieve currently authenticated user profile |
+
+#### 1. Register User
+- **URL**: `/api/v1/register`
+- **Method**: `POST`
+- **Request Body**:
+  ```json
+  {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "securepassword"
+  }
+  ```
+- **Validation Rules**:
+  - `name`: Required, string, max:255
+  - `email`: Required, string, email, max:255, unique in `users` table
+  - `password`: Required, string, min:8
+
+#### 2. Login User
+- **URL**: `/api/v1/login`
+- **Method**: `POST`
+- **Request Body**:
+  ```json
+  {
+    "email": "john@example.com",
+    "password": "securepassword"
+  }
+  ```
+- **Success Response**:
+  ```json
+  {
+    "user": {
+      "id": "01J4V8Q...",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "created_at": "2026-08-09T03:13:58.000000Z",
+      "updated_at": "2026-08-09T03:13:58.000000Z"
+    },
+    "token": "1|sanctum_plain_text_token..."
+  }
+  ```
+
+#### 3. Currently Authenticated User Profile
+- **URL**: `/api/v1/me`
+- **Method**: `GET`
+- **Headers**:
+  - `Authorization: Bearer <token>`
+- **Success Response**:
+  ```json
+  {
+    "id": "01J4V8Q...",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "created_at": "2026-08-09T03:13:58.000000Z",
+    "updated_at": "2026-08-09T03:13:58.000000Z"
+  }
+  ```
+
+---
+
+### Posts Module (Prefix: `/api/v1`)
+
+*All Post endpoints require a valid Sanctum token.*
+
+| Method | Endpoint | Authentication | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/v1/posts` | Bearer Token | Create a new post |
+| `GET` | `/api/v1/posts` | Bearer Token | List posts feed (cursor paginated) |
+| `GET` | `/api/v1/posts/{post}`| Bearer Token | Show a specific post's details |
+| `DELETE`| `/api/v1/posts/{post}`| Bearer Token | Soft-delete a post (owner only) |
+
+#### 1. Create a Post
+- **URL**: `/api/v1/posts`
+- **Method**: `POST`
+- **Request Body**:
+  ```json
+  {
+    "content": "This is a new post!",
+    "visibility": "public"
+  }
+  ```
+- **Validation Rules**:
+  - `content`: Optional, string, max:5000
+  - `visibility`: Optional, enum string (`public`, `private`, `followers`) - defaults to `public`
+
+#### 2. List Feed Posts
+- **URL**: `/api/v1/posts`
+- **Method**: `GET`
+- **Query Parameters**:
+  - `per_page`: Optional integer (defaults to 15)
+- **Response**: Returns a cursor-paginated list of posts, sorted by newest first, wrapped in the paginated success envelope.
+
+#### 3. Get Post Details
+- **URL**: `/api/v1/posts/{post}`
+- **Method**: `GET`
+- **Success Response**:
+  ```json
+  {
+    "success": true,
+    "message": "Success",
+    "data": {
+      "id": "01J4V8X...",
+      "content": "This is a new post!",
+      "visibility": "public",
+      "created_at": "2026-08-09T03:13:58.000000Z",
+      "updated_at": "2026-08-09T03:13:58.000000Z"
+    },
+    "meta": null
+  }
+  ```
+
+#### 4. Delete Post
+- **URL**: `/api/v1/posts/{post}`
+- **Method**: `DELETE`
+- **Success Response**:
+  ```json
+  {
+    "success": true,
+    "message": "Post deleted successfully",
+    "data": null,
+    "meta": null
+  }
+  ```
+
+---
+
+## Setup & Running the Application
+
+### Prerequisites
+
+- **PHP**: ^8.3
+- **Composer**: Dependency Manager for PHP
+- **SQLite**: (Default local database)
+
+### Installation Steps
+
+1. **Clone the Repository** and navigate to the directory:
+   ```bash
+   cd zion-backend-php
+   ```
+
+2. **Copy Environment Configurations**:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Install Composer Dependencies**:
+   ```bash
+   composer install
+   ```
+
+4. **Initialize Database**:
+   Ensure you have a SQLite database file created (e.g. `database/database.sqlite`), then run:
+   ```bash
+   php artisan migrate
+   ```
+
+5. **Generate Application Key**:
+   ```bash
+   php artisan key:generate
+   ```
+
+6. **Start the Development Server**:
+   ```bash
+   php artisan serve
+   ```
+   The backend will be accessible locally at `http://127.0.0.1:8000`.
+
+---
+
+## Testing
+
+The project uses PHPUnit for automated feature and unit tests. Run the test suite using:
+
+```bash
+php artisan test
+```
