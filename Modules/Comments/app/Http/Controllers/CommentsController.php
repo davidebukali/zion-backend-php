@@ -3,10 +3,16 @@
 namespace Modules\Comments\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Concerns\RespondsWithApi;
+use Modules\Comments\Http\Requests\StoreCommentRequest;
+use Modules\Comments\Actions\CreateComment;
+use Modules\Posts\Models\Post;
+use Modules\Comments\Transformers\CommentResource;
 use Illuminate\Http\Request;
 
 class CommentsController extends Controller
 {
+    use RespondsWithApi;
     /**
      * Display a listing of the resource.
      */
@@ -26,7 +32,11 @@ class CommentsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {}
+    public function store(Post $post, StoreCommentRequest $request, CreateComment $createComment)
+    {
+        $comment = $createComment($request->user(), $post, $request->validated());
+        return $this->success(new CommentResource($comment), 'Comment created successfully', 201);
+    }
 
     /**
      * Show the specified resource.

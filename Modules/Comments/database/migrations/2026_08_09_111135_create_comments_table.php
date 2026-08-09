@@ -23,10 +23,8 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             // Enables replies to comments
-            $table->foreignUlid('parent_comment_id')
-                ->nullable()
-                ->constrained('comments')
-                ->nullOnDelete();
+            $table->ulid('parent_comment_id')
+                ->nullable();
 
             $table->text('content');
 
@@ -38,6 +36,13 @@ return new class extends Migration
 
             $table->index(['post_id', 'created_at']);
             $table->index(['parent_comment_id', 'created_at']);
+        });
+
+        Schema::table('comments', function (Blueprint $table) {
+            $table->foreign('parent_comment_id')
+                ->references('id')
+                ->on('comments')
+                ->nullOnDelete();
         });
     }
 

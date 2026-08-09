@@ -10,8 +10,8 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
-use App\Models\Post;
-use App\Models\User;
+use Modules\Posts\Models\Post;
+use Modules\Auth\Models\User;
 // use Modules\Comments\Database\Factories\CommentFactory;
 
 class Comment extends Model
@@ -23,7 +23,12 @@ class Comment extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'post_id',
+        'user_id',
+        'parent_comment_id',
+        'content',
+    ];
 
     public function user()
     {
