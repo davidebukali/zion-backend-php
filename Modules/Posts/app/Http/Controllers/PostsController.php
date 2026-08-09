@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use Modules\Posts\Http\Requests\StorePostRequest;
 use Modules\Posts\Actions\CreatePost;
 use Modules\Posts\Actions\ListPosts;
+use Modules\Posts\Actions\DeletePost;
 use Modules\Posts\Transformers\PostResource;
+use Modules\Posts\Models\Post;
+use Illuminate\Support\Facades\Auth;
 
 class PostsController extends Controller
 {
@@ -52,5 +55,14 @@ class PostsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id) {}
+    public function destroy(Post $post, DeletePost $deletePost)
+    {
+        if (Auth::user()->cannot('delete', $post)) {
+            abort(403);
+        }
+
+        $deletePost($post);
+
+        return response()->noContent();
+    }
 }
