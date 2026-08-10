@@ -8,6 +8,7 @@ use Modules\Comments\Models\Comment;
 use Modules\Comments\Transformers\CommentResource;
 use Modules\Comments\Actions\CreateReply;
 use Modules\Comments\Actions\ListReplies;
+use Modules\Comments\Actions\DeleteReply;
 use Illuminate\Http\Request;
 
 class CommentReplyController extends Controller
@@ -73,5 +74,14 @@ class CommentReplyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id) {}
+    public function destroy(Comment $comment, Request $request, DeleteReply $deleteReply)
+    {
+        if ($request->user()->cannot('delete', $comment)) {
+            abort(403);
+        }
+
+        $deleteReply($comment);
+
+        return $this->success(message: 'Reply deleted successfully');
+    }
 }

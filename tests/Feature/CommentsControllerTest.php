@@ -429,9 +429,12 @@ class CommentsControllerTest extends TestCase
             'content' => 'Reply comment to delete',
         ]);
 
+        $this->post->comments_count = 2;
+        $this->post->save();
+
         Sanctum::actingAs($this->user);
 
-        $response = $this->deleteJson(route('api.comments.destroy', ['comment' => $reply->id]));
+        $response = $this->deleteJson(route('api.comments.reply.destroy', ['comment' => $reply->id]));
 
         $response->assertStatus(200);
 
@@ -440,6 +443,7 @@ class CommentsControllerTest extends TestCase
         ]);
 
         $this->assertEquals(0, $parentComment->refresh()->replies_count);
+        $this->assertEquals(1, $this->post->refresh()->comments_count);
     }
 }
 
