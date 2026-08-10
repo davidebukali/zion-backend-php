@@ -11,7 +11,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::delete('comments/{comment}', [CommentsController::class, 'destroy'])->name('comments.destroy');
 
     // Comment reply routes
-    Route::post('comments/{comment}/replies', [CommentReplyController::class, 'store'])->name('comments.reply.store');
-    Route::get('comments/{comment}/replies', [CommentReplyController::class, 'index'])->name('comments.reply.index');
-    Route::delete('comments/{comment}/replies', [CommentReplyController::class, 'destroy'])->name('comments.reply.destroy');
+    Route::post('comments/{comment}/replies', [CommentReplyController::class, 'store'])->name('comments.reply.store')->withTrashed();
+    Route::get('comments/{comment}/replies', [CommentReplyController::class, 'index'])->name('comments.reply.index')->withTrashed();
+    Route::delete('comments/{comment}/replies', [CommentReplyController::class, 'destroy'])->name('comments.reply.destroy')->withTrashed();
 });

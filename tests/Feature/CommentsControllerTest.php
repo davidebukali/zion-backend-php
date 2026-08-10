@@ -445,5 +445,53 @@ class CommentsControllerTest extends TestCase
         $this->assertEquals(0, $parentComment->refresh()->replies_count);
         $this->assertEquals(1, $this->post->refresh()->comments_count);
     }
+
+    public function test_tombstone_when_deleted_with_replies(): void
+    {
+        Sanctum::actingAs($this->user);
+
+        // 1. Create a parent comment using the endpoint/action to set counts correctly
+        $createResponse = $this->postJson(route('api.comments.store', ['post' => $this->post->id]), [
+            'content' => 'Top-level parent comment',
+        ]);
+        $createResponse->assertStatus(201);
+        $parentId = $createResponse->json('data.id');
+
+        // 2. Create a reply using the endpoint/action
+        $replyResponse = $this->postJson(route('api.comments.reply.store', ['comment' => $parentId]), [
+            'content' => 'First reply',
+        ]);
+        $replyResponse->assertStatus(201);
+        $replyId = $replyResponse->json('data.id');
+
+        // 3. Delete the parent comment (which has replies_count = 1)
+        $deleteParentResponse = $this->deleteJson(route('api.comments.destroy', ['comment' => $parentId]));
+        $deleteParentResponse->assertStatus(200);
+
+        // Assert it is soft-deleted
+        $this->assertSoftDeleted('comments', ['id' => $parentId]);
+
+        // 4. List comments for the post and assert the parent comment is still returned as a tombstone placeholder
+        $listResponse = $this->getJson(route('api.comments.index', ['post' => $this->post->id]));
+        $listResponse->assertStatus(200);
+        $listResponse->assertJsonCount(1, 'data');
+        $listResponse->assertJsonPath('data.0.id', $parentId);
+        $listResponse->assertJsonPath('data.0.content', '[This comment has been deleted]');
+        $listResponse->assertJsonPath('data.0.user_id', null);
+        $listResponse->assertJsonPath('data.0.likes_count', 0);
+        $listResponse->assertJsonPath('data.0.replies_count', 1);
+
+        // 5. Delete the reply (which decrements parent replies_count to 0)
+        $deleteReplyResponse = $this->deleteJson(route('api.comments.reply.destroy', ['comment' => $replyId]));
+        $deleteReplyResponse->assertStatus(200);
+
+        // Assert the reply is soft-deleted
+        $this->assertSoftDeleted('comments', ['id' => $replyId]);
+
+        // 6. List comments for the post again and assert parent comment is now hidden (count = 0)
+        $listResponse2 = $this->getJson(route('api.comments.index', ['post' => $this->post->id]));
+        $listResponse2->assertStatus(200);
+        $listResponse2->assertJsonCount(0, 'data');
+    }
 }
 

@@ -14,8 +14,16 @@ class ListComments
     public function __invoke(Post $post, int $perPage = 15): CursorPaginator
     {
         return $post->comments()
+            ->withTrashed()
             ->with('user')
             ->whereNull('parent_comment_id')
+            ->where(function ($query) {
+                $query->whereNull('deleted_at')
+                    ->orWhere(function ($q) {
+                        $q->whereNotNull('deleted_at')
+                            ->where('replies_count', '>', 0);
+                    });
+            })
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->cursorPaginate($perPage);
