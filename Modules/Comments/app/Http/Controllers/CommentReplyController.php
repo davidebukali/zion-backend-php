@@ -7,6 +7,7 @@ use App\Http\Controllers\Concerns\RespondsWithApi;
 use Modules\Comments\Models\Comment;
 use Modules\Comments\Transformers\CommentResource;
 use Modules\Comments\Actions\CreateReply;
+use Modules\Comments\Actions\ListReplies;
 use Illuminate\Http\Request;
 
 class CommentReplyController extends Controller
@@ -15,21 +16,35 @@ class CommentReplyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Comment $comment, Request $request, ListReplies $listReplies)
     {
-        return view('comments::index');
+        $replies = $listReplies($comment, $request->integer('per_page', 15));
+        $paginated = CommentResource::collection($replies)->toResponse($request)->getData(true);
+        return $this->success(
+            data: $paginated['data'],
+            meta: [
+                'links' => $paginated['links'],
+                'meta' => $paginated['meta'],
+            ]
+        );
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Comment $comment, Request $request, CreateReply $action)
+    public function store(Comment $comment, Request $request, CreateReply $createReply)
     {
         $data = $request->validate([
             'content' => ['required', 'string', 'max:5000'],
         ]);
 
-        $reply = $action($request->user(), $comment, $data);
+        if ($comment->parent_comment_id !== null) {
+            throw new \DomainException(
+                'Replies to replies are not supported.'
+            );
+        }
+
+        $reply = $createReply($request->user(), $comment, $data);
 
         return $this->success(new CommentResource($reply), 'Reply created successfully', 201);
     }
