@@ -67,6 +67,8 @@ class CommentsControllerTest extends TestCase
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
         ]);
+
+        $this->assertEquals(1, $this->post->refresh()->comments_count);
     }
 
     public function test_cannot_create_comment_without_content(): void
@@ -238,6 +240,8 @@ class CommentsControllerTest extends TestCase
             'content' => 'Delete me comment',
         ]);
 
+        $this->post->increment('comments_count');
+
         Sanctum::actingAs($this->user);
 
         $response = $this->deleteJson(route('api.comments.destroy', ['comment' => $comment->id]));
@@ -247,6 +251,8 @@ class CommentsControllerTest extends TestCase
         $this->assertSoftDeleted('comments', [
             'id' => $comment->id,
         ]);
+
+        $this->assertEquals(0, $this->post->refresh()->comments_count);
     }
 
     public function test_cannot_delete_other_user_comment(): void
@@ -334,4 +340,106 @@ class CommentsControllerTest extends TestCase
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['content']);
     }
+
+    public function test_can_list_replies_for_comment(): void
+    {
+        $parentComment = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+            'content' => 'This is the parent comment.',
+        ]);
+
+        // Create two replies to the parent comment
+        $reply1 = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+            'parent_comment_id' => $parentComment->id,
+            'content' => 'First reply comment',
+        ]);
+
+        $reply2 = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+            'parent_comment_id' => $parentComment->id,
+            'content' => 'Second reply comment',
+        ]);
+
+        // Create a reply to another comment to ensure filtering works
+        $otherParent = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+            'content' => 'Another parent comment',
+        ]);
+        Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+            'parent_comment_id' => $otherParent->id,
+            'content' => 'Other comment reply',
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->getJson(route('api.comments.reply.index', ['comment' => $parentComment->id]));
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'success',
+            'message',
+            'data' => [
+                '*' => [
+                    'id',
+                    'post_id',
+                    'user_id',
+                    'parent_comment_id',
+                    'content',
+                    'likes_count',
+                    'replies_count',
+                    'created_at',
+                    'updated_at',
+                ]
+            ],
+            'meta' => [
+                'links' => ['first', 'last', 'prev', 'next'],
+                'meta' => ['path', 'per_page', 'next_cursor', 'prev_cursor']
+            ]
+        ]);
+
+        // Assert only replies for our target comment are returned (count = 2)
+        $response->assertJsonCount(2, 'data');
+
+        // Assert order (oldest first: reply1 first, then reply2)
+        $response->assertJsonPath('data.0.id', $reply1->id);
+        $response->assertJsonPath('data.1.id', $reply2->id);
+    }
+
+    public function test_can_delete_reply_comment(): void
+    {
+        $parentComment = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+            'content' => 'This is the parent comment.',
+        ]);
+        $parentComment->replies_count = 1;
+        $parentComment->save();
+
+        $reply = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+            'parent_comment_id' => $parentComment->id,
+            'content' => 'Reply comment to delete',
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->deleteJson(route('api.comments.destroy', ['comment' => $reply->id]));
+
+        $response->assertStatus(200);
+
+        $this->assertSoftDeleted('comments', [
+            'id' => $reply->id,
+        ]);
+
+        $this->assertEquals(0, $parentComment->refresh()->replies_count);
+    }
 }
+
