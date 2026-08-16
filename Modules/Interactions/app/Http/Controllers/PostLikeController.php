@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\RespondsWithApi;
 use Illuminate\Http\Request;
 use Modules\Interactions\Actions\LikePosts;
+use Modules\Interactions\Actions\UnlikePost;
 use Modules\Posts\Models\Post;
 
 class PostLikeController extends Controller
@@ -25,11 +26,12 @@ class PostLikeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function unlikePost($id)
+    public function unlikePost(Request $request, Post $post, UnlikePost $unlikePost)
     {
-        //
+        $unlikePost($request->user(), $post);
 
-        return response()->json([]);
+        return $this->success(message: 'Post unliked successfully');
     }
 }
+
 
