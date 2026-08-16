@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/interactions",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Interactions\\": "app/",
+            "Modules\\Interactions\\Database\\Factories\\": "database/factories/",
+            "Modules\\Interactions\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Interactions\\Tests\\": "tests/"
+        }
+    }
+}

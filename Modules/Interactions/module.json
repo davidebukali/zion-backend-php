@@ -1,0 +1,11 @@
+{
+    "name": "Interactions",
+    "alias": "interactions",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Interactions\\Providers\\InteractionsServiceProvider"
+    ],
+    "files": []
+}
