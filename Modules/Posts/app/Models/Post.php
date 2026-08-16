@@ -50,4 +50,9 @@ class Post extends Model
     {
         return $this->hasMany(Comment::class);
     }
+
+    public function bookmarks()
+    {
+        return $this->hasMany(\Modules\Interactions\Models\Bookmark::class);
+    }
 }
