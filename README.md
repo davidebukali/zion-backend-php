@@ -22,7 +22,6 @@ The application is structured into decoupled modules:
 - **Posts**: Manages post creation, feed retrieval, post viewing, deletion, and visibility settings.
 - **Comments**: Handles top-level comments and nested replies on posts, including comment creation, updates, listing, and deletion.
 - **Interactions**: Manages user engagement actions such as liking and unliking posts, tracking likes counts, and dispatching interaction events.
-We work on liking/unliking, comments next.
 ---
 
 ## Technology Stack
