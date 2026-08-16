@@ -21,7 +21,7 @@ The application is structured into decoupled modules:
 - **Auth**: Handles user registration, authentication, user credentials, and token management via Laravel Sanctum.
 - **Posts**: Manages post creation, feed retrieval, post viewing, deletion, and visibility settings.
 - **Comments**: Handles top-level comments and nested replies on posts, including comment creation, updates, listing, and deletion.
-- **Interactions**: Manages user engagement actions such as liking and unliking posts, tracking likes counts, and dispatching interaction events.
+- **Interactions**: Manages user engagement actions including liking and unliking posts and comments, internal and external post sharing (with type tracking and share counters), and dispatching interaction events.
 ---
 
 ## Technology Stack
