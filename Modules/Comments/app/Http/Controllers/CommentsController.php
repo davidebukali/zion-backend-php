@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 class CommentsController extends Controller
 {
     use RespondsWithApi;
+    
     /**
      * Display a listing of the resource.
      */

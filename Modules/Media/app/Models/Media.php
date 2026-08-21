@@ -2,13 +2,18 @@
 
 namespace Modules\Media\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Modules\Media\Database\Factories\MediaFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Modules\Auth\Models\User;
+use Modules\Media\Enums\MediaStatus;
 
 class Media extends Model
 {
     use HasFactory;
+    use HasUlids;
 
     protected $table = 'media';
 
@@ -16,6 +21,7 @@ class Media extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
+        'id',
         'user_id',
         'mediable_type',
         'mediable_id',
@@ -50,5 +56,5 @@ class Media extends Model
     {
         return $this->morphTo();
     }
-
 }
+

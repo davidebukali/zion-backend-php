@@ -8,7 +8,7 @@ use Modules\Auth\Transformers\UserResource;
 
 class RegisterUser
 {
-    public function __invoke(array $data): User
+    public function __invoke(array $data): array
     {
         $user = User::create([
             'name' => $data['name'],
