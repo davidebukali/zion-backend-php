@@ -13,8 +13,7 @@ class ConfirmUpload
 {
     public function __construct(
         private readonly R2StorageService $storage,
-    ) {
-    }
+    ) {}
 
     public function __invoke(
         User $user,

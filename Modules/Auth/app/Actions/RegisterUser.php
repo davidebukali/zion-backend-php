@@ -16,6 +16,6 @@ class RegisterUser
             'password' => $data['password'],
         ]);
 
-        return new UserResource($user);
+        return (new UserResource($user))->toArray();
     }
 }

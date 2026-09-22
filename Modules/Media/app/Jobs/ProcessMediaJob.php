@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 use Modules\Media\Enums\MediaStatus;
 use Modules\Media\Models\Media;
@@ -30,6 +31,7 @@ class ProcessMediaJob implements ShouldQueue
 
         if (! $media) {
             Log::error("ProcessMediaJob failed: Media ID {$this->mediaId} not found.");
+
             return;
         }
 
@@ -50,15 +52,15 @@ class ProcessMediaJob implements ShouldQueue
             }
 
             // Initialize Intervention ImageManager (GD driver)
-            $manager = ImageManager::gd();
-            $image = $manager->read($originalContent);
+            $manager = new ImageManager(new Driver);
+            $image = $manager->decode($originalContent);
 
             $width = $image->width();
             $height = $image->height();
 
             // Prepare paths for derivatives
             $pathInfo = pathinfo($media->path);
-            $dir = ($pathInfo['dirname'] === '.' || $pathInfo['dirname'] === '') ? '' : $pathInfo['dirname'] . '/';
+            $dir = ($pathInfo['dirname'] === '.' || $pathInfo['dirname'] === '') ? '' : $pathInfo['dirname'].'/';
             $filename = $pathInfo['filename'];
 
             $thumbPath = "{$dir}variants/{$filename}_thumb.webp";
@@ -67,12 +69,12 @@ class ProcessMediaJob implements ShouldQueue
             // Generate 300x300 thumbnail
             $thumbImage = clone $image;
             $thumbImage->cover(300, 300);
-            $thumbWebp = (string) $thumbImage->toWebp(80);
+            $thumbWebp = (string) $thumbImage->encodeUsingMediaType('image/webp', 80);
 
             // Generate medium derivative (max 1080px dimension)
             $mediumImage = clone $image;
             $mediumImage->scaleDown(width: 1080, height: 1080);
-            $mediumWebp = (string) $mediumImage->toWebp(85);
+            $mediumWebp = (string) $mediumImage->encodeUsingMediaType('image/webp', 85);
 
             // Upload variants to R2
             $storage->put($thumbPath, $thumbWebp, 'image/webp');
@@ -94,7 +96,7 @@ class ProcessMediaJob implements ShouldQueue
                 'metadata' => $metadata,
             ]);
         } catch (Throwable $e) {
-            Log::error("ProcessMediaJob error for Media {$this->mediaId}: " . $e->getMessage(), [
+            Log::error("ProcessMediaJob error for Media {$this->mediaId}: ".$e->getMessage(), [
                 'exception' => $e,
             ]);
 

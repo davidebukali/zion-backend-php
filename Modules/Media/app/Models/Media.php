@@ -57,4 +57,3 @@ class Media extends Model
         return $this->morphTo();
     }
 }
-

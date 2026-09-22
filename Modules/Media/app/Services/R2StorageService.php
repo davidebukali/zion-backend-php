@@ -2,15 +2,16 @@
 
 namespace Modules\Media\Services;
 
+use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 
 class R2StorageService
 {
-    private S3Client \;
+    private S3Client $client;
 
     public function __construct()
     {
-        \->client = new S3Client([
+        $this->client = new S3Client([
             'version' => 'latest',
             'region' => config('filesystems.disks.r2.region', 'auto'),
             'endpoint' => config('filesystems.disks.r2.endpoint'),
@@ -21,51 +22,51 @@ class R2StorageService
         ]);
     }
 
-    public function head(string \): ?array
+    public function head(string $path): ?array
     {
         try {
-            \ = \->client->headObject([
+            $result = $this->client->headObject([
                 'Bucket' => config('filesystems.disks.r2.bucket'),
-                'Key' => \,
+                'Key' => $path,
             ]);
 
-            return \->toArray();
-        } catch (\Aws\S3\Exception\S3Exception \) {
-            if (\->getStatusCode() === 404) {
+            return $result->toArray();
+        } catch (S3Exception $e) {
+            if ($e->getStatusCode() === 404) {
                 return null;
             }
 
-            throw \;
+            throw $e;
         }
     }
 
-    public function get(string \): ?string
+    public function get(string $path): ?string
     {
         try {
-            \ = \->client->getObject([
+            $result = $this->client->getObject([
                 'Bucket' => config('filesystems.disks.r2.bucket'),
-                'Key' => \,
+                'Key' => $path,
             ]);
 
-            return (string) \['Body'];
-        } catch (\Aws\S3\Exception\S3Exception \) {
-            if (\->getStatusCode() === 404) {
+            return (string) $result['Body'];
+        } catch (S3Exception $e) {
+            if ($e->getStatusCode() === 404) {
                 return null;
             }
 
-            throw \;
+            throw $e;
         }
     }
 
-    public function put(string \, mixed \, string \ = 'application/octet-stream'): array
+    public function put(string $path, mixed $body, string $contentType = 'application/octet-stream'): array
     {
-        \ = \->client->putObject([
+        $result = $this->client->putObject([
             'Bucket' => config('filesystems.disks.r2.bucket'),
-            'Key' => \,
-            'Body' => \,
-            'ContentType' => \,
+            'Key' => $path,
+            'Body' => $body,
+            'ContentType' => $contentType,
         ]);
 
-        return \->toArray();
+        return $result->toArray();
     }
 }

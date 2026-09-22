@@ -3,6 +3,7 @@
 namespace Modules\Media\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 use Modules\Auth\Models\User;
 use Modules\Media\Enums\MediaStatus;
@@ -34,9 +35,9 @@ class ProcessMediaJobTest extends TestCase
         ]);
 
         // Generate a real test image binary using Intervention Image
-        $manager = ImageManager::gd();
-        $testImage = $manager->create(500, 500);
-        $testImageBinary = (string) $testImage->toJpeg(80);
+        $manager = new ImageManager(new Driver);
+        $testImage = $manager->createImage(500, 500);
+        $testImageBinary = (string) $testImage->encodeUsingMediaType('image/jpeg', 80);
 
         $mockStorage = $this->mock(R2StorageService::class);
         $mockStorage->shouldReceive('get')

@@ -46,7 +46,7 @@ class GenerateUploadUrl
 
         $cmd = $s3->getCommand('PutObject', [
             'Bucket' => 'zion-files',
-            'Key'    => $media->path,
+            'Key' => $media->path,
         ]);
 
         $request = $s3->createPresignedRequest($cmd, '+1 hour');

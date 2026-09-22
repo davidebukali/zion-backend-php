@@ -10,21 +10,21 @@ class MediaResource extends JsonResource
     /**
      * Transform the resource into an array.
      */
-    public function toArray(Request \): array
+    public function toArray(Request $request): array
     {
         return [
-            'id' => \->id,
-            'user_id' => \->user_id,
-            'type' => \->type,
-            'mime_type' => \->mime_type,
-            'size' => \->size,
-            'width' => \->width,
-            'height' => \->height,
-            'status' => \->status,
-            'checksum' => \->checksum,
-            'metadata' => \->metadata,
-            'created_at' => \->created_at,
-            'updated_at' => \->updated_at,
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'type' => $this->type,
+            'mime_type' => $this->mime_type,
+            'size' => $this->size,
+            'width' => $this->width,
+            'height' => $this->height,
+            'status' => $this->status,
+            'checksum' => $this->checksum,
+            'metadata' => $this->metadata,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }
