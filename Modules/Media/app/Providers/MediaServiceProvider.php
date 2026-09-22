@@ -2,7 +2,9 @@
 
 namespace Modules\Media\Providers;
 
-use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Gate;
+use Modules\Media\Models\Media;
+use Modules\Media\Policies\MediaPolicy;
 use Nwidart\Modules\Support\ModuleServiceProvider;
 
 class MediaServiceProvider extends ModuleServiceProvider
@@ -35,12 +37,15 @@ class MediaServiceProvider extends ModuleServiceProvider
     ];
 
     /**
-     * Define module schedules.
-     *
-     * @param  $schedule
+     * Bootstrap any application services.
      */
-    // protected function configureSchedules(Schedule $schedule): void
-    // {
-    //     $schedule->command('inspire')->hourly();
-    // }
+    public function boot(): void
+    {
+        parent::boot();
+
+        Gate::policy(
+            Media::class,
+            MediaPolicy::class
+        );
+    }
 }
