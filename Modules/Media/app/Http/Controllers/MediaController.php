@@ -4,26 +4,44 @@ namespace Modules\Media\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\RespondsWithApi;
-use Illuminate\Http\Request;
+use Modules\Media\Actions\ConfirmUpload;
 use Modules\Media\Actions\GenerateUploadUrl;
+use Modules\Media\Http\Requests\ConfirmUploadRequest;
 use Modules\Media\Http\Requests\GenerateUploadUrlRequest;
+use Modules\Media\Models\Media;
+use Modules\Media\Transformers\MediaResource;
 
 class MediaController extends Controller
 {
     use RespondsWithApi;
 
     public function uploadUrl(
-        GenerateUploadUrlRequest $request,
-        GenerateUploadUrl $action
-    ) {
-        $data = $action(
-            $request->user(),
-            $request->validated()
+        GenerateUploadUrlRequest \,
+        GenerateUploadUrl     ) {
+        \ = \(
+            \->user(),
+            \->validated()
         );
 
-        return $this->success(
-            $data,
+        return \->success(
+            \,
             'Upload URL generated.'
+        );
+    }
+
+    public function confirm(
+        ConfirmUploadRequest \,
+        Media \,
+        ConfirmUpload     ) {
+        \ = \(
+            \->user(),
+            \,
+            \->validated('checksum')
+        );
+
+        return \->success(
+            new MediaResource(\),
+            'Media upload confirmed.'
         );
     }
 }

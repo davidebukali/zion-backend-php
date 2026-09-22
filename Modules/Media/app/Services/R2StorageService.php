@@ -6,11 +6,11 @@ use Aws\S3\S3Client;
 
 class R2StorageService
 {
-    private S3Client $client;
+    private S3Client \;
 
     public function __construct()
     {
-        $this->client = new S3Client([
+        \->client = new S3Client([
             'version' => 'latest',
             'region' => config('filesystems.disks.r2.region', 'auto'),
             'endpoint' => config('filesystems.disks.r2.endpoint'),
@@ -21,21 +21,51 @@ class R2StorageService
         ]);
     }
 
-    public function head(string $path): ?array
+    public function head(string \): ?array
     {
         try {
-            $result = $this->client->headObject([
+            \ = \->client->headObject([
                 'Bucket' => config('filesystems.disks.r2.bucket'),
-                'Key' => $path,
+                'Key' => \,
             ]);
 
-            return $result->toArray();
-        } catch (\Aws\S3\Exception\S3Exception $e) {
-            if ($e->getStatusCode() === 404) {
+            return \->toArray();
+        } catch (\Aws\S3\Exception\S3Exception \) {
+            if (\->getStatusCode() === 404) {
                 return null;
             }
 
-            throw $e;
+            throw \;
         }
+    }
+
+    public function get(string \): ?string
+    {
+        try {
+            \ = \->client->getObject([
+                'Bucket' => config('filesystems.disks.r2.bucket'),
+                'Key' => \,
+            ]);
+
+            return (string) \['Body'];
+        } catch (\Aws\S3\Exception\S3Exception \) {
+            if (\->getStatusCode() === 404) {
+                return null;
+            }
+
+            throw \;
+        }
+    }
+
+    public function put(string \, mixed \, string \ = 'application/octet-stream'): array
+    {
+        \ = \->client->putObject([
+            'Bucket' => config('filesystems.disks.r2.bucket'),
+            'Key' => \,
+            'Body' => \,
+            'ContentType' => \,
+        ]);
+
+        return \->toArray();
     }
 }

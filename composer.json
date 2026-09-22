@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.3",
         "aws/aws-sdk-php": "^3.393",
+        "intervention/image": "^4.3",
         "knuckleswtf/scribe": "^5.11",
         "laravel/framework": "^13.8",
         "laravel/sanctum": "^4.0",
