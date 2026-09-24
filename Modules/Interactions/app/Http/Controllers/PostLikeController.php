@@ -14,7 +14,20 @@ class PostLikeController extends Controller
     use RespondsWithApi;
 
     /**
-     * Store a newly created resource in storage.
+     * @group Interactions
+     * @subgroup Likes
+     * @authenticated
+     * 
+     * Like Post
+     * 
+     * Like a post as the authenticated user.
+     * 
+     * @urlParam post integer required The ID of the post to like. Example: 1
+     * 
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Post liked successfully"
+     * }
      */
     public function likePost(Request $request, Post $post, LikePosts $likePosts)
     {
@@ -24,7 +37,20 @@ class PostLikeController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @group Interactions
+     * @subgroup Likes
+     * @authenticated
+     * 
+     * Unlike Post
+     * 
+     * Remove like from a post.
+     * 
+     * @urlParam post integer required The ID of the post to unlike. Example: 1
+     * 
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Post unliked successfully"
+     * }
      */
     public function unlikePost(Request $request, Post $post, UnlikePost $unlikePost)
     {
@@ -33,5 +59,3 @@ class PostLikeController extends Controller
         return $this->success(message: 'Post unliked successfully');
     }
 }
-
-

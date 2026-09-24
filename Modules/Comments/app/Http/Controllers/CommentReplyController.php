@@ -14,8 +14,34 @@ use Illuminate\Http\Request;
 class CommentReplyController extends Controller
 {
     use RespondsWithApi;
+
     /**
-     * Display a listing of the resource.
+     * @group Comments
+     * @subgroup Replies
+     * @authenticated
+     * 
+     * List Comment Replies
+     * 
+     * Retrieve paginated replies for a specific top-level comment.
+     * 
+     * @urlParam comment string required Parent comment UUID. Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+     * @queryParam per_page integer Items per page. Example: 15
+     * 
+     * @response 200 {
+     *   "success": true,
+     *   "data": [
+     *     {
+     *       "id": "9c2eeb4d-3b7d-4bad-9bdd-2b0d7b3dcb6e",
+     *       "content": "I completely agree!",
+     *       "parent_comment_id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
+     *       "created_at": "2026-09-24T12:00:00.000000Z"
+     *     }
+     *   ],
+     *   "meta": {
+     *     "links": { "first": "...", "last": "...", "prev": null, "next": null },
+     *     "meta": { "current_page": 1, "from": 1, "last_page": 1, "per_page": 15, "to": 1, "total": 1 }
+     *   }
+     * }
      */
     public function index(Comment $comment, Request $request, ListReplies $listReplies)
     {
@@ -31,7 +57,26 @@ class CommentReplyController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @group Comments
+     * @subgroup Replies
+     * @authenticated
+     * 
+     * Create Reply
+     * 
+     * Create a reply to a top-level comment.
+     * 
+     * @urlParam comment string required Parent comment UUID. Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+     * @bodyParam content string required Reply text content. Example: I completely agree!
+     * 
+     * @response 201 {
+     *   "success": true,
+     *   "message": "Reply created successfully",
+     *   "data": {
+     *     "id": "9c2eeb4d-3b7d-4bad-9bdd-2b0d7b3dcb6e",
+     *     "content": "I completely agree!",
+     *     "parent_comment_id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
+     *   }
+     * }
      */
     public function store(Comment $comment, Request $request, CreateReply $createReply)
     {
@@ -72,7 +117,23 @@ class CommentReplyController extends Controller
     public function update(Request $request, $id) {}
 
     /**
-     * Remove the specified resource from storage.
+     * @group Comments
+     * @subgroup Replies
+     * @authenticated
+     * 
+     * Delete Reply
+     * 
+     * Delete a comment reply.
+     * 
+     * @urlParam comment string required Reply comment UUID to delete. Example: 9c2eeb4d-3b7d-4bad-9bdd-2b0d7b3dcb6e
+     * 
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Reply deleted successfully"
+     * }
+     * @response 403 status=403 scenario="Unauthorized deletion" {
+     *   "message": "This action is unauthorized."
+     * }
      */
     public function destroy(Comment $comment, Request $request, DeleteReply $deleteReply)
     {

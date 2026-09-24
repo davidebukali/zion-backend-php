@@ -12,8 +12,22 @@ use Modules\Interactions\Actions\UnlikeComments;
 class CommentLikeController extends Controller
 {
     use RespondsWithApi;
+
     /**
-     * Store a newly created resource in storage.
+     * @group Interactions
+     * @subgroup Likes
+     * @authenticated
+     * 
+     * Like Comment
+     * 
+     * Like a comment as the authenticated user.
+     * 
+     * @urlParam comment string required The UUID of the comment to like. Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+     * 
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Comment liked successfully"
+     * }
      */
     public function likeComment(Request $request, Comment $comment, LikeComments $likeComments)
     {
@@ -23,7 +37,20 @@ class CommentLikeController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @group Interactions
+     * @subgroup Likes
+     * @authenticated
+     * 
+     * Unlike Comment
+     * 
+     * Remove like from a comment.
+     * 
+     * @urlParam comment string required The UUID of the comment to unlike. Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+     * 
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Comment unliked successfully"
+     * }
      */
     public function unlikeComment(Request $request, Comment $comment, UnlikeComments $unlikeComments)
     {

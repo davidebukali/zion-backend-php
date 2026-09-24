@@ -13,7 +13,26 @@ class ReportController extends Controller
     use RespondsWithApi;
 
     /**
-     * Store a newly created resource in storage.
+     * @group Interactions
+     * @subgroup Reports
+     * @authenticated
+     * 
+     * Report Post
+     * 
+     * Submit a report for a post violating platform guidelines.
+     * 
+     * @urlParam post integer required The ID of the post to report. Example: 1
+     * @bodyParam reason string required Reason for reporting. Allowed values: spam, harassment, hate_speech, violence, sexual_content, false_information, other. Example: spam
+     * @bodyParam description string Optional detailed description of the violation. Example: Unwanted promotional spam.
+     * 
+     * @response 201 {
+     *   "success": true,
+     *   "message": "Post reported successfully"
+     * }
+     * @response 422 status=422 scenario="Validation error" {
+     *   "message": "The selected reason is invalid.",
+     *   "errors": { "reason": ["The selected reason is invalid."] }
+     * }
      */
     public function store(StoreReportRequest $request, Post $post, ReportPost $reportPost)
     {
@@ -22,4 +41,3 @@ class ReportController extends Controller
         return $this->success(message: 'Post reported successfully', status: 201);
     }
 }
-
