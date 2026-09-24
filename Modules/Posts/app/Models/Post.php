@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Auth\Models\User;
 use Modules\Posts\Enums\PostVisibility;
 use Modules\Comments\Models\Comment;
-// use Modules\Posts\Database\Factories\PostFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Modules\Media\Models\Media;
 
 class Post extends Model
 {
@@ -29,10 +30,6 @@ class Post extends Model
         ];
     }
 
-    // protected static function newFactory(): PostFactory
-    // {
-    //     // return PostFactory::new();
-    // }
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -54,5 +51,15 @@ class Post extends Model
     public function bookmarks()
     {
         return $this->hasMany(\Modules\Interactions\Models\Bookmark::class);
+    }
+
+    public function media(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Media::class,
+            'post_media'
+        )
+        ->withPivot('sort_order')
+        ->orderByPivot('sort_order');
     }
 }

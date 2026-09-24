@@ -4,7 +4,8 @@ namespace Modules\Comments\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Modules\Media\Models\Media;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -48,5 +49,15 @@ class Comment extends Model
     public function replies()
     {
         return $this->hasMany(Comment::class, 'parent_comment_id');
+    }
+
+    public function media(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Media::class,
+            'comment_media'
+        )
+        ->withPivot('sort_order')
+        ->orderByPivot('sort_order');
     }
 }

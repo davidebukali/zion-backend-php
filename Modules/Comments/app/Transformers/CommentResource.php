@@ -4,6 +4,7 @@ namespace Modules\Comments\Transformers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Modules\Media\Transformers\MediaResource;
 
 class CommentResource extends JsonResource
 {
@@ -22,6 +23,9 @@ class CommentResource extends JsonResource
             'content' => $isDeleted ? '[This comment has been deleted]' : $this->content,
             'likes_count' => $isDeleted ? 0 : $this->likes_count,
             'replies_count' => $this->replies_count,
+            'media' => MediaResource::collection(
+                $this->whenLoaded('media')
+            ),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

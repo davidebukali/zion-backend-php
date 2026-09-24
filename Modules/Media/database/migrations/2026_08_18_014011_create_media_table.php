@@ -18,9 +18,6 @@ return new class extends Migration
                 ->constrained('users')
                 ->cascadeOnDelete();
 
-            $table->string('mediable_type')->nullable();
-            $table->ulid('mediable_id')->nullable();
-
             $table->string('disk')->default('r2');
             $table->string('path')->unique();
 
@@ -35,8 +32,6 @@ return new class extends Migration
 
             $table->string('checksum')->nullable();
 
-            $table->unsignedInteger('sort_order')->default(0);
-
             $table->string('status')->default('pending');
 
             $table->json('metadata')->nullable();
@@ -44,17 +39,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['status', 'created_at']);
-
-            $table->index([
-                'mediable_type',
-                'mediable_id',
-            ]);
-
-            $table->unique([
-                'mediable_type',
-                'mediable_id',
-                'sort_order',
-            ]);
         });
     }
 

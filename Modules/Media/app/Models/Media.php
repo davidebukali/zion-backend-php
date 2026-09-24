@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Modules\Auth\Models\User;
 use Modules\Media\Enums\MediaStatus;
 
@@ -22,9 +21,7 @@ class Media extends Model
      */
     protected $fillable = [
         'id',
-        'user_id',
-        'mediable_type',
-        'mediable_id',
+        'user_id',        
         'disk',
         'path',
         'type',
@@ -34,7 +31,6 @@ class Media extends Model
         'height',
         'duration',
         'checksum',
-        'sort_order',
         'status',
         'metadata',
     ];
@@ -50,10 +46,5 @@ class Media extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function mediable(): MorphTo
-    {
-        return $this->morphTo();
     }
 }

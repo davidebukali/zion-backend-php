@@ -12,6 +12,6 @@ class ListPosts
      */
     public function __invoke(int $perPage = 15): CursorPaginator
     {
-        return Post::feed()->cursorPaginate($perPage);
+        return Post::feed()->with('media')->cursorPaginate($perPage);
     }
 }

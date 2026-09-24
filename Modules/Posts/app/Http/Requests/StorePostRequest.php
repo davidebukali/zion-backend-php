@@ -17,6 +17,17 @@ class StorePostRequest extends FormRequest
                 'string',
                 'max:5000',
             ],
+            'media_ids' => [
+                'nullable',
+                'array',
+                'max:10',
+            ],
+
+            'media_ids.*' => [
+                'string',
+                'distinct',
+                'exists:media,id',
+            ],
         ];
     }
 
