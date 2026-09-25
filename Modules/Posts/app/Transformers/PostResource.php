@@ -18,10 +18,10 @@ class PostResource extends JsonResource
             'content' => $this->content,
             'visibility' => $this->visibility,
             'media' => MediaResource::collection(
-    $this->whenLoaded('media')
-),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+                $this->whenLoaded('media')
+            ),
+            'created_at' => $this->created_at?->toISOString(),
+            'updated_at' => $this->updated_at?->toISOString(),
         ];
     }
 }

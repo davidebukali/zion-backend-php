@@ -20,11 +20,27 @@ class MediaResource extends JsonResource
             'size' => $this->size,
             'width' => $this->width,
             'height' => $this->height,
-            'status' => $this->status,
+            'duration' => $this->duration,
+            'status' => $this->status->value,
             'checksum' => $this->checksum,
+            'url' => $this->getMediaUrl(),
+            'sort_order' => $this->when(
+                $this->pivot !== null &&
+                isset($this->pivot->sort_order),
+                fn () => $this->pivot->sort_order
+            ),
             'metadata' => $this->metadata,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at?->toISOString(),
+            'updated_at' => $this->updated_at?->toISOString(),
         ];
+    }
+
+    private function getMediaUrl(): ?string
+    {
+        if ($this->status?->value !== 'ready') {
+            return null;
+        }
+
+        return Storage::disk($this->disk)->url($this->path);
     }
 }
