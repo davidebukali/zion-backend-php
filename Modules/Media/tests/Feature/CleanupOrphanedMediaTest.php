@@ -140,7 +140,7 @@ class CleanupOrphanedMediaTest extends TestCase
         DB::table('posts')->insert([
             'id' => $postId,
             'user_id' => $this->user->id,
-            'caption' => 'Test post',
+            'content' => 'Test post',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

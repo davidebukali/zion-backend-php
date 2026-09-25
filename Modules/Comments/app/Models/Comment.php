@@ -6,14 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Modules\Media\Models\Media;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Modules\Posts\Models\Post;
 use Modules\Auth\Models\User;
-// use Modules\Comments\Database\Factories\CommentFactory;
+use Modules\Interactions\Models\CommentLike;
 
 class Comment extends Model
 {
@@ -59,5 +56,10 @@ class Comment extends Model
         )
         ->withPivot('sort_order')
         ->orderByPivot('sort_order');
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(CommentLike::class);
     }
 }

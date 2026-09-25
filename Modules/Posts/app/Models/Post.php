@@ -11,6 +11,7 @@ use Modules\Posts\Enums\PostVisibility;
 use Modules\Comments\Models\Comment;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Modules\Media\Models\Media;
+use Modules\Interactions\Models\PostLike;
 
 class Post extends Model
 {
@@ -46,6 +47,11 @@ class Post extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(PostLike::class);
     }
 
     public function bookmarks()
