@@ -15,7 +15,7 @@ class ListComments
     {
         return $post->comments()
             ->withTrashed()
-            ->with('user')
+            ->with(['user', 'media'])
             ->whereNull('parent_comment_id')
             ->where(function ($query) {
                 $query->whereNull('deleted_at')

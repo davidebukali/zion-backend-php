@@ -3,6 +3,7 @@
 namespace Modules\Media\Providers;
 
 use Illuminate\Support\Facades\Gate;
+use Modules\Media\Console\CleanupOrphanedMedia;
 use Modules\Media\Models\Media;
 use Modules\Media\Policies\MediaPolicy;
 use Nwidart\Modules\Support\ModuleServiceProvider;
@@ -24,7 +25,9 @@ class MediaServiceProvider extends ModuleServiceProvider
      *
      * @var string[]
      */
-    // protected array $commands = [];
+    protected array $commands = [
+        CleanupOrphanedMedia::class,
+    ];
 
     /**
      * Provider classes to register.
