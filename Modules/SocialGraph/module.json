@@ -1,0 +1,11 @@
+{
+    "name": "SocialGraph",
+    "alias": "socialgraph",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\SocialGraph\\Providers\\SocialGraphServiceProvider"
+    ],
+    "files": []
+}

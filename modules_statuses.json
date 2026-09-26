@@ -3,5 +3,6 @@
     "Posts": true,
     "Comments": true,
     "Interactions": true,
-    "Media": true
+    "Media": true,
+    "SocialGraph": true
 }
