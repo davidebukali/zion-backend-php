@@ -2,55 +2,139 @@
 
 namespace Modules\SocialGraph\Http\Controllers;
 
+use App\Http\Controllers\Concerns\RespondsWithApi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Auth\Models\User;
+use Modules\SocialGraph\Actions\AcceptFollowRequest;
+use Modules\SocialGraph\Actions\FollowUser;
+use Modules\SocialGraph\Actions\RejectFollowRequest;
+use Modules\SocialGraph\Actions\UnfollowUser;
+use Modules\SocialGraph\Models\Follow;
+use Modules\SocialGraph\Transformers\FollowResource;
 
 class SocialGraphController extends Controller
 {
+    use RespondsWithApi;
+
     /**
-     * Display a listing of the resource.
+     * Follow a user
      */
-    public function index()
-    {
-        return view('socialgraph::index');
+    public function follow(
+        Request $request,
+        User $user,
+        FollowUser $followUser
+    ) {
+        $follow = $followUser(
+            $request->user(),
+            $user
+        );
+
+        return $this->success(
+            new FollowResource($follow),
+            'User followed successfully.',
+            201
+        );
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Unfollow a user
      */
-    public function create()
-    {
-        return view('socialgraph::create');
+    public function unfollow(
+        Request $request,
+        User $user,
+        UnfollowUser $unfollowUser
+    ) {
+        $unfollowUser(
+            $request->user(),
+            $user
+        );
+
+        return $this->success(
+            null,
+            'User unfollowed successfully.'
+        );
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Accept a follow request
      */
-    public function store(Request $request) {}
+    public function acceptFollowRequest(
+        Request $request,
+        Follow $follow,
+        AcceptFollowRequest $acceptFollowRequest
+    ) {
+        $follow = $acceptFollowRequest(
+            $request->user(),
+            $follow
+        );
 
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
-    {
-        return view('socialgraph::show');
+        return $this->success(
+            new FollowResource($follow),
+            'Follow request accepted successfully.'
+        );
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Reject a follow request
      */
-    public function edit($id)
-    {
-        return view('socialgraph::edit');
+    public function rejectFollowRequest(
+        Request $request,
+        Follow $follow,
+        RejectFollowRequest $rejectFollowRequest
+    ) {
+        $follow = $rejectFollowRequest(
+            $request->user(),
+            $follow
+        );
+
+        return $this->success(
+            new FollowResource($follow),
+            'Follow request rejected successfully.'
+        );
     }
 
     /**
-     * Update the specified resource in storage.
+     * Get all followers for a user
      */
-    public function update(Request $request, $id) {}
+    public function getFollowers(
+        Request $request,
+        User $user
+    ) {
+        $perPage = (int) $request->query('per_page', 15);
+        $followers = Follow::with('follower')
+            ->where('following_id', $user->id)
+            ->paginate($perPage);
+
+        $paginated = FollowResource::collection($followers)->response()->getData(true);
+
+        return $this->success(
+            data: $paginated['data'] ?? [],
+            message: 'Followers retrieved successfully.',
+            status: 200,
+            meta: $paginated['meta'] ?? []
+        );
+    }
 
     /**
-     * Remove the specified resource from storage.
+     * Get all users following a user
      */
-    public function destroy($id) {}
+    public function getFollowing(
+        Request $request,
+        User $user
+    ) {
+        $perPage = (int) $request->query('per_page', 15);
+        $following = Follow::with('following')
+            ->where('follower_id', $user->id)
+            ->paginate($perPage);
+
+        $paginated = FollowResource::collection($following)->response()->getData(true);
+
+        return $this->success(
+            data: $paginated['data'] ?? [],
+            message: 'Following retrieved successfully.',
+            status: 200,
+            meta: $paginated['meta'] ?? []
+        );
+    }
 }
