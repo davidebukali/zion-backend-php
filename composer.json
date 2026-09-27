@@ -11,6 +11,7 @@
         "intervention/image": "^4.3",
         "knuckleswtf/scribe": "^5.11",
         "laravel/framework": "^13.8",
+        "laravel/horizon": "^5.50",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
         "league/flysystem-aws-s3-v3": "^3.0",

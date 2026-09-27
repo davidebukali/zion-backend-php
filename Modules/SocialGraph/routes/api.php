@@ -12,4 +12,6 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
 
     Route::post('follows/{follow}/accept', [SocialGraphController::class, 'acceptFollowRequest'])->name('follows.accept');
     Route::post('follows/{follow}/reject', [SocialGraphController::class, 'rejectFollowRequest'])->name('follows.reject');
+
+    Route::get('feed', [SocialGraphController::class, 'feed'])->name('feed.index');
 });

@@ -4,6 +4,7 @@ namespace Modules\Posts\Transformers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Modules\Auth\Transformers\UserResource;
 use Modules\Media\Transformers\MediaResource;
 
 class PostResource extends JsonResource
@@ -17,6 +18,7 @@ class PostResource extends JsonResource
             'id' => $this->id,
             'content' => $this->content,
             'visibility' => $this->visibility,
+            'user' => new UserResource($this->whenLoaded('user')),
             'media' => MediaResource::collection(
                 $this->whenLoaded('media')
             ),

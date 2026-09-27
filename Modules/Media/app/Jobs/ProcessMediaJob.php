@@ -23,7 +23,9 @@ class ProcessMediaJob implements ShouldQueue
 
     public function __construct(
         public string $mediaId
-    ) {}
+    ) {
+        $this->onQueue('media');
+    }
 
     public function handle(R2StorageService $storage): void
     {
