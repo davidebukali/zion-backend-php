@@ -1,49 +1,69 @@
 # Zion Backend (PHP)
 
-Zion Backend is a clean, modular REST API built with Laravel 13 and PHP 8.3+. It leverages a modular architecture to group features into decoupled packages, ensuring scalability and ease of maintenance.
+Zion Backend is a clean, modular REST API built with **Laravel 13** and **PHP 8.3+**. It leverages a decoupled modular architecture to isolate domain concerns, ensuring scalability, high performance, and ease of maintenance.
 
 ---
 
-## Key Features
+## 🚀 Key Features
 
-- **Modular Architecture**: Built using `nwidart/laravel-modules` to isolate distinct logic modules (e.g. `Auth`, `Posts`).
-- **Standardized API Responses**: Employs a unified response envelope via the `RespondsWithApi` trait and `ApiResponse` support classes.
-- **Global Error Handling**: Integrated error handling inside `bootstrap/app.php` that transforms standard exceptions (e.g., validation errors, auth failures, resource not found) into uniform API error response envelopes.
-- **Implicit Route Model Binding**: Utilizes native Laravel route model binding mapped to modular schemas.
-- **Cursor Pagination**: Employs performant, cursor-based pagination for feeds.
+- **Modular Architecture**: Built using `nwidart/laravel-modules` to strictly isolate domain packages (e.g. `Auth`, `Posts`, `SocialGraph`, `Media`, `Comments`, `Interactions`).
+- **Standardized API Responses**: Employs a uniform API envelope via the `RespondsWithApi` trait and `ApiResponse` support layer (`success`, `message`, `data`, `meta`, `errors`).
+- **Global Error Handling**: Integrated error pipeline in `bootstrap/app.php` that transforms validation, authentication, authorization, domain exceptions, and missing models into consistent JSON error responses.
+- **Asynchronous Post Fan-out Engine**: High-throughput two-tier `Bus::batch()` processing that chunks followers and performs bulk `FeedItem::insertOrIgnore()` inserts into timeline feeds.
+- **Dynamic Feed Backfill & Cleanup**: Automatically backfills existing posts upon follow request acceptance and removes unfollowed users' posts asynchronously via transaction-safe events.
+- **Dedicated Queue Isolation**: Redis-backed queue pools (`notifications`, `feed`, `media`, `default`) monitored and auto-scaled with **Laravel Horizon**.
+- **Direct Cloud Media Uploads**: Secure Cloudflare R2 / AWS S3 direct presigned upload URLs with async media processing and attachment workflows.
+- **Cursor Pagination**: Efficient cursor-based pagination for high-volume feeds (`GET /api/v1/feed`).
 
 ---
 
-## Modules Overview
+## 📦 Modules Overview
 
-The application is structured into decoupled modules:
+The application is organized into the following decoupled modules:
 
-- **Auth**: Handles user registration, authentication, user credentials, and token management via Laravel Sanctum.
-- **Posts**: Manages post creation, feed retrieval, post viewing, deletion, and visibility settings.
-- **Comments**: Handles top-level comments and nested replies on posts, including comment creation, updates, listing, and deletion.
-- **Interactions**: Manages user engagement actions including liking and unliking posts and comments, internal and external post sharing (with type tracking and share counters), and dispatching interaction events.
+- **Auth**: User registration, authentication, credential management, and API token generation using Laravel Sanctum.
+- **Posts**: Post creation, visibility settings (`public`, `followers`, `private`), post retrieval, updates, and soft deletion.
+- **SocialGraph**: Follow/unfollow management, follow request handling (accept/reject), followers & following lists, timeline feed generation, async post fan-out, feed backfilling, and unfollow cleanup.
+- **Media**: Cloudflare R2 / S3 presigned upload URL generation, upload confirmation, background media processing, media attachment to posts/comments, and orphan cleanup.
+- **Comments**: Top-level comments and nested replies on posts, with comment creation, updates, listing, and deletion.
+- **Interactions**: User engagement actions including liking/unliking posts and comments, post sharing (internal & external with analytics counters), and bookmarking.
+
 ---
 
-## Technology Stack
+## 🛠️ Technology Stack
 
 - **Framework**: Laravel 13
 - **Language**: PHP 8.3+
-- **Authentication**: Laravel Sanctum (token-based)
-- **Database**: SQLite (default configuration)
-- **Modularity**: `nwidart/laravel-modules`
+- **Database**: PostgreSQL (Production/Testing) / SQLite
+- **Queue & Cache**: Redis with **Laravel Horizon**
+- **Object Storage**: Cloudflare R2 / AWS S3 (Flysystem S3 v3)
+- **Authentication**: Laravel Sanctum (Bearer Token)
+- **API Documentation**: Knuckles Scribe
 
 ---
 
-## API Documentation
+## ⚡ Queue & Background Workers
 
-All API endpoints, request structures, validation parameters, and response formats are automatically generated using **Scribe**.
+Queue workers are grouped into specialized supervisor pools in `config/horizon.php` to ensure resource-intensive jobs never block real-time operations:
+
+| Supervisor | Queues | Workload Characteristics |
+| :--- | :--- | :--- |
+| **`supervisor-general`** | `notifications`, `default` | Low-latency alerts, emails, general tasks (128MB RAM, auto-balanced) |
+| **`supervisor-feed`** | `feed` | High-throughput post fan-out & feed backfill batches (256MB RAM, auto-scales up to 20 workers) |
+| **`supervisor-media`** | `media` | Heavy image manipulation, video transcoding & cloud storage operations (512MB RAM, isolated) |
+
+---
+
+## 📖 API Documentation
+
+All endpoints, request payloads, query parameters, and response schemas are generated using **Scribe**.
 
 ### Viewing the Docs
-- Local Environment: [http://localhost:8000/docs](http://localhost:8000/docs)
-- Deployed Environments: `<app_url>/docs`
+- **Local Environment**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Horizon Dashboard**: [http://localhost:8000/horizon](http://localhost:8000/horizon)
 
-### Generating Documentation
-Since the generated documentation assets (HTML, CSS, JS, Blade view) are ignored in `.gitignore`, you must compile them locally before viewing:
+### Compiling Documentation
+Generate the interactive API documentation assets:
 
 ```bash
 php artisan scribe:generate
@@ -51,17 +71,18 @@ php artisan scribe:generate
 
 ---
 
-## Setup & Running the Application
+## ⚙️ Setup & Running the Application
 
 ### Prerequisites
 
 - **PHP**: ^8.3
 - **Composer**: Dependency Manager for PHP
-- **SQLite**: (Default local database)
+- **PostgreSQL** or **SQLite**
+- **Redis**: For cache and queue management
 
 ### Installation Steps
 
-1. **Clone the Repository** and navigate to the directory:
+1. **Clone the Repository** and navigate to the project directory:
    ```bash
    cd zion-backend-php
    ```
@@ -76,29 +97,35 @@ php artisan scribe:generate
    composer install
    ```
 
-4. **Initialize Database**:
-   Ensure you have a SQLite database file created (e.g. `database/database.sqlite`), then run:
-   ```bash
-   php artisan migrate
-   ```
-
-5. **Generate Application Key**:
+4. **Generate Application Key**:
    ```bash
    php artisan key:generate
    ```
 
-6. **Start the Development Server**:
+5. **Run Database Migrations**:
    ```bash
-   php artisan serve
+   php artisan migrate
    ```
-   The backend will be accessible locally at `http://127.0.0.1:8000`.
+
+6. **Start the Development Server**:
+   In Laravel 13, run the all-in-one development command:
+   ```bash
+   php artisan dev
+   ```
+   *This concurrently starts the HTTP server, queue listeners, and log streaming.*
 
 ---
 
-## Testing
+## 🧪 Testing
 
-The project uses PHPUnit for automated feature and unit tests. Run the test suite using:
+Run the automated test suite across all modules:
 
 ```bash
 php artisan test
+```
+
+To run tests for a specific module:
+
+```bash
+php artisan test Modules/SocialGraph
 ```
