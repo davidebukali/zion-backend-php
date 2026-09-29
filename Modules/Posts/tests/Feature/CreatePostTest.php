@@ -139,4 +139,22 @@ class CreatePostTest extends TestCase
             'content' => 'This post must roll back because media is pending',
         ]);
     }
+
+    public function test_post_creation_dispatches_post_created_event(): void
+    {
+        \Illuminate\Support\Facades\Event::fake([\Modules\Posts\Events\PostCreated::class]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->postJson(route('api.post.store'), [
+            'content' => 'Post to test event dispatching',
+            'visibility' => PostVisibility::PUBLIC->value,
+        ]);
+
+        $response->assertStatus(201);
+
+        \Illuminate\Support\Facades\Event::assertDispatched(\Modules\Posts\Events\PostCreated::class, function ($event) {
+            return $event->post->content === 'Post to test event dispatching';
+        });
+    }
 }

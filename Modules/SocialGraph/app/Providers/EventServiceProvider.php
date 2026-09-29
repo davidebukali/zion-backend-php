@@ -4,10 +4,12 @@ namespace Modules\SocialGraph\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
+use Modules\Posts\Events\PostCreated;
 use Modules\SocialGraph\Events\FollowRequestAccepted;
 use Modules\SocialGraph\Events\UserUnfollowed;
 use Modules\SocialGraph\Listeners\BackfillFollowerFeedListener;
 use Modules\SocialGraph\Listeners\CleanUnfollowedUserFeedListener;
+use Modules\SocialGraph\Listeners\FanOutPostListener;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         FollowRequestAccepted::class => [
             BackfillFollowerFeedListener::class,
+        ],
+        PostCreated::class => [
+            FanOutPostListener::class,
         ],
     ];
 

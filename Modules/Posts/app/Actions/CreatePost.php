@@ -8,6 +8,7 @@ use Modules\Posts\Transformers\PostResource;
 use Modules\Posts\Enums\PostVisibility;
 use Illuminate\Support\Facades\DB;
 use Modules\Posts\Actions\AttachMediaToPost;
+use Modules\Posts\Events\PostCreated;
 
 class CreatePost
 {
@@ -36,6 +37,8 @@ class CreatePost
                 mediaIds: $mediaIds,
                 userId: $user->id
             );
+
+            PostCreated::dispatch($post);
 
             return new PostResource($post->load('media'));
         });
