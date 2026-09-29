@@ -4,8 +4,9 @@ namespace Modules\SocialGraph\Actions;
 
 use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
-use Modules\SocialGraph\Models\Follow;
 use Modules\SocialGraph\Enums\FollowStatus;
+use Modules\SocialGraph\Events\FollowRequestAccepted;
+use Modules\SocialGraph\Models\Follow;
 
 class AcceptFollowRequest
 {
@@ -24,6 +25,8 @@ class AcceptFollowRequest
         $follow->update([
             'status' => FollowStatus::ACCEPTED,
         ]);
+
+        FollowRequestAccepted::dispatch($follow->follower_id, $follow->following_id);
 
         return $follow->refresh();
     }

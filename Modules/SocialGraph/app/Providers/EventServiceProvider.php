@@ -4,7 +4,9 @@ namespace Modules\SocialGraph\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
+use Modules\SocialGraph\Events\FollowRequestAccepted;
 use Modules\SocialGraph\Events\UserUnfollowed;
+use Modules\SocialGraph\Listeners\BackfillFollowerFeedListener;
 use Modules\SocialGraph\Listeners\CleanUnfollowedUserFeedListener;
 
 class EventServiceProvider extends ServiceProvider
@@ -17,6 +19,9 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         UserUnfollowed::class => [
             CleanUnfollowedUserFeedListener::class,
+        ],
+        FollowRequestAccepted::class => [
+            BackfillFollowerFeedListener::class,
         ],
     ];
 
