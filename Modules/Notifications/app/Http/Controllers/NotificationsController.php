@@ -4,53 +4,46 @@ namespace Modules\Notifications\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
+use Modules\Notifications\Actions\MarkAllAsRead;
+use Modules\Notifications\Actions\MarkAsRead;
+use Modules\Notifications\Models\Notification;
+use Modules\Notifications\Transformers\NotificationResource;
 
 class NotificationsController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Get paginated notifications for the authenticated user.
      */
-    public function index()
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return view('notifications::index');
+        return NotificationResource::collection(
+            $request->user()
+                ->notifications()
+                ->with('actor')
+                ->latest()
+                ->paginate(20)
+        );
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Mark a specific notification as read.
      */
-    public function create()
+    public function markAsRead(Notification $notification, MarkAsRead $action, Request $request): Response
     {
-        return view('notifications::create');
+        $action->execute($notification, $request->user());
+
+        return response()->noContent();
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Mark all unread notifications as read for the authenticated user.
      */
-    public function store(Request $request) {}
-
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
+    public function markAllAsRead(Request $request, MarkAllAsRead $action): Response
     {
-        return view('notifications::show');
+        $action->execute($request->user());
+
+        return response()->noContent();
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        return view('notifications::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
 }
