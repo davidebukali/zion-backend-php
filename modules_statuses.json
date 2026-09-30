@@ -4,5 +4,6 @@
     "Comments": true,
     "Interactions": true,
     "Media": true,
-    "SocialGraph": true
+    "SocialGraph": true,
+    "Notifications": true
 }
