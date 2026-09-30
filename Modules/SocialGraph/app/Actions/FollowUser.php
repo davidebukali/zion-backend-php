@@ -4,8 +4,10 @@ namespace Modules\SocialGraph\Actions;
 
 use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
-use Modules\SocialGraph\Models\Follow;
 use Modules\SocialGraph\Enums\FollowStatus;
+use Modules\SocialGraph\Events\FollowRequested;
+use Modules\SocialGraph\Events\UserFollowed;
+use Modules\SocialGraph\Models\Follow;
 
 class FollowUser
 {
@@ -30,6 +32,14 @@ class FollowUser
                     'status' => FollowStatus::ACCEPTED,
                 ]
             );
+
+            if ($follow->wasRecentlyCreated) {
+                if ($follow->status === FollowStatus::ACCEPTED) {
+                    UserFollowed::dispatch($follower->id, $following->id);
+                } elseif ($follow->status === FollowStatus::PENDING) {
+                    FollowRequested::dispatch($follower->id, $following->id, $follow->id);
+                }
+            }
 
             return $follow;
         });
