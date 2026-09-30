@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('notifications', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete(); // recipient
-            $table->foreignId('actor_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->ulid('id')->primary();
+            $table->foreignUlid('user_id')->constrained('users')->cascadeOnDelete(); // recipient
+            $table->foreignUlid('actor_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('type'); // 'post_liked', 'post_commented', 'user_followed', 'comment_replied'
-            $table->uuidMorphs('notifiable'); // post_id / comment_id + type
-            $table->jsonb('data'); // ->jsonb for Postgres, use ->json() portability if you prefer
+            $table->ulidMorphs('notifiable'); // post_id / comment_id + type
+            $table->json('data');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
 

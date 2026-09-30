@@ -7,6 +7,7 @@ use Modules\Auth\Models\User;
 use Modules\Posts\Models\Post;
 use Modules\Comments\Models\Comment;
 use Modules\Comments\Actions\AttachMediaToComment;
+use Modules\Comments\Events\CommentCreated;
 
 class CreateComment
 {
@@ -39,6 +40,8 @@ class CreateComment
                 mediaIds: $mediaIds,
                 userId: $user->id
             );
+
+            CommentCreated::dispatch($comment);
 
             return $comment->load('media');
         });
