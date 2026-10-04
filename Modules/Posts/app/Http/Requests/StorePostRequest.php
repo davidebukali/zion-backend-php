@@ -13,8 +13,10 @@ class StorePostRequest extends FormRequest
     {
         return [
             'content' => [
+                'required_without:media_ids',
                 'nullable',
                 'string',
+                'filled',
                 'max:5000',
             ],
             'media_ids' => [

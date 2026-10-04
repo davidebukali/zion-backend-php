@@ -2,16 +2,18 @@
 
 namespace Modules\Posts\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\RespondsWithApi;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Posts\Http\Requests\StorePostRequest;
-use Modules\Posts\Actions\CreatePost;
-use Modules\Posts\Actions\ListPosts;
-use Modules\Posts\Actions\DeletePost;
-use Modules\Posts\Transformers\PostResource;
-use Modules\Posts\Models\Post;
 use Illuminate\Support\Facades\Auth;
+use Modules\Auth\Models\User;
+use Modules\Posts\Actions\CreatePost;
+use Modules\Posts\Actions\DeletePost;
+use Modules\Posts\Actions\GetUserPosts;
+use Modules\Posts\Actions\ListPosts;
+use Modules\Posts\Http\Requests\StorePostRequest;
+use Modules\Posts\Models\Post;
+use Modules\Posts\Transformers\PostResource;
 
 class PostsController extends Controller
 {
@@ -47,8 +49,39 @@ class PostsController extends Controller
      */
     public function index(Request $request, ListPosts $listPosts)
     {
-        $posts = $listPosts($request->integer('per_page', 15));
+        $perPage = (int) ($request->query('per_page') ?? $request->input('per_page') ?? 15);
+        $posts = $listPosts($perPage);
         $paginated = PostResource::collection($posts)->toResponse($request)->getData(true);
+        return $this->success(
+            data: $paginated['data'],
+            meta: [
+                'links' => $paginated['links'],
+                'meta' => $paginated['meta'],
+            ]
+        );
+    }
+
+    /**
+     * @group Posts
+     * 
+     * Get User Posts
+     * 
+     * Retrieve paginated posts for a specific user with visibility filtering.
+     * 
+     * @urlParam user string required The ID of the user.
+     * @queryParam per_page integer Number of items per page. Example: 15
+     */
+    public function userPosts(Request $request, User $user, GetUserPosts $getUserPosts)
+    {
+        $perPage = (int) ($request->query('per_page') ?? $request->input('per_page') ?? 15);
+        $posts = ($getUserPosts)(
+            targetUser: $user,
+            viewer: $request->user(),
+            perPage: $perPage
+        );
+
+        $paginated = PostResource::collection($posts)->toResponse($request)->getData(true);
+
         return $this->success(
             data: $paginated['data'],
             meta: [

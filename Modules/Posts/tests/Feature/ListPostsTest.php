@@ -67,6 +67,8 @@ class ListPostsTest extends TestCase
      */
     public function test_cursor_pagination_returns_expected_records(): void
     {
+        Post::query()->forceDelete();
+
         Sanctum::actingAs($this->user);
 
         // Create 5 posts with slightly staggered timestamps
@@ -75,13 +77,14 @@ class ListPostsTest extends TestCase
             $post = $this->user->posts()->create([
                 'content' => "Cursor Paginated Post {$i}",
                 'visibility' => PostVisibility::PUBLIC->value,
-                'created_at' => now()->subMinutes(10 - $i),
             ]);
+            $post->created_at = now()->subMinutes(10 - $i);
+            $post->save();
             $createdPosts[] = $post;
         }
 
         // Request first page with per_page = 2
-        $firstPageResponse = $this->getJson(route('api.post.index', ['per_page' => 2]));
+        $firstPageResponse = $this->getJson(route('api.post.index') . '?per_page=2');
 
         $firstPageResponse->assertStatus(200);
         $firstPageData = $firstPageResponse->json('data');
