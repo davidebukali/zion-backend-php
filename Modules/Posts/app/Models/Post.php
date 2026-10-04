@@ -2,17 +2,25 @@
 
 namespace Modules\Posts\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Auth\Models\User;
-use Modules\Posts\Enums\PostVisibility;
 use Modules\Comments\Models\Comment;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Modules\Media\Models\Media;
 use Modules\Interactions\Models\PostLike;
+use Modules\Media\Models\Media;
+use Modules\Posts\Enums\PostModerationStatus;
+use Modules\Posts\Enums\PostVisibility;
+use Modules\Posts\Scopes\PostModerationScope;
+use Modules\Interactions\Models\Bookmark;
+use Modules\Interactions\Models\PostReports;
 
+#[ScopedBy([PostModerationScope::class])]
 class Post extends Model
 {
     use HasFactory;
@@ -20,14 +28,24 @@ class Post extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'user_id',
         'content',
-        'visibility'
+        'visibility',
+        'moderation_status',
+        'moderated_at',
+        'moderated_by_type',
+        'is_flagged_manually',
+        'moderation_metadata',
     ];
 
     protected function casts(): array
     {
         return [
             'visibility' => PostVisibility::class,
+            'moderation_status' => PostModerationStatus::class,
+            'moderated_at' => 'datetime',
+            'is_flagged_manually' => 'boolean',
+            'moderation_metadata' => 'array',
         ];
     }
 
@@ -56,7 +74,7 @@ class Post extends Model
 
     public function bookmarks()
     {
-        return $this->hasMany(\Modules\Interactions\Models\Bookmark::class);
+        return $this->hasMany(Bookmark::class);
     }
 
     public function media(): BelongsToMany
@@ -67,5 +85,20 @@ class Post extends Model
         )
         ->withPivot('sort_order')
         ->orderByPivot('sort_order');
+    }
+
+    public function moderationRequests(): HasMany
+    {
+        return $this->hasMany(ModerationRequest::class);
+    }
+
+    public function latestModerationRequest(): HasOne
+    {
+        return $this->hasOne(ModerationRequest::class)->latestOfMany();
+    }
+
+    public function reports(): HasMany
+    {
+        return $this->hasMany(PostReports::class, 'post_id');
     }
 }

@@ -5,6 +5,7 @@ namespace Modules\Posts\Policies;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Modules\Auth\Models\User;
 use Modules\Posts\Enums\PostVisibility;
+use Modules\Posts\Enums\PostModerationStatus;
 use Modules\Posts\Models\Post;
 
 class PostPolicy
@@ -17,10 +18,23 @@ class PostPolicy
     public function __construct() {}
 
     /**
-     * Determine whether the user can view the post based on visibility.
+     * Determine whether the user can view the post based on visibility and moderation.
      */
     public function view(?User $user, Post $post): bool
     {
+        if ($post->moderation_status !== PostModerationStatus::APPROVED) {
+            if (! $user) {
+                return false;
+            }
+
+            $isAuthor = $user->id === $post->user_id;
+            $isStaff = (bool) ($user->is_admin ?? false) || (bool) ($user->is_moderator ?? false);
+
+            if (! $isAuthor && ! $isStaff) {
+                return false;
+            }
+        }
+
         if ($post->visibility === PostVisibility::PUBLIC) {
             return true;
         }

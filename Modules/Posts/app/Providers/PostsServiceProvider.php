@@ -4,6 +4,7 @@ namespace Modules\Posts\Providers;
 
 use Nwidart\Modules\Support\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
+use Modules\Posts\Console\ResolveStuckModerationRequests;
 
 class PostsServiceProvider extends ModuleServiceProvider
 {
@@ -22,7 +23,9 @@ class PostsServiceProvider extends ModuleServiceProvider
      *
      * @var string[]
      */
-    // protected array $commands = [];
+    protected array $commands = [
+        ResolveStuckModerationRequests::class,
+    ];
 
     /**
      * Provider classes to register.
@@ -37,12 +40,12 @@ class PostsServiceProvider extends ModuleServiceProvider
     /**
      * Define module schedules.
      * 
-     * @param $schedule
+     * @param Schedule $schedule
      */
-    // protected function configureSchedules(Schedule $schedule): void
-    // {
-    //     $schedule->command('inspire')->hourly();
-    // }
+    protected function configureSchedules(Schedule $schedule): void
+    {
+        $schedule->command('moderation:resolve-stuck-requests')->everyFiveMinutes();
+    }
 
     /**
      * Bootstrap any application services.

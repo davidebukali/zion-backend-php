@@ -3,6 +3,12 @@
 namespace Modules\Posts\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Modules\Posts\Events\PostCreated;
+use Modules\Posts\Events\PostUpdated;
+use Modules\Posts\Events\PostModerationEvaluated;
+use Modules\Posts\Listeners\TriggerModerationOnPostChange;
+use Modules\Posts\Listeners\UpdateReportStatusOnModeration;
+use Modules\Interactions\Events\PostReported;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -11,7 +17,20 @@ class EventServiceProvider extends ServiceProvider
      *
      * @var array<string, array<int, string>>
      */
-    protected $listen = [];
+    protected $listen = [
+        PostCreated::class => [
+            TriggerModerationOnPostChange::class,
+        ],
+        PostUpdated::class => [
+            TriggerModerationOnPostChange::class,
+        ],
+        PostReported::class => [
+            TriggerModerationOnPostChange::class,
+        ],
+        PostModerationEvaluated::class => [
+            UpdateReportStatusOnModeration::class,
+        ],
+    ];
 
     /**
      * Indicates if events should be discovered.
