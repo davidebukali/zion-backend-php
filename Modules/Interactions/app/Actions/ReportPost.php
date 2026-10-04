@@ -3,6 +3,7 @@
 namespace Modules\Interactions\Actions;
 
 use Modules\Auth\Models\User;
+use Modules\Interactions\Enums\ReportStatus;
 use Modules\Interactions\Events\PostReported;
 use Modules\Interactions\Models\PostReports;
 use Modules\Posts\Models\Post;
@@ -22,7 +23,7 @@ class ReportPost
             [
                 'reason' => $data['reason'],
                 'description' => $data['description'] ?? null,
-                'status' => 'pending',
+                'status' => ReportStatus::PENDING,
             ]
         );
 
