@@ -6,11 +6,12 @@ Zion Backend is a clean, modular REST API built with **Laravel 13** and **PHP 8.
 
 ## 🚀 Key Features
 
-- **Modular Architecture**: Built using `nwidart/laravel-modules` to strictly isolate domain packages (e.g. `Auth`, `Posts`, `SocialGraph`, `Media`, `Comments`, `Interactions`).
+- **Modular Architecture**: Built using `nwidart/laravel-modules` to strictly isolate domain packages (e.g. `Auth`, `Posts`, `SocialGraph`, `Media`, `Comments`, `Interactions`, `Notifications`).
 - **Standardized API Responses**: Employs a uniform API envelope via the `RespondsWithApi` trait and `ApiResponse` support layer (`success`, `message`, `data`, `meta`, `errors`).
 - **Global Error Handling**: Integrated error pipeline in `bootstrap/app.php` that transforms validation, authentication, authorization, domain exceptions, and missing models into consistent JSON error responses.
 - **Asynchronous Post Fan-out Engine**: High-throughput two-tier `Bus::batch()` processing that chunks followers and performs bulk `FeedItem::insertOrIgnore()` inserts into timeline feeds.
 - **Dynamic Feed Backfill & Cleanup**: Automatically backfills existing posts upon follow request acceptance and removes unfollowed users' posts asynchronously via transaction-safe events.
+- **Event-Driven In-App Notifications**: Real-time asynchronous notification listeners for user interactions (likes, shares, comments, follows, follow requests, reports) with built-in self-action suppression.
 - **Dedicated Queue Isolation**: Redis-backed queue pools (`notifications`, `feed`, `media`, `default`) monitored and auto-scaled with **Laravel Horizon**.
 - **Direct Cloud Media Uploads**: Secure Cloudflare R2 / AWS S3 direct presigned upload URLs with async media processing and attachment workflows.
 - **Cursor Pagination**: Efficient cursor-based pagination for high-volume feeds (`GET /api/v1/feed`).
@@ -26,7 +27,8 @@ The application is organized into the following decoupled modules:
 - **SocialGraph**: Follow/unfollow management, follow request handling (accept/reject), followers & following lists, timeline feed generation, async post fan-out, feed backfilling, and unfollow cleanup.
 - **Media**: Cloudflare R2 / S3 presigned upload URL generation, upload confirmation, background media processing, media attachment to posts/comments, and orphan cleanup.
 - **Comments**: Top-level comments and nested replies on posts, with comment creation, updates, listing, and deletion.
-- **Interactions**: User engagement actions including liking/unliking posts and comments, post sharing (internal & external with analytics counters), and bookmarking.
+- **Interactions**: User engagement actions including liking/unliking posts and comments, post sharing (internal & external with analytics counters), bookmarking, and reporting.
+- **Notifications**: In-app notification engine with queued listeners (`notifications` queue) handling `post_liked`, `comment_liked`, `post_shared`, `post_commented`, `user_followed`, `follow_requested`, `follow_request_accepted`, and `post_reported`. Includes REST API endpoints to fetch paginated notifications and mark individual or all notifications as read.
 
 ---
 
@@ -124,8 +126,9 @@ Run the automated test suite across all modules:
 php artisan test
 ```
 
-To run tests for a specific module:
+To run tests for specific modules:
 
 ```bash
+php artisan test Modules/Notifications
 php artisan test Modules/SocialGraph
 ```
