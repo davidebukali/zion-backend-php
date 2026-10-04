@@ -1,0 +1,11 @@
+{
+    "name": "Search",
+    "alias": "search",
+    "description": "Unified and dedicated search for users and posts",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Search\\Providers\\SearchServiceProvider"
+    ],
+    "files": []
+}

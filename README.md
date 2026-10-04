@@ -29,6 +29,7 @@ The application is organized into the following decoupled modules:
 - **Comments**: Top-level comments and nested replies on posts, with comment creation, updates, listing, and deletion.
 - **Interactions**: User engagement actions including liking/unliking posts and comments, post sharing (internal & external with analytics counters), bookmarking, and reporting.
 - **Notifications**: In-app notification engine with queued listeners (`notifications` queue) handling `post_liked`, `comment_liked`, `post_shared`, `post_commented`, `user_followed`, `follow_requested`, `follow_request_accepted`, and `post_reported`. Includes REST API endpoints to fetch paginated notifications and mark individual or all notifications as read.
+- **Search**: Unified search engine (`GET /api/v1/search`) supporting combined overview results (`type=all`) and tabbed searches (`type=users`, `type=posts`) with real-time post visibility scoping.
 
 ---
 
@@ -129,6 +130,7 @@ php artisan test
 To run tests for specific modules:
 
 ```bash
+php artisan test Modules/Search
 php artisan test Modules/Notifications
 php artisan test Modules/SocialGraph
 ```
