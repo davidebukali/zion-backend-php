@@ -62,4 +62,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(\Modules\Notifications\Models\Notification::class, 'user_id');
     }
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
 }

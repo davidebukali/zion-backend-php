@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Actions;
 
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
 use Modules\Auth\Transformers\UserResource;
 
@@ -10,12 +10,21 @@ class RegisterUser
 {
     public function __invoke(array $data): array
     {
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => $data['password'],
-        ]);
+        return DB::transaction(function () use ($data) {
+            $name = $data['name'] ?? null;
 
-        return (array) new UserResource($user);
+            $user = User::create([
+                'name' => $name ?? strstr($data['email'], '@', true),
+                'email' => $data['email'],
+                'password' => $data['password'],
+            ]);
+
+            $user->profile()->create([
+                'username' => $name,
+                'display_name' => $name,
+            ]);
+
+            return (array) new UserResource($user->load('profile'));
+        });
     }
 }
