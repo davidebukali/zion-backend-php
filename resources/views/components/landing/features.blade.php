@@ -1,24 +1,36 @@
 <!-- FEATURES SECTION: Core Offerings & Interactive Bento Grid -->
 <div class="w-full space-y-space-xl" id="features">
-    <!-- 1. STATS / SOCIAL PROOF STRIP -->
-    <section class="w-full bg-surface-container-low border-y border-outline-variant/15 py-space-xl">
+    <!-- 1. MISSION & VALUES STRIP -->
+    <section class="w-full bg-surface-container-low border-y border-outline-variant/15 py-space-lg sm:py-space-xl">
         <div class="max-w-[1200px] mx-auto px-gutter">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-space-md sm:gap-space-lg text-center">
-                <div class="flex flex-col items-center gap-1 p-space-md rounded-2xl bg-surface-container/60 border border-outline-variant/10 shadow-sm transition-transform duration-200 hover:-translate-y-0.5">
-                    <span class="text-3xl sm:text-4xl text-primary font-extrabold tracking-tight">14.2k+</span>
-                    <span class="text-xs sm:text-sm text-on-surface-variant font-medium">Waitlist Members</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md sm:gap-space-lg">
+                <div class="flex flex-col items-center text-center gap-2 p-space-md sm:p-5 rounded-2xl bg-surface-container/60 border border-outline-variant/10 shadow-sm transition-transform duration-200 hover:-translate-y-0.5">
+                    <div class="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[26px] icon-fill">shield</span>
+                    </div>
+                    <span class="text-base sm:text-lg text-on-surface font-bold tracking-tight">100% Moderated</span>
+                    <span class="text-xs sm:text-sm text-on-surface-variant leading-snug">Every post is wholesome &amp; safe</span>
                 </div>
-                <div class="flex flex-col items-center gap-1 p-space-md rounded-2xl bg-surface-container/60 border border-outline-variant/10 shadow-sm transition-transform duration-200 hover:-translate-y-0.5">
-                    <span class="text-3xl sm:text-4xl text-primary font-extrabold tracking-tight">100%</span>
-                    <span class="text-xs sm:text-sm text-on-surface-variant font-medium">Wholesome &amp; Moderated</span>
+                <div class="flex flex-col items-center text-center gap-2 p-space-md sm:p-5 rounded-2xl bg-surface-container/60 border border-outline-variant/10 shadow-sm transition-transform duration-200 hover:-translate-y-0.5">
+                    <div class="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[26px] icon-fill">lock</span>
+                    </div>
+                    <span class="text-base sm:text-lg text-on-surface font-bold tracking-tight">Zero Data Selling</span>
+                    <span class="text-xs sm:text-sm text-on-surface-variant leading-snug">Your privacy is sacred to us</span>
                 </div>
-                <div class="flex flex-col items-center gap-1 p-space-md rounded-2xl bg-surface-container/60 border border-outline-variant/10 shadow-sm transition-transform duration-200 hover:-translate-y-0.5">
-                    <span class="text-3xl sm:text-4xl text-primary font-extrabold tracking-tight">45+</span>
-                    <span class="text-xs sm:text-sm text-on-surface-variant font-medium">Countries Represented</span>
+                <div class="flex flex-col items-center text-center gap-2 p-space-md sm:p-5 rounded-2xl bg-surface-container/60 border border-outline-variant/10 shadow-sm transition-transform duration-200 hover:-translate-y-0.5">
+                    <div class="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[26px] icon-fill">church</span>
+                    </div>
+                    <span class="text-base sm:text-lg text-on-surface font-bold tracking-tight">Christ-Centered</span>
+                    <span class="text-xs sm:text-sm text-on-surface-variant leading-snug">Built on Biblical values</span>
                 </div>
-                <div class="flex flex-col items-center gap-1 p-space-md rounded-2xl bg-surface-container/60 border border-outline-variant/10 shadow-sm transition-transform duration-200 hover:-translate-y-0.5">
-                    <span class="text-3xl sm:text-4xl text-primary font-extrabold tracking-tight">0</span>
-                    <span class="text-xs sm:text-sm text-on-surface-variant font-medium">Toxic Rage Algorithms</span>
+                <div class="flex flex-col items-center text-center gap-2 p-space-md sm:p-5 rounded-2xl bg-surface-container/60 border border-outline-variant/10 shadow-sm transition-transform duration-200 hover:-translate-y-0.5">
+                    <div class="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[26px] icon-fill">block</span>
+                    </div>
+                    <span class="text-base sm:text-lg text-on-surface font-bold tracking-tight">No Rage Algorithms</span>
+                    <span class="text-xs sm:text-sm text-on-surface-variant leading-snug">No toxic engagement tricks</span>
                 </div>
             </div>
         </div>
