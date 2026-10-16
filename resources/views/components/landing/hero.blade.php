@@ -120,149 +120,223 @@
                 <div class="absolute inset-4 bg-primary-container/20 rounded-[48px] blur-2xl -z-10 transform scale-95"></div>
 
                 <!-- Smartphone Chassis -->
-                <div class="w-full max-w-[340px] rounded-[44px] bg-surface-container-lowest p-3 border border-outline-variant/30 shadow-[0_24px_50px_-10px_rgba(0,0,0,0.6),0_0_30px_0_rgba(198,40,40,0.2)]">
+                <div class="w-full max-w-[340px] rounded-[48px] bg-[#1a1414] p-3 border border-outline-variant/30 shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7),0_0_35px_0_rgba(198,40,40,0.22)]">
                     <!-- Screen Surface -->
-                    <div class="w-full rounded-[36px] bg-surface-container-low overflow-hidden flex flex-col h-[640px] relative border border-outline-variant/15">
-                        <!-- Dynamic Notch & Status Area -->
-                        <div class="w-full px-6 pt-3 pb-1 flex justify-between items-center text-on-surface-variant text-[11px] font-semibold tracking-wide">
-                            <span>9:41</span>
-                            <div class="w-20 h-4 bg-surface-container-highest rounded-full flex items-center justify-center">
-                                <span class="w-2.5 h-2.5 rounded-full bg-surface-container-low"></span>
+                    <div class="w-full rounded-[40px] bg-[#130F0F] overflow-hidden flex flex-col h-[650px] relative border border-outline-variant/20 select-none">
+                        <!-- Dynamic Island & Status Area -->
+                        <div class="w-full px-6 pt-3 pb-1 flex justify-between items-center text-on-surface-variant text-[12px] font-semibold tracking-tight z-30">
+                            <span class="text-white/90">9:41</span>
+                            <!-- Dynamic Island Pill -->
+                            <div class="w-24 h-5 bg-black rounded-full flex items-center justify-end pr-2 gap-1.5 border border-white/5 shadow-inner">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#1c1c1e] border border-white/10"></span>
                             </div>
-                            <div class="flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[13px]">signal_cellular_alt</span>
-                                <span class="material-symbols-outlined text-[13px]">wifi</span>
-                                <span class="material-symbols-outlined text-[14px]">battery_full</span>
+                            <div class="flex items-center gap-1.5 text-white/90">
+                                <span class="material-symbols-outlined text-[14px]">signal_cellular_alt</span>
+                                <span class="material-symbols-outlined text-[14px]">wifi</span>
+                                <span class="material-symbols-outlined text-[15px] icon-fill">battery_full</span>
                             </div>
                         </div>
 
                         <!-- Tsiyon App Bar -->
-                        <div class="px-4 py-2.5 flex items-center justify-between bg-surface-container-low/90 backdrop-blur-md sticky top-0 z-20 border-b border-outline-variant/10">
+                        <div class="px-4 py-2.5 flex items-center justify-between bg-[#130F0F]/90 backdrop-blur-md sticky top-0 z-20">
                             <div class="flex items-center gap-2">
-                                <div class="w-6 h-6 rounded-md bg-primary-container flex items-center justify-center text-on-primary-container">
-                                    <span class="material-symbols-outlined text-[16px] icon-fill">local_fire_department</span>
+                                <div class="w-7 h-7 rounded-lg bg-[#C62828] flex items-center justify-center text-white shadow-sm">
+                                    <span class="material-symbols-outlined text-[18px] icon-fill">local_fire_department</span>
                                 </div>
-                                <span class="text-[17px] font-extrabold text-on-surface tracking-tight">Tsiyon</span>
+                                <span class="text-[19px] font-black text-white tracking-tight">Tsiyon</span>
                             </div>
-                            <div class="flex items-center gap-1 text-on-surface-variant">
-                                <button class="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-[19px]">search</span>
+                            <div class="flex items-center gap-2 text-neutral-300">
+                                <button type="button" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors">
+                                    <span class="material-symbols-outlined text-[20px]">search</span>
                                 </button>
-                                <button class="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center relative">
-                                    <span class="material-symbols-outlined text-[19px]">notifications</span>
-                                    <span class="w-2 h-2 rounded-full bg-primary absolute top-1.5 right-1.5"></span>
+                                <button type="button" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center relative transition-colors">
+                                    <span class="material-symbols-outlined text-[20px]">notifications</span>
+                                    <span class="w-2 h-2 rounded-full bg-[#E53935] absolute top-1.5 right-1.5 ring-2 ring-[#130F0F]"></span>
                                 </button>
                             </div>
                         </div>
 
                         <!-- Internal Scrollable Feed -->
-                        <div class="flex-1 overflow-y-auto px-3 py-2 space-y-3 pb-16">
-                            <!-- Daily Scripture Highlight Ribbon -->
-                            <div class="rounded-xl p-3 bg-gradient-to-br from-secondary-container via-primary-container to-surface-container-high text-white shadow-sm flex flex-col gap-1 relative overflow-hidden">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[10px] uppercase font-bold tracking-widest text-primary-fixed">Daily Scripture</span>
-                                    <span class="material-symbols-outlined text-[14px] text-primary-fixed">bookmark</span>
-                                </div>
-                                <p class="text-[12px] font-semibold leading-tight text-white">
-                                    “The Lord is my shepherd; I shall not want.”
-                                </p>
-                                <span class="text-[10px] text-secondary-fixed opacity-90 font-medium">Psalm 23:1 • Fellowship Meditation</span>
-                            </div>
-
-                            <!-- Feed Card 1: Reflection & Verse -->
-                            <div class="rounded-xl bg-surface-container p-3 space-y-2.5 border border-outline-variant/15 shadow-sm">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-7 h-7 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs">
+                        <div class="flex-1 overflow-y-auto px-3 py-2 space-y-3 pb-20 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                            <!-- Feed Card 1: Sarah Miller (Verse Study) -->
+                            <div 
+                                x-data="{ liked: true, count: 248, bookmarked: false }"
+                                class="rounded-[22px] bg-[#1C1717] p-3.5 space-y-3 border border-white/5 shadow-sm"
+                            >
+                                <!-- Author Row -->
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center gap-2.5">
+                                        <!-- Lime Green Avatar -->
+                                        <div class="w-9 h-9 rounded-full bg-[#84E42B] text-black flex items-center justify-center font-extrabold text-[13px] tracking-tight shrink-0 shadow-sm">
                                             SM
                                         </div>
                                         <div>
-                                            <div class="text-[12px] font-bold text-on-surface leading-none">Sarah Miller</div>
-                                            <div class="text-[10px] text-on-surface-variant mt-0.5">2h ago • Fellowship Group</div>
+                                            <div class="flex items-center gap-1 leading-tight">
+                                                <span class="text-[13px] font-bold text-white">Sarah Miller</span>
+                                                <span class="material-symbols-outlined text-[14px] text-[#FFB4AC] icon-fill">verified</span>
+                                            </div>
+                                            <div class="text-[11px] text-neutral-400">@sarahm • 2h</div>
                                         </div>
                                     </div>
-                                    <span class="px-2 py-0.5 rounded-full bg-secondary-container/30 text-secondary text-[10px] font-semibold">Verse Study</span>
+                                    <button type="button" class="text-neutral-400 hover:text-white p-1">
+                                        <span class="material-symbols-outlined text-[18px]">more_horiz</span>
+                                    </button>
                                 </div>
-                                <p class="text-[12px] text-on-surface leading-snug">
-                                    Reflecting on morning prayer with the women's fellowship group. What a blessing to walk in peace without the noise of typical feeds!
+
+                                <!-- Post Text -->
+                                <p class="text-[12.5px] text-neutral-200 leading-relaxed">
+                                    Reflecting on morning prayer with the women's fellowship group. What a blessing to walk in peace without the noise of typical feeds! 🙌
                                 </p>
-                                <div class="rounded-lg bg-surface-container-high p-2.5 flex items-center gap-2 border border-outline-variant/10">
-                                    <span class="material-symbols-outlined text-primary text-[18px]">format_quote</span>
-                                    <span class="text-[11px] text-on-surface italic line-clamp-1">“Peace I leave with you; my peace I give you.”</span>
+
+                                <!-- Quote Box with Quotation Mark & Italicized Verse -->
+                                <div class="rounded-full bg-[#151111] px-3.5 py-2 flex items-center gap-2 border border-white/10">
+                                    <span class="text-[#FFB4AC] font-serif font-black text-sm leading-none select-none">””</span>
+                                    <span class="text-[11.5px] text-neutral-300 italic truncate">“Peace I leave with you; my peace I give...</span>
                                 </div>
+
                                 <!-- Engagement Footer -->
-                                <div class="flex items-center justify-between pt-1 text-on-surface-variant text-[11px]">
-                                    <div class="flex items-center gap-3">
-                                        <button class="flex items-center gap-1 text-primary hover:opacity-80">
-                                            <span class="material-symbols-outlined text-[15px] icon-fill">favorite</span>
-                                            <span>248</span>
+                                <div class="flex items-center justify-between pt-1 text-neutral-400 text-[11px]">
+                                    <div class="flex items-center gap-4">
+                                        <!-- Heart with Alpine Toggle -->
+                                        <button 
+                                            type="button" 
+                                            @click="liked = !liked; count += liked ? 1 : -1"
+                                            class="flex items-center gap-1.5 transition-colors"
+                                            :class="liked ? 'text-[#FF8A80]' : 'hover:text-white'"
+                                        >
+                                            <span class="material-symbols-outlined text-[16px]" :class="{ 'icon-fill': liked }">favorite</span>
+                                            <span class="font-medium" x-text="count">248</span>
                                         </button>
-                                        <button class="flex items-center gap-1 hover:text-on-surface">
-                                            <span class="material-symbols-outlined text-[15px]">chat_bubble</span>
-                                            <span>34</span>
+
+                                        <!-- Comments -->
+                                        <div class="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
+                                            <span class="material-symbols-outlined text-[16px]">chat_bubble</span>
+                                            <span class="font-medium">34</span>
+                                        </div>
+
+                                        <!-- Share -->
+                                        <button type="button" class="hover:text-white transition-colors">
+                                            <span class="material-symbols-outlined text-[16px]">share</span>
                                         </button>
                                     </div>
-                                    <button class="flex items-center gap-1 hover:text-on-surface">
-                                        <span class="material-symbols-outlined text-[15px]">share</span>
+
+                                    <!-- Bookmark -->
+                                    <button 
+                                        type="button" 
+                                        @click="bookmarked = !bookmarked" 
+                                        class="hover:text-white transition-colors"
+                                        :class="bookmarked ? 'text-[#FFB4AC]' : ''"
+                                    >
+                                        <span class="material-symbols-outlined text-[16px]" :class="{ 'icon-fill': bookmarked }">bookmark</span>
                                     </button>
                                 </div>
                             </div>
 
-                            <!-- Feed Card 2: Community Worship Audio -->
-                            <div class="rounded-xl bg-surface-container p-3 space-y-2 border border-outline-variant/15 shadow-sm">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-7 h-7 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-[11px] font-bold">
-                                        TG
+                            <!-- Feed Card 2: Gracious (Video Post) -->
+                            <div 
+                                x-data="{ liked: false, count: 6700 }"
+                                class="rounded-[22px] bg-[#1C1717] p-3.5 space-y-3 border border-white/5 shadow-sm"
+                            >
+                                <!-- Author Row -->
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center gap-2.5">
+                                        <!-- Lime Green Avatar -->
+                                        <div class="w-9 h-9 rounded-full bg-[#84E42B] text-black flex items-center justify-center font-extrabold text-[14px] shrink-0 shadow-sm">
+                                            G
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center gap-1 leading-tight">
+                                                <span class="text-[13px] font-bold text-white">Gracious</span>
+                                                <span class="material-symbols-outlined text-[14px] text-[#FFB4AC] icon-fill">verified</span>
+                                            </div>
+                                            <div class="text-[11px] text-neutral-400">@gracious • 1h</div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <div class="text-[12px] font-bold text-on-surface leading-none">Tsiyon Global Worship</div>
-                                        <div class="text-[10px] text-on-surface-variant mt-0.5">Live Audio Session • 412 listening</div>
+                                    <button type="button" class="text-neutral-400 hover:text-white p-1">
+                                        <span class="material-symbols-outlined text-[18px]">more_horiz</span>
+                                    </button>
+                                </div>
+
+                                <!-- Post Text -->
+                                <p class="text-[12.5px] text-neutral-200 leading-relaxed">
+                                    Still overwhelmed with joy from all the faith testimonies shared at last week's fellowship! God is moving in amazing ways. 🙏✨
+                                </p>
+
+                                <!-- Video Player Mockup Surface -->
+                                <div class="rounded-2xl bg-[#5C1D1B] aspect-[16/9] flex items-center justify-center relative overflow-hidden group cursor-pointer border border-white/10 shadow-inner">
+                                    <!-- Subtle ambient backdrop light -->
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                                    <!-- Circular Play Button -->
+                                    <div class="w-12 h-12 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white shadow-lg transition-transform duration-200 group-hover:scale-110">
+                                        <span class="material-symbols-outlined text-[26px] icon-fill ml-0.5">play_arrow</span>
                                     </div>
                                 </div>
-                                <!-- Waveform player container -->
-                                <div class="rounded-lg bg-surface-container-high p-2 flex items-center gap-2.5 border border-outline-variant/10">
-                                    <button class="w-7 h-7 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
-                                        <span class="material-symbols-outlined text-[14px] icon-fill">play_arrow</span>
-                                    </button>
-                                    <div class="flex-1 flex items-center gap-0.5 h-6">
-                                        <span class="w-1 h-2 rounded-full bg-primary"></span>
-                                        <span class="w-1 h-4 rounded-full bg-primary"></span>
-                                        <span class="w-1 h-5 rounded-full bg-primary"></span>
-                                        <span class="w-1 h-3 rounded-full bg-outline"></span>
-                                        <span class="w-1 h-6 rounded-full bg-primary"></span>
-                                        <span class="w-1 h-4 rounded-full bg-primary"></span>
-                                        <span class="w-1 h-2 rounded-full bg-outline"></span>
-                                        <span class="w-1 h-5 rounded-full bg-primary"></span>
-                                        <span class="w-1 h-3 rounded-full bg-primary"></span>
-                                        <span class="w-1 h-1.5 rounded-full bg-outline"></span>
+
+                                <!-- Engagement Footer -->
+                                <div class="flex items-center justify-between pt-1 text-neutral-400 text-[11px]">
+                                    <div class="flex items-center gap-4">
+                                        <!-- Heart with Alpine Toggle -->
+                                        <button 
+                                            type="button" 
+                                            @click="liked = !liked; count += liked ? 1 : -1"
+                                            class="flex items-center gap-1.5 transition-colors"
+                                            :class="liked ? 'text-[#FF8A80]' : 'hover:text-white'"
+                                        >
+                                            <span class="material-symbols-outlined text-[16px]" :class="{ 'icon-fill': liked }">favorite</span>
+                                            <span class="font-medium" x-text="liked ? '6.7k' : '6.7k'">6.7k</span>
+                                        </button>
+
+                                        <!-- Comments -->
+                                        <div class="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
+                                            <span class="material-symbols-outlined text-[16px]">chat_bubble</span>
+                                            <span class="font-medium">401</span>
+                                        </div>
+
+                                        <!-- Share -->
+                                        <button type="button" class="hover:text-white transition-colors">
+                                            <span class="material-symbols-outlined text-[16px]">share</span>
+                                        </button>
                                     </div>
-                                    <span class="text-[10px] font-mono text-on-surface-variant">04:12</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Floating Bottom Navigation -->
-                        <div class="absolute bottom-2 inset-x-2 rounded-full bg-surface-container-highest/95 backdrop-blur-md px-3 py-2 flex justify-around items-center text-on-surface-variant border border-outline-variant/20 shadow-lg z-30">
-                            <button class="flex flex-col items-center text-primary">
-                                <span class="material-symbols-outlined text-[18px] icon-fill">home</span>
-                                <span class="text-[9px] font-semibold">Feed</span>
-                            </button>
-                            <button class="flex flex-col items-center hover:text-on-surface">
-                                <span class="material-symbols-outlined text-[18px]">explore</span>
-                                <span class="text-[9px]">Discover</span>
-                            </button>
-                            <button class="flex flex-col items-center hover:text-on-surface">
-                                <span class="material-symbols-outlined text-[18px]">volunteer_activism</span>
-                                <span class="text-[9px]">Prayer</span>
-                            </button>
-                            <button class="flex flex-col items-center hover:text-on-surface">
-                                <span class="material-symbols-outlined text-[18px]">chat</span>
-                                <span class="text-[9px]">Messages</span>
-                            </button>
-                            <button class="flex flex-col items-center hover:text-on-surface">
-                                <span class="material-symbols-outlined text-[18px]">account_circle</span>
-                                <span class="text-[9px]">Profile</span>
-                            </button>
+                        <!-- Floating Bottom Navigation Dock -->
+                        <div class="absolute bottom-3 inset-x-3 rounded-full bg-[#1E1919]/90 backdrop-blur-md px-3 py-2 flex items-center justify-between text-neutral-400 border border-white/10 shadow-[0_8px_24px_rgba(0,0,0,0.6)] z-30">
+                            <!-- 1. Home (Permanently Active) -->
+                            <div class="flex flex-col items-center flex-1 text-white">
+                                <span class="material-symbols-outlined text-[20px] icon-fill">home</span>
+                                <span class="text-[9.5px] font-semibold tracking-tight">Home</span>
+                            </div>
+
+                            <!-- 2. Discover -->
+                            <div class="flex flex-col items-center flex-1 hover:text-white transition-colors cursor-pointer">
+                                <span class="material-symbols-outlined text-[20px]">search</span>
+                                <span class="text-[9.5px] font-medium tracking-tight">Discover</span>
+                            </div>
+
+                            <!-- 3. Center Red Floating Action Button (+) -->
+                            <div class="flex items-center justify-center px-1">
+                                <button 
+                                    type="button" 
+                                    class="w-11 h-11 -my-2.5 rounded-full bg-gradient-to-tr from-[#C62828] to-[#EF5350] text-white flex items-center justify-center shadow-[0_4px_14px_rgba(198,40,40,0.6)] hover:scale-105 active:scale-95 transition-transform"
+                                    aria-label="Create New Post"
+                                >
+                                    <span class="material-symbols-outlined text-[24px] font-bold">add</span>
+                                </button>
+                            </div>
+
+                            <!-- 4. Alerts -->
+                            <div class="flex flex-col items-center flex-1 hover:text-white transition-colors cursor-pointer">
+                                <span class="material-symbols-outlined text-[20px]">notifications</span>
+                                <span class="text-[9.5px] font-medium tracking-tight">Alerts</span>
+                            </div>
+
+                            <!-- 5. Me -->
+                            <div class="flex flex-col items-center flex-1 hover:text-white transition-colors cursor-pointer">
+                                <span class="material-symbols-outlined text-[20px]">person</span>
+                                <span class="text-[9.5px] font-medium tracking-tight">Me</span>
+                            </div>
                         </div>
                     </div>
                 </div>
