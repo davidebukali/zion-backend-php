@@ -2,8 +2,145 @@
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+
+:root {
+  --color-surface: #FCF8F8;
+  --color-surface-dim: #EFE8E8;
+  --color-surface-bright: #FFFFFF;
+  --color-surface-container-lowest: #FFFFFF;
+  --color-surface-container-low: #F6F1F1;
+  --color-surface-container: #EFE8E8;
+  --color-surface-container-high: #E8E1E1;
+  --color-surface-container-highest: #DFD7D7;
+  --color-on-surface: #211A1A;
+  --color-on-surface-variant: #524343;
+  --color-primary: #C62828;
+  --color-primary-container: #FFDAD6;
+  --color-on-primary: #FFFFFF;
+  --color-on-primary-container: #410003;
+  --color-secondary: #8E0000;
+  --color-secondary-container: #FFDAD4;
+  --color-on-secondary: #FFFFFF;
+  --color-on-secondary-container: #410000;
+  --color-tertiary: #C03132;
+  --color-tertiary-container: #FFDAD7;
+  --color-on-tertiary: #FFFFFF;
+  --color-on-tertiary-container: #410004;
+  --color-outline: #857371;
+  --color-outline-variant: #D7C1C0;
+}
+
+html.dark {
+  --color-surface: #161212;
+  --color-surface-dim: #161212;
+  --color-surface-bright: #3d3838;
+  --color-surface-container-lowest: #110d0d;
+  --color-surface-container-low: #1f1b1b;
+  --color-surface-container: #231f1f;
+  --color-surface-container-high: #2d2929;
+  --color-surface-container-highest: #383434;
+  --color-on-surface: #eae0e0;
+  --color-on-surface-variant: #e4beba;
+  --color-primary: #ffb4ac;
+  --color-primary-container: #c62828;
+  --color-on-primary: #690007;
+  --color-on-primary-container: #ffe0dd;
+  --color-secondary: #ffb4a8;
+  --color-secondary-container: #960804;
+  --color-on-secondary: #690000;
+  --color-on-secondary-container: #ff9f90;
+  --color-tertiary: #ffb3ae;
+  --color-tertiary-container: #c03132;
+  --color-on-tertiary: #68000b;
+  --color-on-tertiary-container: #ffe0dd;
+  --color-outline: #ab8985;
+  --color-outline-variant: #5b403d;
+}
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display-hero: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-headline-lg: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-title-md: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-body-md: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-body-sm: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-label-sm: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+
+  --color-surface: var(--color-surface);
+  --color-surface-dim: var(--color-surface-dim);
+  --color-surface-bright: var(--color-surface-bright);
+  --color-surface-container-lowest: var(--color-surface-container-lowest);
+  --color-surface-container-low: var(--color-surface-container-low);
+  --color-surface-container: var(--color-surface-container);
+  --color-surface-container-high: var(--color-surface-container-high);
+  --color-surface-container-highest: var(--color-surface-container-highest);
+  --color-on-surface: var(--color-on-surface);
+  --color-on-surface-variant: var(--color-on-surface-variant);
+  --color-primary: var(--color-primary);
+  --color-primary-container: var(--color-primary-container);
+  --color-on-primary: var(--color-on-primary);
+  --color-on-primary-container: var(--color-on-primary-container);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-container: var(--color-secondary-container);
+  --color-on-secondary: var(--color-on-secondary);
+  --color-on-secondary-container: var(--color-on-secondary-container);
+  --color-tertiary: var(--color-tertiary);
+  --color-tertiary-container: var(--color-tertiary-container);
+  --color-on-tertiary: var(--color-on-tertiary);
+  --color-on-tertiary-container: var(--color-on-tertiary-container);
+  --color-outline: var(--color-outline);
+  --color-outline-variant: var(--color-outline-variant);
+
+  --color-primary-fixed: #ffdad6;
+  --color-primary-fixed-dim: #ffb4ac;
+  --color-secondary-fixed: #ffdad4;
+  --color-secondary-fixed-dim: #ffb4a8;
+  --color-tertiary-fixed: #ffdad7;
+  --color-tertiary-fixed-dim: #ffb3ae;
+
+  --spacing-gutter: 1.5rem;
+  --spacing-gutter-sm: 1rem;
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2.5rem;
+}
+
+/* Material Symbols Outlined font-variation utility */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+.icon-fill {
+  font-variation-settings: 'FILL' 1;
+}
+
+/* Red ambient glow utilities */
+.glow-primary {
+  box-shadow: 0 0 20px rgba(239, 83, 80, 0.3);
+}
+
+.glow-primary-hover:hover {
+  box-shadow: 0 0 28px rgba(239, 83, 80, 0.55);
+}
+
+.glow-card {
+  box-shadow: 0 12px 32px -8px rgba(198, 40, 40, 0.18);
+}
+
+.glow-card-hover:hover {
+  box-shadow: 0 14px 40px -6px rgba(198, 40, 40, 0.25);
 }
