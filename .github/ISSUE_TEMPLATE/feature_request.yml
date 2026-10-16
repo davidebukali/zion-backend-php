@@ -1,0 +1,36 @@
+name: ✨ Feature Request
+description: Suggest an idea or feature enhancement for Zion Backend
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a feature! Please provide as much detail as possible to help us evaluate and design it.
+  - type: input
+    id: module
+    attributes:
+      label: Target Module
+      description: Which module does this feature belong to? (e.g. Auth, Posts, SocialGraph, Notifications, Media, Search, or New Module)
+      placeholder: "e.g. Modules/Notifications"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: Is your feature request related to a problem or limitation? A clear description of what the problem is.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution / Endpoint Design
+      description: A clear description of how you envision this working, including suggested endpoints, payload formats, or database schema changes.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Any alternative solutions or features you've considered.

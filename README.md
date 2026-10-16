@@ -1,6 +1,40 @@
 # Zion Backend (PHP)
 
-Zion Backend is a clean, modular REST API built with **Laravel 13** and **PHP 8.3+**. It leverages a decoupled modular architecture to isolate domain concerns, ensuring scalability, high performance, and ease of maintenance.
+<p align="left">
+  <a href="https://php.net"><img src="https://img.shields.io/badge/PHP-%3E%3D%208.4-777bb4?logo=php&logoColor=white" alt="PHP Version"></a>
+  <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white" alt="Laravel 13"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+  <a href="https://laravel.com/docs/pint"><img src="https://img.shields.io/badge/code%20style-pint-f43f5e.svg" alt="Code Style: Pint"></a>
+  <a href="docker-compose.yml"><img src="https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white" alt="Docker Ready"></a>
+</p>
+
+Zion Backend is a clean, modular REST API built with **Laravel 13** and **PHP 8.4+**. It leverages a decoupled modular architecture to isolate domain concerns, ensuring scalability, high performance, and ease of maintenance.
+
+---
+
+## 📑 Table of Contents
+
+- [Key Features](#-key-features)
+- [Modules Overview](#-modules-overview)
+- [API Endpoints Summary](#-api-endpoints-summary)
+  - [Authentication & Profiles](#authentication--profiles-modulesauth)
+  - [Posts](#posts-modulesposts)
+  - [Social Graph & Feeds](#social-graph--feeds-modulessocialgraph)
+  - [Unified Search](#unified-search-modulessearch)
+  - [Notifications](#notifications-modulesnotifications)
+  - [Interactions & Comments](#interactions--comments-modulesinteractions-modulescomments)
+  - [Media](#media-modulesmedia)
+- [Technology Stack](#️-technology-stack)
+- [Queue & Background Workers](#-queue-background-workers)
+- [API Documentation](#-api-documentation)
+- [Setup & Running the Application](#️-setup-running-the-application)
+  - [Running with Docker (Recommended)](#-running-with-docker-recommended)
+  - [Local (Non-Docker) Setup](#-local-non-docker-setup)
+- [Code Quality & Formatting](#-code-quality-formatting)
+- [Testing](#-testing)
+- [Contributing](#-contributing)
+- [Security Policy](#-security-policy)
+- [License & Acknowledgments](#-license-acknowledgments)
 
 ---
 
@@ -248,24 +282,64 @@ docker compose exec app php artisan migrate
 
 ---
 
+## 🎨 Code Quality & Formatting
+
+This project uses [Laravel Pint](https://laravel.com/docs/pint) to enforce clean and consistent PHP code styling across all modules.
+
+```bash
+# Check code style without modifying files
+docker compose exec app ./vendor/bin/pint --test
+
+# Automatically fix code formatting issues
+docker compose exec app ./vendor/bin/pint
+```
+
+---
+
 ## 🧪 Testing
 
 Run the automated test suite across all modules:
 
 ```bash
-php artisan test
+docker compose exec app php artisan test
 ```
 
 To run tests for individual domain modules:
 
 ```bash
-php artisan test Modules/Auth
-php artisan test Modules/Posts
-php artisan test Modules/SocialGraph
-php artisan test Modules/Search
-php artisan test Modules/Notifications
-php artisan test Modules/Interactions
-php artisan test Modules/Comments
-php artisan test Modules/Media
+docker compose exec app php artisan test Modules/Auth
+docker compose exec app php artisan test Modules/Posts
+docker compose exec app php artisan test Modules/SocialGraph
+docker compose exec app php artisan test Modules/Search
+docker compose exec app php artisan test Modules/Notifications
+docker compose exec app php artisan test Modules/Interactions
+docker compose exec app php artisan test Modules/Comments
+docker compose exec app php artisan test Modules/Media
 ```
+
+---
+
+## 🤝 Contributing
+
+We welcome community contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on our branching model, Conventional Commits specification, Pint styling checks, and pull request checklist.
+
+---
+
+## 🔒 Security Policy
+
+If you discover a security vulnerability within Zion Backend, please review our [Security Policy](SECURITY.md) and report it privately via [GitHub Private Vulnerability Reporting](https://github.com/davidebukali/zion-backend-php/security/advisories/new). Please **do not** open public issues for security vulnerabilities.
+
+---
+
+## 📄 License & Acknowledgments
+
+Zion Backend is open-source software licensed under the [MIT License](LICENSE). Copyright &copy; 2026 Tsiyon App.
+
+Special thanks to the open-source projects powering this platform:
+- [Laravel](https://laravel.com)
+- [nwidart/laravel-modules](https://github.com/nWidart/laravel-modules)
+- [Laravel Horizon](https://laravel.com/docs/horizon)
+- [Laravel Pint](https://laravel.com/docs/pint)
+- [Knuckles Scribe](https://scribe.knuckles.wtf)
+
 
