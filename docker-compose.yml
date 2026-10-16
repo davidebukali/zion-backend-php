@@ -1,0 +1,187 @@
+services:
+  # ---------------------------------------------------------------------------
+  # Application Runtime (PHP 8.3 FPM)
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: development
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    user: "${UID:-1000}:${GID:-1000}"
+    container_name: zion_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini:ro
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - zion_network
+
+  # ---------------------------------------------------------------------------
+  # Web Server (Nginx)
+  # ---------------------------------------------------------------------------
+  web:
+    image: nginx:alpine
+    container_name: zion_web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    networks:
+      - zion_network
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL 17 Database (Internal Only, Persistent Volume)
+  # ---------------------------------------------------------------------------
+  db:
+    image: postgres:17-alpine
+    container_name: zion_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-zionweb}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_DATABASE:-zionweb}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zion_network
+
+  # ---------------------------------------------------------------------------
+  # Redis Cache & Queue Broker
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:alpine
+    container_name: zion_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zion_network
+
+  # ---------------------------------------------------------------------------
+  # Laravel Horizon Worker
+  # ---------------------------------------------------------------------------
+  horizon:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: development
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    user: "${UID:-1000}:${GID:-1000}"
+    container_name: zion_horizon
+    restart: unless-stopped
+    working_dir: /var/www
+    command: /var/www/docker/horizon/entrypoint.sh
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini:ro
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      app:
+        condition: service_started
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - zion_network
+
+  # ---------------------------------------------------------------------------
+  # Laravel Task Scheduler
+  # ---------------------------------------------------------------------------
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: development
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    user: "${UID:-1000}:${GID:-1000}"
+    container_name: zion_scheduler
+    restart: unless-stopped
+    working_dir: /var/www
+    command: php artisan schedule:work
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini:ro
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      app:
+        condition: service_started
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - zion_network
+
+  # ---------------------------------------------------------------------------
+  # Vite Development Server (HMR on port 5173)
+  # ---------------------------------------------------------------------------
+  vite:
+    image: node:22-alpine
+    container_name: zion_vite
+    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    networks:
+      - zion_network
+
+# -----------------------------------------------------------------------------
+# Persistent Volumes (Data preserved across restarts)
+# -----------------------------------------------------------------------------
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+# -----------------------------------------------------------------------------
+# Isolated Bridge Network
+# -----------------------------------------------------------------------------
+networks:
+  zion_network:
+    driver: bridge

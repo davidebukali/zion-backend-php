@@ -153,15 +153,65 @@ php artisan scribe:generate
 
 ## ⚙️ Setup & Running the Application
 
-### Prerequisites
+### 🐳 Running with Docker (Recommended)
 
+The easiest way to run the entire stack (PHP 8.4 FPM, Nginx, PostgreSQL 17, Redis, Laravel Horizon, Task Scheduler, and Vite HMR) is using Docker Compose.
+
+#### 1. Setup Environment Configuration
+Copy the Docker environment template:
+```bash
+cp .env.docker.example .env
+```
+*(Ensure `APP_KEY` is set or run `docker compose exec app php artisan key:generate`. Add your Cloudflare R2 credentials if you test media uploads).*
+
+#### 2. Start the Stack
+```bash
+docker compose up -d --build
+```
+
+#### 3. Available Endpoints
+- **Web Application / API**: [http://localhost](http://localhost)
+- **Vite Dev Server (HMR)**: [http://localhost:5173](http://localhost:5173)
+- **Horizon Dashboard**: [http://localhost/horizon](http://localhost/horizon)
+- **API Documentation (Scribe)**: [http://localhost/docs](http://localhost/docs)
+
+#### 4. Run Migrations (Manual)
+```bash
+docker compose exec app php artisan migrate
+```
+
+#### 5. Common Docker Commands
+- **Run Artisan commands**:
+  ```bash
+  docker compose exec app php artisan <command>
+  ```
+- **Stream logs**:
+  ```bash
+  docker compose logs -f app
+  docker compose logs -f horizon
+  docker compose logs -f vite
+  ```
+- **Run test suite**:
+  ```bash
+  docker compose exec app php artisan test
+  ```
+- **Stop containers**:
+  ```bash
+  docker compose down
+  ```
+
+---
+
+### 💻 Local (Non-Docker) Setup
+
+#### Prerequisites
 - **PHP**: ^8.3
 - **Composer**: Dependency Manager for PHP
 - **PostgreSQL** or **SQLite**
 - **Redis**: For cache and queue management
+- **Node.js**: For Vite asset bundling
 
-### Installation Steps
-
+#### Installation Steps
 1. **Clone the Repository** and navigate to the project directory:
    ```bash
    cd zion-backend-php
@@ -172,9 +222,10 @@ php artisan scribe:generate
    cp .env.example .env
    ```
 
-3. **Install Composer Dependencies**:
+3. **Install Composer & Node Dependencies**:
    ```bash
    composer install
+   npm install
    ```
 
 4. **Generate Application Key**:
@@ -193,6 +244,7 @@ php artisan scribe:generate
    php artisan dev
    ```
    *This concurrently starts the HTTP server, queue listeners, and log streaming.*
+
 
 ---
 

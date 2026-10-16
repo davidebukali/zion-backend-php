@@ -1,0 +1,113 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: production
+    container_name: zion_app_prod
+    restart: always
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - zion_network
+
+  web:
+    image: nginx:alpine
+    container_name: zion_web_prod
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    networks:
+      - zion_network
+
+  db:
+    image: postgres:17-alpine
+    container_name: zion_db_prod
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zion_network
+
+  redis:
+    image: redis:alpine
+    container_name: zion_redis_prod
+    restart: always
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zion_network
+
+  horizon:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: production
+    container_name: zion_horizon_prod
+    restart: always
+    command: /var/www/docker/horizon/entrypoint.sh
+    depends_on:
+      app:
+        condition: service_started
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - zion_network
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: production
+    container_name: zion_scheduler_prod
+    restart: always
+    command: sh -c "while true; do php /var/www/artisan schedule:run --verbose --no-interaction & sleep 60; done"
+    depends_on:
+      app:
+        condition: service_started
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - zion_network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  zion_network:
+    driver: bridge
