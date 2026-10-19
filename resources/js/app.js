@@ -44,24 +44,63 @@ Alpine.data('mobileNav', () => ({
     }
 }));
 
-Alpine.data('waitlistForm', () => ({
+Alpine.data('waitlistForm', (defaultSource = 'hero') => ({
     email: '',
-    status: 'idle', // 'idle' | 'submitting' | 'success'
+    status: 'idle', // 'idle' | 'submitting' | 'success' | 'already_registered'
     errorMessage: '',
-    submit() {
+    message: '',
+    async submit(customSource) {
         if (!this.email || !this.email.includes('@')) {
             this.errorMessage = 'Please enter a valid email address.';
             return;
         }
         this.errorMessage = '';
         this.status = 'submitting';
-        setTimeout(() => {
-            this.status = 'success';
-            this.email = '';
-            setTimeout(() => {
+
+        try {
+            const response = await fetch('/api/waitlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    email: this.email,
+                    source: customSource || defaultSource
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                if (data.status === 'already_registered') {
+                    this.status = 'already_registered';
+                    this.message = data.message || "You're already on the waitlist! We'll reach out as soon as your invite is ready.";
+                } else {
+                    this.status = 'success';
+                    this.message = data.message || "Your early beta slot is reserved! Check your inbox for confirmation.";
+                    this.email = '';
+                }
+
+                setTimeout(() => {
+                    this.status = 'idle';
+                    this.message = '';
+                }, 8000);
+            } else if (response.status === 422) {
                 this.status = 'idle';
-            }, 6000);
-        }, 600);
+                this.errorMessage = data.message || 'Please provide a valid email address.';
+            } else if (response.status === 429) {
+                this.status = 'idle';
+                this.errorMessage = 'Too many attempts. Please try again in a minute.';
+            } else {
+                this.status = 'idle';
+                this.errorMessage = data.message || 'Something went wrong. Please try again.';
+            }
+        } catch (err) {
+            this.status = 'idle';
+            this.errorMessage = 'Network connection error. Please try again shortly.';
+        }
     }
 }));
 

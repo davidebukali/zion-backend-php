@@ -48,12 +48,14 @@ services:
       - zion_network
 
   # ---------------------------------------------------------------------------
-  # PostgreSQL 17 Database (Internal Only, Persistent Volume)
+  # PostgreSQL 17 Database (Development: Exposed on Port 54322)
   # ---------------------------------------------------------------------------
   db:
     image: postgres:17-alpine
     container_name: zion_db
     restart: unless-stopped
+    ports:
+      - "54322:5432"
     environment:
       POSTGRES_DB: ${DB_DATABASE:-zionweb}
       POSTGRES_USER: ${DB_USERNAME:-postgres}

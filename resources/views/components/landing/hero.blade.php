@@ -59,8 +59,8 @@
                 </div>
 
                 <!-- Interactive Waitlist Module (Alpine.js) -->
-                <div class="w-full max-w-xl flex flex-col gap-space-xs" x-data="waitlistForm">
-                    <form @submit.prevent="submit()"
+                <div class="w-full max-w-xl flex flex-col gap-space-xs" x-data="waitlistForm('hero')">
+                    <form @submit.prevent="submit('hero')"
                         class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-1.5 rounded-2xl sm:rounded-full bg-surface-container-highest border border-outline-variant/20 shadow-inner">
                         <div class="flex items-center pl-3.5 pr-2 py-2 flex-1 gap-2">
                             <span class="material-symbols-outlined text-outline text-[20px]">mail</span>
@@ -88,15 +88,25 @@
                         <p class="text-xs text-on-surface-variant flex items-center gap-1.5">
                             <span
                                 class="material-symbols-outlined text-[15px] text-primary icon-fill">verified_user</span>
-                            <span>Be the first to know when we launch on Android. No spam, ever.</span>
+                            <span>Be the first to know when we launch on Android. IOS coming soon. No spam, ever.</span>
                         </p>
                     </div>
 
+                    <!-- New Registration Success Notification -->
                     <div x-show="status === 'success'" x-transition
                         class="p-3 rounded-xl bg-secondary-container/40 border border-primary/20 text-xs text-primary font-semibold flex items-center gap-2 mt-1"
                         x-cloak>
                         <span class="material-symbols-outlined text-[18px]">check_circle</span>
-                        <span>Your early beta slot is reserved! God bless you.</span>
+                        <span x-text="message || 'Your early beta slot is reserved! God bless you.'"></span>
+                    </div>
+
+                    <!-- Already Registered Notification -->
+                    <div x-show="status === 'already_registered'" x-transition
+                        class="p-3 rounded-xl bg-surface-container-highest border border-primary/20 text-xs text-on-surface font-semibold flex items-center gap-2 mt-1"
+                        x-cloak>
+                        <span class="material-symbols-outlined text-[18px] text-primary">mark_email_read</span>
+                        <span
+                            x-text="message || 'You\'re already on the waitlist! We\'ll reach out as soon as your invite is ready.'"></span>
                     </div>
 
                     <div x-show="errorMessage" x-transition class="p-2 text-xs text-primary font-medium"

@@ -25,8 +25,8 @@
         </div>
 
         <!-- Large Interactive Email Input Bar (Alpine.js) -->
-        <div class="w-full max-w-xl z-10 flex flex-col gap-2" x-data="waitlistForm">
-            <form @submit.prevent="submit()"
+        <div class="w-full max-w-xl z-10 flex flex-col gap-2" x-data="waitlistForm('footer_cta')">
+            <form @submit.prevent="submit('footer_cta')"
                 class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2 rounded-2xl sm:rounded-full bg-surface-container-highest border border-outline-variant/20 shadow-inner">
                 <div class="flex items-center pl-4 pr-2 py-2 flex-1 gap-2.5">
                     <span class="material-symbols-outlined text-outline text-[22px]">mark_email_read</span>
@@ -53,10 +53,18 @@
                 class="p-4 rounded-2xl bg-secondary-container/40 border border-primary/20 text-xs sm:text-sm text-primary font-bold flex items-center justify-center gap-2 shadow-sm"
                 x-cloak>
                 <span class="material-symbols-outlined text-[20px] icon-fill">check_circle</span>
-                <span>Your beta invitation request has been recorded. God bless you!</span>
+                <span x-text="message || 'Your beta invitation request has been recorded. God bless you!'"></span>
             </div>
 
-            <div x-show="errorMessage" x-transition class="p-2 text-xs text-primary font-medium" x-text="errorMessage"
+            <!-- Already Registered Notification -->
+            <div x-show="status === 'already_registered'" x-transition
+                class="p-4 rounded-2xl bg-surface-container-highest border border-primary/20 text-xs sm:text-sm text-on-surface font-semibold flex items-center justify-center gap-2 shadow-sm"
+                x-cloak>
+                <span class="material-symbols-outlined text-[20px] text-primary">mark_email_read</span>
+                <span x-text="message || 'You\'re already on the waitlist! We\'ll reach out as soon as your invite is ready.'"></span>
+            </div>
+
+            <div x-show="errorMessage" x-transition class="p-2 text-xs text-primary font-medium text-center" x-text="errorMessage"
                 x-cloak></div>
         </div>
 
