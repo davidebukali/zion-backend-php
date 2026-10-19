@@ -41,26 +41,6 @@ The application will be available at `http://localhost`.
 
 ---
 
-## 📝 Commit Conventions
-
-We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
-
-- `feat:` A new feature or endpoint
-- `fix:` A bug fix
-- `docs:` Documentation-only changes
-- `style:` Code style/formatting changes that do not affect code logic
-- `refactor:` Code refactoring that neither fixes a bug nor adds a feature
-- `test:` Adding or updating tests
-- `chore:` Build process, dependency updates, or auxiliary tool changes
-
-**Examples:**
-```bash
-git commit -m "feat(posts): add cursor pagination to user posts sub-resource"
-git commit -m "fix(socialgraph): prevent duplicate feed items during backfill"
-```
-
----
-
 ## 🎨 Code Style (Laravel Pint)
 
 All PHP code must conform to Laravel code style standards. Run Pint before committing:
@@ -110,3 +90,12 @@ docker compose exec app php artisan scribe:generate
 3. Fill out the provided Pull Request template completely.
 4. Ensure all CI checks and automated tests pass.
 5. Address any review comments or suggestions.
+
+## 🚀 Areas for Contribution
+If you're looking to get involved, we're currently prioritizing the following areas:
+- **[Setup Google Analytics]**: Set up tracking for user engagement and website traffic.
+- **[Optimise website SEO]**: Enhance on-page SEO elements and improve the meta description for better search engine visibility.
+- **[Setup RabbitMQ]**: Set up RabbitMQ for message queuing and event-driven architecture.
+- **[CI CD]**: Set up CI/CD for automated testing and deployment.
+- **[Setup AI marketing]**: AI marketing toolset - create AI-driven post suggestions, captions, and targeted content for user engagement. This is targeted to alternative platforms to draw an audience to our app.
+- **[Build python APIs for content moderation]**: Implement robust AI-powered content moderation using Python to detect and filter inappropriate content, ensuring a safe user environment.
