@@ -25,6 +25,7 @@ x-laravel: &laravel
     APP_URL: https://tsiyonapp.com
     DB_HOST: db
     REDIS_HOST: redis
+    LOG_STACK: "single,stderr"
   entrypoint: ["/usr/local/bin/entrypoint.sh"]
   cap_add:
     - CHOWN
@@ -68,16 +69,10 @@ services:
       dockerfile: docker/php/Dockerfile
       target: web
     image: zion/web:${APP_TAG:-latest}
-    read_only: true
     cap_add:
       - CHOWN
       - SETGID
       - SETUID
-    tmpfs:
-      - /tmp
-      - /var/cache/nginx
-      - /var/run
-      - /var/log/nginx
     volumes:
       - storage:/var/www/storage:ro
     depends_on:
