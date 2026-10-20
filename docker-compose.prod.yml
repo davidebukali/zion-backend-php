@@ -30,9 +30,12 @@ x-laravel: &laravel
     - CHOWN
     - FOWNER
     - DAC_OVERRIDE
+    - SETGID
+    - SETUID
   read_only: true
   tmpfs:
     - /tmp
+    - /var/run
     - /var/www/bootstrap/cache
   volumes:
     - storage:/var/www/storage
