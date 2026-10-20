@@ -8,8 +8,14 @@ mkdir -p /var/www/storage/framework/views
 mkdir -p /var/www/storage/logs
 mkdir -p /var/www/bootstrap/cache
 
-# Fix permissions for web server and PHP execution if possible
+# Ensure www-data owns storage and bootstrap/cache for PHP-FPM execution
+chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
 chmod -R 775 /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
+
+# Pre-discover packages if running on a fresh tmpfs mount
+if [ ! -f /var/www/bootstrap/cache/packages.php ]; then
+    su -s /bin/sh www-data -c "php /var/www/artisan package:discover --ansi" 2>/dev/null || true
+fi
 
 # Execute the main command passed to the container
 exec "$@"
