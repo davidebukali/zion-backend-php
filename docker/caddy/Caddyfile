@@ -1,9 +1,21 @@
-{ 
-    email debukali@gmail.com 
-} tsiyonapp.com { 
-    encode zstd gzip 
-    request\_body { max\_size 20MB } 
+{
+    email debukali@gmail.com
+}
+
+tsiyonapp.com {
+    encode zstd gzip
+    
+    request_body { 
+        max_size 20MB 
+    } 
+    
     header { 
-        Strict-Transport-Security "max-age=31536000; includeSubDomains" X-Content-Type-Options nosniff Referrer-Policy strict-origin-when-cross-origin Permissions-Policy "camera=(), microphone=(), geolocation=()" -Server 
-    } reverse\_proxy web:8080 
+        Strict-Transport-Security "max-age=31536000; includeSubDomains" 
+        X-Content-Type-Options "nosniff" 
+        Referrer-Policy "strict-origin-when-cross-origin" 
+        Permissions-Policy "camera=(), microphone=(), geolocation=()" 
+        -Server 
+    } 
+    
+    reverse_proxy web:8080 
 }
