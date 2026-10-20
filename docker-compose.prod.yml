@@ -66,10 +66,15 @@ services:
       target: web
     image: zion/web:${APP_TAG:-latest}
     read_only: true
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
     tmpfs:
       - /tmp
       - /var/cache/nginx
       - /var/run
+      - /var/log/nginx
     volumes:
       - storage:/var/www/storage:ro
     depends_on:
