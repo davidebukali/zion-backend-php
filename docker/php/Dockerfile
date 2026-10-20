@@ -101,3 +101,23 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["php-fpm"]
+
+# ==========================================
+# Web Server Target (Nginx)
+# ==========================================
+FROM nginx:alpine AS web
+
+# Copy production Nginx server configuration
+COPY docker/nginx/prod.conf /etc/nginx/conf.d/default.conf
+
+# Copy public assets and compiled Vite frontend build
+COPY public /var/www/public
+COPY --from=production-assets /app/public/build /var/www/public/build
+
+# Ensure required runtime directories exist and have proper ownership
+RUN mkdir -p /var/cache/nginx /var/run /tmp \
+    && chown -R nginx:nginx /var/cache/nginx /var/run /var/www/public
+
+EXPOSE 8080
+
+CMD ["nginx", "-g", "daemon off;"]
