@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Actions;
 
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
 use Modules\Auth\Transformers\UserResource;
@@ -23,6 +24,8 @@ class RegisterUser
                 'username' => $name,
                 'display_name' => $name,
             ]);
+
+            event(new Registered($user));
 
             return (array) new UserResource($user->load('profile'));
         });

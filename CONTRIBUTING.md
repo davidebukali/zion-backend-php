@@ -99,3 +99,4 @@ If you're looking to get involved, we're currently prioritizing the following ar
 - **[CI CD]**: Set up CI/CD for automated testing and deployment.
 - **[Setup AI marketing]**: AI marketing toolset - create AI-driven post suggestions, captions, and targeted content for user engagement. This is targeted to alternative platforms to draw an audience to our app.
 - **[Build python APIs for content moderation]**: Implement robust AI-powered content moderation using Python to detect and filter inappropriate content, ensuring a safe user environment.
+- **[Add UI to manage waitlist]**: Build a filament php admin panel interface to manage waitlist and send app download invitations. (Good first issue)

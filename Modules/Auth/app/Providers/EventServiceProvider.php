@@ -2,6 +2,8 @@
 
 namespace Modules\Auth\Providers;
 
+use App\Listeners\UpdateWaitlistOnUserRegistered;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -11,7 +13,11 @@ class EventServiceProvider extends ServiceProvider
      *
      * @var array<string, array<int, string>>
      */
-    protected $listen = [];
+    protected $listen = [
+        Registered::class => [
+            UpdateWaitlistOnUserRegistered::class,
+        ],
+    ];
 
     /**
      * Indicates if events should be discovered.
