@@ -37,7 +37,7 @@ x-laravel: &laravel
   tmpfs:
     - /tmp
     - /var/run
-    - /var/www/bootstrap/cache
+    - /var/www/bootstrap/cache:uid=82,gid=82,mode=775
   volumes:
     - storage:/var/www/storage
   networks:
