@@ -71,6 +71,8 @@ services:
     image: zion/web:${APP_TAG:-latest}
     cap_add:
       - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
       - SETGID
       - SETUID
     volumes:
