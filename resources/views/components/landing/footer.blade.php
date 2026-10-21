@@ -4,8 +4,8 @@
         class="max-w-[1200px] w-full mx-auto px-gutter py-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md">
         <!-- Brand & Tagline -->
         <a href="{{ route('home') }}" class="flex items-center gap-space-xs text-center sm:text-left group">
-            <img src="{{ asset('images/landing/logo.png') }}" alt="Tsiyon Logo"
-                class="h-7 w-auto object-contain rounded-md transition-transform duration-200 group-hover:scale-105">
+            <img src="{{ asset('images/landing/logo.png') }}" alt="Tsiyon Logo" width="28" height="28"
+                class="h-7 w-7 object-contain rounded-md transition-transform duration-200 group-hover:scale-105">
             <span class="text-lg font-bold text-on-surface tracking-tight">Tsiyon</span>
             <span class="text-outline-variant hidden lg:inline">•</span>
             <span class="text-xs text-on-surface-variant hidden lg:inline">A social home built for what matters
