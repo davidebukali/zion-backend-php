@@ -3,21 +3,25 @@
     <div
         class="max-w-[1200px] w-full mx-auto px-gutter py-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md">
         <!-- Brand & Tagline -->
-        <div class="flex items-center gap-space-xs text-center sm:text-left">
+        <a href="{{ route('home') }}" class="flex items-center gap-space-xs text-center sm:text-left group">
             <img src="{{ asset('images/landing/logo.png') }}" alt="Tsiyon Logo"
-                class="h-7 w-auto object-contain rounded-md">
+                class="h-7 w-auto object-contain rounded-md transition-transform duration-200 group-hover:scale-105">
             <span class="text-lg font-bold text-on-surface tracking-tight">Tsiyon</span>
             <span class="text-outline-variant hidden lg:inline">•</span>
-            <span class="text-xs text-on-surface-variant hidden lg:inline">A social home built for what matters most.</span>
-        </div>
+            <span class="text-xs text-on-surface-variant hidden lg:inline">A social home built for what matters
+                most.</span>
+        </a>
 
         <!-- Navigation Links -->
         <nav class="flex flex-wrap items-center justify-center gap-space-md text-xs">
-            <a href="#" class="text-on-surface-variant hover:text-primary transition-colors duration-200">Terms of
+            <a href="{{ route('terms') }}"
+                class="text-on-surface-variant hover:text-primary transition-colors duration-200">Terms of
                 Service</a>
-            <a href="#" class="text-on-surface-variant hover:text-primary transition-colors duration-200">Privacy
+            <a href="{{ route('privacy') }}"
+                class="text-on-surface-variant hover:text-primary transition-colors duration-200">Privacy
                 Policy</a>
-            <a href="#" class="text-on-surface-variant hover:text-primary transition-colors duration-200">Contact
+            <a href="mailto:support@contact.tsiyonapp.com"
+                class="text-on-surface-variant hover:text-primary transition-colors duration-200">Contact
                 Support</a>
         </nav>
 
