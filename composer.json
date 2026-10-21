@@ -9,6 +9,7 @@
         "php": "^8.3",
         "aws/aws-sdk-php": "^3.393",
         "intervention/image": "^4.3",
+        "jeffersongoncalves/flysystem-google-drive": "^1.0",
         "knuckleswtf/scribe": "^5.11",
         "laravel/framework": "^13.8",
         "laravel/horizon": "^5.50",
@@ -17,7 +18,8 @@
         "league/flysystem-aws-s3-v3": "^3.0",
         "nwidart/laravel-modules": "^13.0",
         "predis/predis": "^3.6",
-        "resend/resend-laravel": "^1.6"
+        "resend/resend-laravel": "^1.6",
+        "spatie/laravel-backup": "^10.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
