@@ -6,6 +6,13 @@
     <meta name="description" content="Tsiyon — A social home built for what matters most. Christ-centered, family-friendly content that builds up your life.">
     <title>{{ $title ?? 'Tsiyon — A Social Home for What Matters Most' }}</title>
 
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=2">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon_48x48.png') }}?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon_32x32.png') }}?v=2">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon_16x16.png') }}?v=2">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple_touch_icon_180x180.png') }}?v=2">
+
     <!-- Google Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
