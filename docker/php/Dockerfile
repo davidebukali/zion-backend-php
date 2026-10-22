@@ -16,6 +16,7 @@ RUN apk add --no-cache \
     freetype-dev \
     libwebp-dev \
     postgresql-dev \
+    postgresql-client \
     icu-dev \
     linux-headers \
     $PHPIZE_DEPS
