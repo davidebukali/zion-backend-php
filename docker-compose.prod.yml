@@ -160,6 +160,7 @@ services:
     image: redis:7-alpine
     cap_add:
       - CHOWN
+      - DAC_OVERRIDE
       - SETGID
       - SETUID
     command:
