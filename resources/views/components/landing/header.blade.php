@@ -4,7 +4,7 @@
     <div class="h-20 max-w-[1200px] mx-auto px-gutter flex items-center justify-between">
         <!-- Brand Logo & Name -->
         <a href="{{ route('home') }}" class="flex items-center gap-space-sm group">
-            <img src="{{ asset('images/landing/logo.png') }}" alt="Tsiyon Logo" width="36" height="36"
+            <img src="{{ asset('images/landing/logo.webp') }}" alt="Tsiyon Logo" width="36" height="36"
                 class="h-9 w-9 object-contain rounded-lg shadow-sm transition-transform duration-200 group-hover:scale-105">
             <span class="text-xl font-extrabold text-on-surface tracking-tight">Tsiyon</span>
         </a>
