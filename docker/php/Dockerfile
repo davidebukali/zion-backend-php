@@ -1,7 +1,7 @@
 # ==========================================
-# Base Image: PHP 8.4 FPM with Extensions
+# Base Image: PHP 8.4.27 FPM with Extensions (Patched for CVE-2026-109618 & CVE-2026-109619)
 # ==========================================
-FROM php:8.4-fpm-alpine AS base
+FROM php:8.4.27-fpm-alpine AS base
 
 WORKDIR /var/www
 
