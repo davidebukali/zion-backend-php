@@ -35,7 +35,13 @@
         })();
     </script>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Scripts & Styles (Inlined in production to eliminate render-blocking CSS) -->
+    @if (!Vite::isRunningHot() && file_exists(public_path('build/manifest.json')))
+        <style>{!! Vite::content('resources/css/app.css') !!}</style>
+        @vite(['resources/js/app.js'])
+    @else
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @endif
 </head>
 <body class="bg-surface font-sans text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col justify-between transition-colors duration-200">
     <!-- Header / Sticky Navigation -->
