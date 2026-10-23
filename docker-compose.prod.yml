@@ -61,6 +61,7 @@ services:
       - caddy_config:/config
     networks:
       - edge
+    mem_limit: 64m
 
   web:
     <<: *hardening
@@ -82,7 +83,7 @@ services:
     networks:
       - edge
       - backend
-    mem_limit: 256m
+    mem_limit: 64m
     pids_limit: 128
 
   app:
@@ -97,7 +98,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    mem_limit: 1g
+    mem_limit: 384m
 
   horizon:
     <<: *laravel
@@ -108,7 +109,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    mem_limit: 768m
+    mem_limit: 256m
 
   scheduler:
     <<: *laravel
@@ -118,7 +119,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    mem_limit: 256m
+    mem_limit: 128m
 
   db:
     <<: *hardening
@@ -152,7 +153,7 @@ services:
       retries: 5
     networks:
       - backend
-    mem_limit: 1g
+    mem_limit: 512m
     stop_grace_period: 30s
 
   redis:
@@ -168,7 +169,7 @@ services:
       - --appendonly
       - "yes"
       - --maxmemory
-      - 256mb
+      - 64mb
       - --maxmemory-policy
       - noeviction
     volumes:
@@ -180,7 +181,7 @@ services:
       retries: 5
     networks:
       - backend
-    mem_limit: 384m
+    mem_limit: 128m
 
 volumes:
   postgres_data:
