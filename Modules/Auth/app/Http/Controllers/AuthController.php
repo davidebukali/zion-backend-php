@@ -6,8 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Auth\Actions\RegisterUser;
 use Modules\Auth\Actions\LoginUser;
+use Modules\Auth\Actions\SendPasswordResetCode;
+use Modules\Auth\Actions\VerifyPasswordResetCode;
+use Modules\Auth\Actions\ResetPassword;
 use Modules\Auth\Http\Requests\StoreUserRequest;
 use Modules\Auth\Http\Requests\LoginRequest;
+use Modules\Auth\Http\Requests\ForgotPasswordRequest;
+use Modules\Auth\Http\Requests\VerifyResetCodeRequest;
+use Modules\Auth\Http\Requests\ResetPasswordRequest;
 use Modules\Auth\Transformers\UserResource;
 
 class AuthController extends Controller
@@ -71,6 +77,84 @@ class AuthController extends Controller
     public function login(LoginRequest $request, LoginUser $loginUser)
     {
         return $loginUser($request->validated());
+    }
+
+    /**
+     * @group Authentication
+     * @unauthenticated
+     * 
+     * Forgot Password
+     * 
+     * Request a 6-digit password reset code sent to the registered email address. The code expires in 2 minutes.
+     * 
+     * @bodyParam email string required The user's registered email address. Example: jane@example.com
+     * 
+     * @response 200 {
+     *   "message": "Password reset code has been sent to your email."
+     * }
+     * @response 422 status=422 scenario="Email not found" {
+     *   "message": "We could not find an account with this email address.",
+     *   "errors": {
+     *     "email": ["We could not find an account with this email address."]
+     *   }
+     * }
+     */
+    public function forgotPassword(ForgotPasswordRequest $request, SendPasswordResetCode $sendResetCode)
+    {
+        return response()->json($sendResetCode($request->validated()));
+    }
+
+    /**
+     * @group Authentication
+     * @unauthenticated
+     * 
+     * Verify Reset Code
+     * 
+     * Verify the 6-digit code sent to the email address. Must be submitted within 2 minutes.
+     * 
+     * @bodyParam email string required The user's registered email address. Example: jane@example.com
+     * @bodyParam code string required The 6-digit verification code. Example: 482910
+     * 
+     * @response 200 {
+     *   "message": "Verification code confirmed. You may now reset your password."
+     * }
+     * @response 422 status=422 scenario="Invalid or expired code" {
+     *   "message": "The verification code has expired. Please request a new one.",
+     *   "errors": {
+     *     "code": ["The verification code has expired. Please request a new one."]
+     *   }
+     * }
+     */
+    public function verifyResetCode(VerifyResetCodeRequest $request, VerifyPasswordResetCode $verifyResetCode)
+    {
+        return response()->json($verifyResetCode($request->validated()));
+    }
+
+    /**
+     * @group Authentication
+     * @unauthenticated
+     * 
+     * Reset Password
+     * 
+     * Set a new password after successful code verification.
+     * 
+     * @bodyParam email string required The user's registered email address. Example: jane@example.com
+     * @bodyParam password string required The new password (min 8 characters). Example: newSecret123
+     * @bodyParam password_confirmation string required Must match password. Example: newSecret123
+     * 
+     * @response 200 {
+     *   "message": "Password has been reset successfully."
+     * }
+     * @response 422 status=422 scenario="Verification expired or mismatch" {
+     *   "message": "Verification code was not verified or verification session has expired. Please request a new code.",
+     *   "errors": {
+     *     "email": ["Verification code was not verified or verification session has expired. Please request a new code."]
+     *   }
+     * }
+     */
+    public function resetPassword(ResetPasswordRequest $request, ResetPassword $resetPassword)
+    {
+        return response()->json($resetPassword($request->validated()));
     }
 
     /**
