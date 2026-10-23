@@ -22,6 +22,7 @@ class LoginUser
         }
 
         $user = Auth::user();
+        $user->load(['profile.avatar', 'profile.cover']);
         $token = $user->createToken('auth_token')->plainTextToken;
         return [
             'user' => new UserResource($user),
