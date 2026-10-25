@@ -345,6 +345,9 @@ class SocialGraphController extends Controller
      *         "id": "01j7b9k5v6abcdef0123456789",
      *         "content": "Check out my new photos!",
      *         "visibility": "public",
+     *         "likes_count": 12,
+     *         "comments_count": 4,
+     *         "is_liked": true,
      *         "user": {
      *           "id": "01j7b9k5v6abcdef0123456789",
      *           "name": "Jane Doe",

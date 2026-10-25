@@ -12,8 +12,12 @@ class GetFeed
         return FeedItem::query()
             ->where('user_id', $user->id)
             ->with([
-                'post.user',
-                'post.media',
+                'post' => function ($query) use ($user) {
+                    $query->with(['user', 'media'])
+                        ->withExists([
+                            'likes as is_liked' => fn ($q) => $q->where('user_id', $user->id),
+                        ]);
+                },
             ])
             ->orderByDesc('published_at')
             ->cursorPaginate($perPage);

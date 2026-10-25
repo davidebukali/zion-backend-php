@@ -162,4 +162,54 @@ class GetFeedTest extends TestCase
 
         $response->assertStatus(401);
     }
+
+    public function test_feed_includes_is_liked_and_counts_for_viewer(): void
+    {
+        $likedPost = $this->author->posts()->create([
+            'content' => 'Liked Feed Post',
+            'visibility' => 'public',
+        ]);
+        $likedPost->forceFill([
+            'likes_count' => 1,
+            'comments_count' => 3,
+        ])->save();
+        $likedPost->likes()->create(['user_id' => $this->user->id]);
+
+        $unlikedPost = $this->author->posts()->create([
+            'content' => 'Unliked Feed Post',
+            'visibility' => 'public',
+        ]);
+
+        FeedItem::create([
+            'user_id' => $this->user->id,
+            'post_id' => $likedPost->id,
+            'published_at' => now()->subMinute(),
+        ]);
+
+        FeedItem::create([
+            'user_id' => $this->user->id,
+            'post_id' => $unlikedPost->id,
+            'published_at' => now(),
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->getJson(route('api.feed.index'));
+
+        $response->assertStatus(200);
+
+        $items = collect($response->json('data'));
+
+        $likedItem = $items->firstWhere('post.id', $likedPost->id);
+        $this->assertNotNull($likedItem);
+        $this->assertTrue($likedItem['post']['is_liked']);
+        $this->assertEquals(1, $likedItem['post']['likes_count']);
+        $this->assertEquals(3, $likedItem['post']['comments_count']);
+
+        $unlikedItem = $items->firstWhere('post.id', $unlikedPost->id);
+        $this->assertNotNull($unlikedItem);
+        $this->assertFalse($unlikedItem['post']['is_liked']);
+        $this->assertEquals(0, $unlikedItem['post']['likes_count']);
+        $this->assertEquals(0, $unlikedItem['post']['comments_count']);
+    }
 }

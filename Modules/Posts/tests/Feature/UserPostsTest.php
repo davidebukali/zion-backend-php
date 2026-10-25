@@ -129,4 +129,27 @@ class UserPostsTest extends TestCase
         $this->assertContains($this->followersPost->id, $ids);
         $this->assertContains($this->privatePost->id, $ids);
     }
+
+    public function test_user_posts_returns_viewer_is_liked_status(): void
+    {
+        $this->publicPost->likes()->create(['user_id' => $this->follower->id]);
+        $this->publicPost->forceFill(['likes_count' => 1])->save();
+
+        Sanctum::actingAs($this->follower);
+
+        $response = $this->getJson(route('api.users.posts', $this->author));
+
+        $response->assertStatus(200);
+        $posts = collect($response->json('data'));
+
+        $liked = $posts->firstWhere('id', $this->publicPost->id);
+        $this->assertNotNull($liked);
+        $this->assertTrue($liked['is_liked']);
+        $this->assertEquals(1, $liked['likes_count']);
+
+        $unliked = $posts->firstWhere('id', $this->followersPost->id);
+        $this->assertNotNull($unliked);
+        $this->assertFalse($unliked['is_liked']);
+        $this->assertEquals(0, $unliked['likes_count']);
+    }
 }

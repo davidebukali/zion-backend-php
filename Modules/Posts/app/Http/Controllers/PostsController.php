@@ -37,6 +37,9 @@ class PostsController extends Controller
      *       "id": 1,
      *       "content": "Exploring Laravel and Scribe!",
      *       "author": { "id": 1, "name": "Jane Doe" },
+     *       "likes_count": 5,
+     *       "comments_count": 2,
+     *       "is_liked": true,
      *       "media": [],
      *       "created_at": "2026-09-24T12:00:00.000000Z"
      *     }
@@ -50,7 +53,7 @@ class PostsController extends Controller
     public function index(Request $request, ListPosts $listPosts)
     {
         $perPage = (int) ($request->query('per_page') ?? $request->input('per_page') ?? 15);
-        $posts = $listPosts($perPage);
+        $posts = $listPosts($perPage, $request->user());
         $paginated = PostResource::collection($posts)->toResponse($request)->getData(true);
         return $this->success(
             data: $paginated['data'],
@@ -137,6 +140,9 @@ class PostsController extends Controller
      *     "id": 1,
      *     "content": "Exploring Laravel and Scribe!",
      *     "author": { "id": 1, "name": "Jane Doe" },
+     *     "likes_count": 5,
+     *     "comments_count": 2,
+     *     "is_liked": true,
      *     "created_at": "2026-09-24T12:00:00.000000Z"
      *   }
      * }
@@ -144,8 +150,16 @@ class PostsController extends Controller
      *   "message": "No query results for model [Modules\\Posts\\Models\\Post] 1"
      * }
      */
-    public function show(Post $post)
+    public function show(Request $request, Post $post)
     {
+        $viewer = $request->user();
+        if ($viewer) {
+            $post->loadExists([
+                'likes as is_liked' => fn ($q) => $q->where('user_id', $viewer->id),
+            ]);
+        }
+        $post->loadMissing(['user', 'media']);
+
         return $this->success(new PostResource($post));
     }
 

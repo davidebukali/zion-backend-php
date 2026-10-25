@@ -49,6 +49,9 @@ class ListPostsTest extends TestCase
                         'id',
                         'content',
                         'visibility',
+                        'likes_count',
+                        'comments_count',
+                        'is_liked',
                         'created_at',
                         'updated_at',
                     ],
@@ -105,5 +108,42 @@ class ListPostsTest extends TestCase
         $intersection = array_intersect($firstPageIds, $secondPageIds);
 
         $this->assertEmpty($intersection, 'Cursor pagination returned duplicate records across pages');
+    }
+
+    public function test_list_posts_returns_accurate_is_liked_and_likes_count(): void
+    {
+        $post1 = $this->user->posts()->create([
+            'content' => 'Liked Post',
+            'visibility' => PostVisibility::PUBLIC->value,
+        ]);
+        $post1->forceFill([
+            'likes_count' => 1,
+            'comments_count' => 2,
+        ])->save();
+        $post1->likes()->create(['user_id' => $this->user->id]);
+
+        $post2 = $this->user->posts()->create([
+            'content' => 'Unliked Post',
+            'visibility' => PostVisibility::PUBLIC->value,
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->getJson(route('api.post.index'));
+
+        $response->assertStatus(200);
+        $posts = collect($response->json('data'));
+
+        $likedItem = $posts->firstWhere('id', $post1->id);
+        $this->assertNotNull($likedItem);
+        $this->assertTrue($likedItem['is_liked']);
+        $this->assertEquals(1, $likedItem['likes_count']);
+        $this->assertEquals(2, $likedItem['comments_count']);
+
+        $unlikedItem = $posts->firstWhere('id', $post2->id);
+        $this->assertNotNull($unlikedItem);
+        $this->assertFalse($unlikedItem['is_liked']);
+        $this->assertEquals(0, $unlikedItem['likes_count']);
+        $this->assertEquals(0, $unlikedItem['comments_count']);
     }
 }

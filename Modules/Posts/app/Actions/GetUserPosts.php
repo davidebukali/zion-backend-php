@@ -26,6 +26,12 @@ class GetUserPosts
             ->orderByDesc('created_at')
             ->orderByDesc('id');
 
+        if ($viewer) {
+            $query->withExists([
+                'likes as is_liked' => fn ($q) => $q->where('user_id', $viewer->id),
+            ]);
+        }
+
         // If viewer is the author, they can see all posts (public, followers, private)
         if ($viewer && $viewer->id === $targetUser->id) {
             return $query->cursorPaginate($perPage)->withQueryString();
