@@ -53,7 +53,9 @@ class GenerateUploadUrl
         $presignedUrl = (string) $request->getUri();
 
         return [
+            'id' => $media->id,
             'media_id' => $media->id,
+            'path' => $media->path,
             'upload_url' => $presignedUrl,
             'expires_at' => $expiresAt,
         ];
