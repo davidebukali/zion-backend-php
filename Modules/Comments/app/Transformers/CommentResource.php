@@ -4,6 +4,7 @@ namespace Modules\Comments\Transformers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Modules\Auth\Transformers\UserResource;
 use Modules\Media\Transformers\MediaResource;
 
 class CommentResource extends JsonResource
@@ -19,6 +20,7 @@ class CommentResource extends JsonResource
             'id' => $this->id,
             'post_id' => $this->post_id,
             'user_id' => $isDeleted ? null : $this->user_id,
+            'user' => $isDeleted ? null : new UserResource($this->whenLoaded('user')),
             'parent_comment_id' => $this->parent_comment_id,
             'content' => $isDeleted ? '[This comment has been deleted]' : $this->content,
             'likes_count' => $isDeleted ? 0 : $this->likes_count,

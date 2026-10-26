@@ -50,7 +50,8 @@ class CreateReplyTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.content', 'This is a reply to the parent comment.')
-            ->assertJsonPath('data.parent_comment_id', $this->parentComment->id);
+            ->assertJsonPath('data.parent_comment_id', $this->parentComment->id)
+            ->assertJsonPath('data.user.id', $this->user->id);
 
         $this->assertDatabaseHas('comments', [
             'post_id' => $this->post->id,

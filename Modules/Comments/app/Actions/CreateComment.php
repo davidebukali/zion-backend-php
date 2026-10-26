@@ -43,7 +43,7 @@ class CreateComment
 
             CommentCreated::dispatch($comment);
 
-            return $comment->load('media');
+            return $comment->load(['user', 'media']);
         });
     }
 }

@@ -15,6 +15,6 @@ class UpdateComment
             'content' => $data['content'],
         ]);
 
-        return $comment;
+        return $comment->load(['user', 'media']);
     }
 }

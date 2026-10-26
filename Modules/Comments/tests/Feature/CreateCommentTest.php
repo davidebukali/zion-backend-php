@@ -60,7 +60,9 @@ class CreateCommentTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJsonPath('success', true)
-            ->assertJsonPath('data.content', 'This is a valid comment.');
+            ->assertJsonPath('data.content', 'This is a valid comment.')
+            ->assertJsonPath('data.user.id', $this->user->id)
+            ->assertJsonPath('data.user.name', $this->user->name);
 
         $this->assertDatabaseHas('comments', [
             'post_id' => $this->post->id,

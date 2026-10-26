@@ -26,7 +26,7 @@ class CreateReply
             // We include replies in the comments_count
             $parentComment->post()->increment('comments_count');
 
-            return $reply;
+            return $reply->load(['user', 'media']);
         });
     }
 }
