@@ -18,6 +18,7 @@ class CleanupOrphanedMedia extends Command
         {--pending-hours=12 : Timeout in hours for pending unconfirmed uploads}
         {--failed-hours=72 : Retention period in hours for failed media before cleanup}
         {--unattached-hours=12 : Grace period in hours for unattached ready/confirmed media}
+        {--ready-hours= : Alias for --unattached-hours}
         {--dry-run : Report candidate files and records without deleting}';
 
     /**
@@ -34,7 +35,7 @@ class CleanupOrphanedMedia extends Command
     {
         $pendingHours = (int) $this->option('pending-hours');
         $failedHours = (int) $this->option('failed-hours');
-        $unattachedHours = (int) $this->option('unattached-hours');
+        $unattachedHours = (int) ($this->option('ready-hours') ?? $this->option('unattached-hours'));
         $dryRun = (bool) $this->option('dry-run');
 
         $this->info('Starting orphaned media cleanup...');
