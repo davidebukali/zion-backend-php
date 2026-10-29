@@ -22,8 +22,12 @@ jobs:
     steps:
       - name: Trust server host key
         env:
-          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS || vars.SSH_KNOWN_HOSTS }}
         run: |
+          if [ -z "$SSH_KNOWN_HOSTS" ]; then
+            echo "::error::SSH_KNOWN_HOSTS secret or variable is not set"
+            exit 1
+          fi
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           printf '%s\n' "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
@@ -31,12 +35,22 @@ jobs:
 
       - name: Execute Restricted Deployment
         env:
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT || '22022' }}
+          SSH_USER: ${{ secrets.SSH_USER || vars.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST || vars.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT || vars.SSH_PORT || '22022' }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           DEPLOY_SHA: ${{ github.sha }}
         run: |
+          if [ -z "$SSH_USER" ] || [ -z "$SSH_HOST" ]; then
+            echo "::error::SSH_USER or SSH_HOST is not set. Check Secrets and Variables in GitHub settings."
+            exit 1
+          fi
+
+          if [ -z "$SSH_PRIVATE_KEY" ]; then
+            echo "::error::SSH_PRIVATE_KEY secret is not set."
+            exit 1
+          fi
+
           KEY_FILE="$(mktemp)"
           trap 'rm -f "$KEY_FILE"' EXIT
           printf '%s\n' "$SSH_PRIVATE_KEY" > "$KEY_FILE"
