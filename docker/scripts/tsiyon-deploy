@@ -18,6 +18,17 @@ cd "$APP_DIR"
 compose() { docker compose -f "$COMPOSE_FILE" "$@"; }
 git_as_deploy() { sudo -u deploy git "$@"; }
 
+# Pre-deploy disk safety check: prune build cache if root partition is > 85% full
+ensure_disk_space() {
+  local disk_usage
+  disk_usage=$(df / | awk 'NR==2 {print $5}' | tr -d '%')
+  if [ "$disk_usage" -ge 85 ]; then
+    echo "Disk usage high (${disk_usage}%). Running pre-build cache cleanup..."
+    docker builder prune -af --filter "until=24h" >/dev/null 2>&1 || true
+    docker image prune -af --filter "until=24h" >/dev/null 2>&1 || true
+  fi
+}
+
 health_check() {
   curl -fsS --max-time 10 --retry 10 --retry-delay 3 --retry-connrefused \
     --resolve "${DOMAIN}:443:127.0.0.1" \
@@ -63,6 +74,8 @@ rollback() {
   fi
 }
 
+ensure_disk_space
+
 git_as_deploy checkout --detach --force "$SHA"
 export APP_TAG="${SHA:0:12}"
 
@@ -93,6 +106,8 @@ if ! health_check; then
   exit 1
 fi
 
-docker image prune -af --filter "until=168h" >/dev/null
-echo "deployed $APP_TAG (previous: ${PREV_SHA:0:12})"
+# Post-deploy cleanup: prune builder cache and images older than 24h
+docker builder prune -af --filter "until=24h" >/dev/null 2>&1 || true
+docker image prune -af --filter "until=24h" >/dev/null 2>&1 || true
 
+echo "deployed $APP_TAG (previous: ${PREV_SHA:0:12})"
