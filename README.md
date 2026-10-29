@@ -30,6 +30,7 @@ Zion Backend is a clean, modular REST API built with **Laravel 13** and **PHP 8.
 - [Setup & Running the Application](#️-setup-running-the-application)
   - [Running with Docker (Recommended)](#-running-with-docker-recommended)
   - [Local (Non-Docker) Setup](#-local-non-docker-setup)
+- [Production Deployment & CI/CD](#-production-deployment--cicd)
 - [Code Quality & Formatting](#-code-quality-formatting)
 - [Testing](#-testing)
 - [Contributing](#-contributing)
@@ -279,6 +280,59 @@ docker compose exec app php artisan migrate
    ```
    *This concurrently starts the HTTP server, queue listeners, and log streaming.*
 
+
+---
+
+## 🚀 Production Deployment & CI/CD
+
+Tsiyon Backend uses an automated, zero-downtime deployment pipeline powered by GitHub Actions and a hardened server-side deployment script ([`docker/scripts/tsiyon-deploy`](docker/scripts/tsiyon-deploy)).
+
+### Architecture Overview
+1. **Push to `main`** or manual **`workflow_dispatch`** triggers the GitHub Actions workflow ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)).
+2. Runner connects via OpenSSH (using an ephemeral private key and host key verification) to the `deploy` user.
+3. The server executes a restricted forced command via `authorized_keys` running `/usr/local/sbin/tsiyon-deploy <commit-sha>`.
+4. The deployment script:
+   - Acquires an exclusive lock (`flock`) to prevent concurrent deployments.
+   - Strictly enforces deploying only the tip of `origin/main`.
+   - Builds production images tagged with the commit SHA prefix.
+   - Runs database migrations under `www-data` to protect volume permissions.
+   - Switches containers gracefully (`docker compose up -d`).
+   - Clears and warms route/config caches via `php artisan optimize`.
+   - Verifies system health locally via `https://tsiyonapp.com/up` directly resolving to `127.0.0.1:443`.
+   - Automatically initiates a full zero-downtime rollback if the health check fails.
+
+### One-Time Server Setup
+On your production host (e.g. `/src/tsiyon`):
+
+1. **Symlink the Deploy Script**:
+   ```bash
+   sudo ln -sf /src/tsiyon/docker/scripts/tsiyon-deploy /usr/local/sbin/tsiyon-deploy
+   sudo chmod 755 /src/tsiyon/docker/scripts/tsiyon-deploy
+   ```
+
+2. **Configure Sudoers Permission**:
+   ```bash
+   echo 'deploy ALL=(root) NOPASSWD: /usr/local/sbin/tsiyon-deploy' | sudo tee /etc/sudoers.d/deploy > /dev/null
+   sudo chmod 0440 /etc/sudoers.d/deploy
+   sudo visudo -c
+   ```
+
+3. **Install Restricted SSH Key**:
+   In `/home/deploy/.ssh/authorized_keys`, add the GitHub Actions public key with strict forced-command restrictions:
+   ```text
+   restrict,command="sudo /usr/local/sbin/tsiyon-deploy \"$SSH_ORIGINAL_COMMAND\"" ssh-ed25519 <PUBLIC_KEY> github-actions-deploy
+   ```
+
+### Required GitHub Secrets & Variables
+Set these under **Settings > Environments > production** (or **Settings > Secrets and variables > Actions**):
+
+| Secret / Variable | Description | Example |
+| :--- | :--- | :--- |
+| `SSH_HOST` | Production server IP or hostname | `209.74.82.49` or `tsiyonapp.com` |
+| `SSH_USER` | Deployment user on the server | `deploy` |
+| `SSH_PORT` | Custom SSH port (defaults to `22022`) | `22022` |
+| `SSH_PRIVATE_KEY` | Dedicated OpenSSH private key for GitHub Actions | `-----BEGIN OPENSSH PRIVATE KEY-----...` |
+| `SSH_KNOWN_HOSTS` | Output of `ssh-keyscan -p <PORT> -H -t ed25519,rsa <HOST>` | `\|1\|... ssh-ed25519 AAAAC...` |
 
 ---
 

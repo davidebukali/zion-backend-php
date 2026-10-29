@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+APP_DIR="/src/tsiyon"
+DOMAIN="tsiyonapp.com"
+HEALTH_URL="https://${DOMAIN}/up"
+BRANCH="origin/main"
+COMPOSE_FILE="docker-compose.prod.yml"
+
+SHA="${1:-}"
+[[ "$SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "usage: tsiyon-deploy <40-char git sha>"; exit 1; }
+
+# Only one deploy at a time
+exec 9>/var/lock/tsiyon-deploy.lock
+flock -n 9 || { echo "another deploy is already running"; exit 1; }
+
+cd "$APP_DIR"
+compose() { docker compose -f "$COMPOSE_FILE" "$@"; }
+git_as_deploy() { sudo -u deploy git "$@"; }
+
+health_check() {
+  curl -fsS --max-time 10 --retry 10 --retry-delay 3 --retry-connrefused \
+    --resolve "${DOMAIN}:443:127.0.0.1" \
+    "$HEALTH_URL" >/dev/null
+}
+
+# Remember what is running now so we can go back to it
+PREV_SHA="$(git_as_deploy rev-parse HEAD)"
+
+git_as_deploy fetch --prune origin
+git_as_deploy cat-file -e "${SHA}^{commit}" || { echo "unknown commit: $SHA"; exit 1; }
+
+# Strict tip-of-main verification: prevents deploying stale commits or accidental rollbacks
+TARGET_SHA="$(git_as_deploy rev-parse "$BRANCH")"
+if [ "$SHA" != "$TARGET_SHA" ]; then
+  echo "refusing to deploy: $SHA is not at the tip of $BRANCH ($TARGET_SHA)"
+  exit 1
+fi
+
+# Used when something fails BEFORE the new containers start
+fail_early() {
+  echo "$1"
+  git_as_deploy checkout --detach --force "$PREV_SHA"
+  exit 1
+}
+
+# Used when the new release started but is unhealthy
+rollback() {
+  echo "ROLLING BACK to ${PREV_SHA:0:12}"
+  git_as_deploy checkout --detach --force "$PREV_SHA"
+  export APP_TAG="${PREV_SHA:0:12}"
+
+  # Rebuild previous images if they were pruned or never tagged
+  if ! docker image inspect "zion/app:${APP_TAG}" "zion/web:${APP_TAG}" >/dev/null 2>&1; then
+    compose build app web
+  fi
+
+  compose up -d --remove-orphans
+  if health_check; then
+    echo "rollback OK, now running $APP_TAG (database migrations were NOT reverted)"
+  else
+    echo "ROLLBACK HEALTH CHECK ALSO FAILED - manual intervention needed"
+  fi
+}
+
+git_as_deploy checkout --detach --force "$SHA"
+export APP_TAG="${SHA:0:12}"
+
+compose build --pull app web \
+  || fail_early "BUILD FAILED. Nothing was released."
+
+compose run --rm -T -u www-data app php artisan migrate --force \
+  || fail_early "MIGRATION FAILED. Old containers are still running. Check the database state."
+
+if ! compose up -d --remove-orphans; then
+  echo "COMPOSE UP FAILED"
+  rollback
+  exit 1
+fi
+
+if ! compose exec -T -u www-data app php artisan optimize:clear; then
+  echo "OPTIMIZE CLEAR FAILED"
+  rollback
+  exit 1
+fi
+
+# Warm up route, config, and event caches for production
+compose exec -T -u www-data app php artisan optimize || true
+
+if ! health_check; then
+  echo "HEALTH CHECK FAILED"
+  rollback
+  exit 1
+fi
+
+docker image prune -af --filter "until=168h" >/dev/null
+echo "deployed $APP_TAG (previous: ${PREV_SHA:0:12})"
+
