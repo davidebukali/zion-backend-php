@@ -35,6 +35,8 @@ class MediaAttachmentTest extends TestCase
             'email' => 'attachment_test@example.com',
             'password' => bcrypt('password'),
         ]);
+
+        $this->actingAs($this->user);
     }
 
     private function createMedia(User $user, MediaStatus $status = MediaStatus::Ready, string $filename = 'test.jpg'): Media

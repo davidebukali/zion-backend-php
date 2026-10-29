@@ -46,8 +46,7 @@ class AttachMediaToPost
         $attachments = [];
 
         foreach ($mediaIds as $sortOrder => $mediaId) {
-            $attachments[] = [
-                'media_id' => $mediaId,
+            $attachments[$mediaId] = [
                 'sort_order' => $sortOrder,
             ];
         }

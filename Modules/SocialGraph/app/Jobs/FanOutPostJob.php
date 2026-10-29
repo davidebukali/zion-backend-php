@@ -25,7 +25,7 @@ class FanOutPostJob implements ShouldQueue
 
     public function handle(): void
     {
-        $post = Post::findOrFail($this->postId);
+        $post = Post::withoutGlobalScopes()->findOrFail($this->postId);
         $publishedAt = $post->created_at?->toDateTimeString() ?? now()->toDateTimeString();
 
         // 1. Insert feed item for the author
