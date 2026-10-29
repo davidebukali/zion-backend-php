@@ -56,7 +56,7 @@ class ForgotPasswordTest extends TestCase
             'email' => $this->user->email,
         ]);
 
-        Mail::assertSent(PasswordResetCodeMail::class, function ($mail) {
+        Mail::assertQueued(PasswordResetCodeMail::class, function ($mail) {
             return $mail->hasTo($this->user->email) && strlen($mail->code) === 6;
         });
     }
