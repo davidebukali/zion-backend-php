@@ -7,7 +7,7 @@ use Modules\Posts\Events\PostCreated;
 use Modules\Posts\Events\PostUpdated;
 use Modules\Posts\Events\PostModerationEvaluated;
 use Modules\Posts\Listeners\TriggerModerationOnPostChange;
-use Modules\Posts\Listeners\UpdateReportStatusOnModeration;
+use Modules\Interactions\Listeners\UpdateReportStatusOnModeration;
 use Modules\Interactions\Events\PostReported;
 
 class EventServiceProvider extends ServiceProvider
