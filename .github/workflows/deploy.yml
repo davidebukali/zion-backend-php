@@ -61,16 +61,13 @@ jobs:
       - name: Cache Composer Dependencies
         uses: actions/cache@v4
         with:
-          path: vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          path: ~/.composer/cache/files
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock', 'Modules/*/composer.json') }}
           restore-keys: |
             ${{ runner.os }}-composer-
 
       - name: Install Composer Dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
-
-      - name: Ensure Test Directories Exist
-        run: mkdir -p tests/Unit tests/Feature
 
       - name: Run Test Suite (Isolated Test Database)
         env:
