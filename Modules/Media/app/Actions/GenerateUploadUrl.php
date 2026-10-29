@@ -2,14 +2,18 @@
 
 namespace Modules\Media\Actions;
 
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Modules\Auth\Models\User;
 use Modules\Media\Enums\MediaStatus;
 use Modules\Media\Models\Media;
+use Modules\Media\Services\R2StorageService;
 
 class GenerateUploadUrl
 {
+    public function __construct(
+        private readonly R2StorageService $storage
+    ) {}
+
     public function __invoke(
         User $user,
         array $data
@@ -42,15 +46,7 @@ class GenerateUploadUrl
 
         $expiresAt = now()->addMinutes(60);
 
-        $s3 = Storage::disk('r2')->getClient();
-
-        $cmd = $s3->getCommand('PutObject', [
-            'Bucket' => 'zion-files',
-            'Key' => $media->path,
-        ]);
-
-        $request = $s3->createPresignedRequest($cmd, '+1 hour');
-        $presignedUrl = (string) $request->getUri();
+        $presignedUrl = $this->storage->createPresignedUploadUrl($media->path, $mimeType, '+1 hour');
 
         return [
             'id' => $media->id,

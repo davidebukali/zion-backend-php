@@ -69,4 +69,17 @@ class R2StorageService
 
         return $result->toArray();
     }
+
+    public function createPresignedUploadUrl(string $path, string $contentType = 'application/octet-stream', string $expires = '+1 hour'): string
+    {
+        $cmd = $this->client->getCommand('PutObject', [
+            'Bucket' => config('filesystems.disks.r2.bucket'),
+            'Key' => $path,
+            'ContentType' => $contentType,
+        ]);
+
+        $request = $this->client->createPresignedRequest($cmd, $expires);
+
+        return (string) $request->getUri();
+    }
 }
