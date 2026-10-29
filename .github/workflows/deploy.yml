@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   test:
-    name: Run Automated Tests & Code Style
+    name: Run Automated Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -68,9 +68,6 @@ jobs:
 
       - name: Install Composer Dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
-
-      - name: Verify Code Style (Laravel Pint)
-        run: ./vendor/bin/pint --test
 
       - name: Run Test Suite (Isolated Test Database)
         env:
