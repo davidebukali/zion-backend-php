@@ -69,6 +69,9 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
+      - name: Ensure Test Directories Exist
+        run: mkdir -p tests/Unit tests/Feature
+
       - name: Run Test Suite (Isolated Test Database)
         env:
           APP_ENV: testing
