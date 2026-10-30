@@ -34,28 +34,8 @@
                             Matters Most</span>
                     </h1>
                     <p class="text-base sm:text-lg text-on-surface-variant font-normal leading-relaxed">
-                        A place to spend time in the Word of God with Christ-centered, family-friendly content that
-                        builds up your life.
+                        A sanctified social home free from toxic algorithms, built for prayer, fellowship, and faith.
                     </p>
-                </div>
-
-                <!-- Scripture Quote Card (Material 3 Surface Layer 2) -->
-                <div
-                    class="w-full max-w-xl p-space-md sm:p-space-lg rounded-2xl bg-surface-container-high border border-outline-variant/15 glow-card glow-card-hover flex items-start gap-space-md transition-all duration-300">
-                    <div
-                        class="w-10 h-10 rounded-full bg-secondary-container/40 flex items-center justify-center shrink-0 text-primary">
-                        <span class="material-symbols-outlined text-[20px] icon-fill">auto_stories</span>
-                    </div>
-                    <div class="flex-1 space-y-1">
-                        <p class="text-sm sm:text-base text-on-surface italic font-medium leading-snug">
-                            “Above all else, guard your heart, for everything you do flows from it.”
-                        </p>
-                        <div class="flex items-center gap-2 pt-0.5">
-                            <span class="text-xs text-primary font-bold tracking-wide uppercase">— Proverbs 4:23</span>
-                            <span class="w-1 h-1 rounded-full bg-outline"></span>
-                            <span class="text-xs text-on-surface-variant">Daily Scripture</span>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Interactive Waitlist Module (Alpine.js) -->
@@ -83,12 +63,12 @@
                         </button>
                     </form>
 
-                    <!-- Feedback Notifications -->
+                    <!-- Feedback Notifications with Social Proof Expectation -->
                     <div class="flex items-center justify-between px-space-xs pt-1">
                         <p class="text-xs text-on-surface-variant flex items-center gap-1.5">
                             <span
                                 class="material-symbols-outlined text-[15px] text-primary icon-fill">verified_user</span>
-                            <span>Be the first to know when we launch on Android. IOS coming soon. No spam, ever.</span>
+                            <span>Join believers reserving early beta access on iOS &amp; Android.</span>
                         </p>
                     </div>
 
@@ -111,6 +91,25 @@
 
                     <div x-show="errorMessage" x-transition class="p-2 text-xs text-primary font-medium"
                         x-text="errorMessage" x-cloak></div>
+                </div>
+
+                <!-- Scripture Quote Card (Material 3 Surface Layer 2) -->
+                <div
+                    class="w-full max-w-xl p-space-md sm:p-space-lg rounded-2xl bg-surface-container-high border border-outline-variant/15 glow-card glow-card-hover flex items-start gap-space-md transition-all duration-300">
+                    <div
+                        class="w-10 h-10 rounded-full bg-secondary-container/40 flex items-center justify-center shrink-0 text-primary">
+                        <span class="material-symbols-outlined text-[20px] icon-fill">auto_stories</span>
+                    </div>
+                    <div class="flex-1 space-y-1">
+                        <p class="text-sm sm:text-base text-on-surface italic font-medium leading-snug">
+                            “Above all else, guard your heart, for everything you do flows from it.”
+                        </p>
+                        <div class="flex items-center gap-2 pt-0.5">
+                            <span class="text-xs text-primary font-bold tracking-wide uppercase">— Proverbs 4:23</span>
+                            <span class="w-1 h-1 rounded-full bg-outline"></span>
+                            <span class="text-xs text-on-surface-variant">Daily Scripture</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Trust Badges Row -->

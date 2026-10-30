@@ -3,8 +3,22 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tsiyon — A social home built for what matters most. Christ-centered, family-friendly content that builds up your life.">
-    <title>{{ $title ?? 'Tsiyon — A Social Home for What Matters Most' }}</title>
+    <meta name="description" content="Tsiyon — A sanctified social home free from toxic algorithms, built for prayer, fellowship, and faith.">
+    <title>{{ $title ?? 'Tsiyon — A Social Home Built for What Matters Most' }}</title>
+
+    <!-- Open Graph / Facebook / LinkedIn -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="{{ $title ?? 'Tsiyon — A Social Home Built for What Matters Most' }}">
+    <meta property="og:description" content="A sanctified social home free from toxic algorithms, built for prayer, fellowship, and faith.">
+    <meta property="og:image" content="{{ asset('images/landing/logo.webp') }}">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ url()->current() }}">
+    <meta name="twitter:title" content="{{ $title ?? 'Tsiyon — A Social Home Built for What Matters Most' }}">
+    <meta name="twitter:description" content="A sanctified social home free from toxic algorithms, built for prayer, fellowship, and faith.">
+    <meta name="twitter:image" content="{{ asset('images/landing/logo.webp') }}">
 
     <!-- Favicon & App Icons -->
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=2">

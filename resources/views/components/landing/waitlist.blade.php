@@ -19,8 +19,7 @@
                 Be Part of the Tsiyon Community
             </h2>
             <p class="text-sm sm:text-base text-on-surface-variant leading-relaxed">
-                Help us shape a safer, faith-focused social experience. Enter your email below to reserve your slot for
-                our upcoming beta release.
+                Join believers reserving early beta access on iOS &amp; Android. Enter your email below to reserve your slot.
             </p>
         </div>
 
@@ -78,7 +77,7 @@
             <span class="text-outline-variant hidden sm:inline">•</span>
             <span class="flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-[18px] text-primary">phone_iphone</span>
-                Android in progress - IOS coming soon
+                Early Access on iOS &amp; Android
             </span>
             <span class="text-outline-variant hidden sm:inline">•</span>
             <span class="flex items-center gap-1.5">
