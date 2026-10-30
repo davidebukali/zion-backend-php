@@ -340,18 +340,35 @@ class SocialGraphController extends Controller
      *   "data": [
      *     {
      *       "id": 1,
+     *       "type": "repost",
      *       "published_at": "2026-09-27T18:00:00.000000Z",
+     *       "actor": {
+     *         "id": "01j7b9k5v6abcdef0123456789",
+     *         "name": "Jane Doe",
+     *         "email": "jane@example.com",
+     *         "profile": {
+     *           "username": "janedoe",
+     *           "display_name": "Jane Doe"
+     *         }
+     *       },
      *       "post": {
      *         "id": "01j7b9k5v6abcdef0123456789",
      *         "content": "Check out my new photos!",
      *         "visibility": "public",
      *         "likes_count": 12,
      *         "comments_count": 4,
+     *         "reposts_count": 1,
      *         "is_liked": true,
+     *         "is_reposted": true,
      *         "user": {
      *           "id": "01j7b9k5v6abcdef0123456789",
-     *           "name": "Jane Doe",
-     *           "email": "jane@example.com"
+     *           "name": "Alex Author",
+     *           "email": "alex@example.com"
+     *         },
+     *         "author": {
+     *           "id": "01j7b9k5v6abcdef0123456789",
+     *           "name": "Alex Author",
+     *           "email": "alex@example.com"
      *         },
      *         "media": [
      *           {

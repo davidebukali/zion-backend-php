@@ -75,6 +75,8 @@ class GetFeedTest extends TestCase
                 'message' => 'Feed retrieved successfully.',
             ])
             ->assertJsonPath('data.0.id', $feedItem->id)
+            ->assertJsonPath('data.0.type', 'post')
+            ->assertJsonPath('data.0.actor', null)
             ->assertJsonPath('data.0.post.id', $post->id)
             ->assertJsonPath('data.0.post.content', 'Post with media attached')
             ->assertJsonPath('data.0.post.user.id', $this->author->id)
@@ -321,5 +323,68 @@ class GetFeedTest extends TestCase
             'type' => 'repost',
             'actor_id' => $friend->id,
         ]);
+    }
+
+    public function test_feed_distinguishes_original_posts_and_reposted_posts_per_contract(): void
+    {
+        $friend = User::create([
+            'name' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $post = $this->author->posts()->create([
+            'content' => 'Check out my new photos!',
+            'visibility' => 'public',
+        ]);
+        $post->forceFill([
+            'likes_count' => 12,
+            'comments_count' => 4,
+            'reposts_count' => 1,
+        ])->save();
+        $post->likes()->create(['user_id' => $this->user->id]);
+        $post->reposts()->create(['user_id' => $this->user->id]);
+
+        // Original post entry
+        FeedItem::create([
+            'user_id' => $this->user->id,
+            'post_id' => $post->id,
+            'type' => 'post',
+            'actor_id' => $this->author->id,
+            'published_at' => now()->subHour(),
+        ]);
+
+        // Repost entry from friend
+        FeedItem::create([
+            'user_id' => $this->user->id,
+            'post_id' => $post->id,
+            'type' => 'repost',
+            'actor_id' => $friend->id,
+            'published_at' => now(),
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->getJson(route('api.feed.index'));
+
+        $response->assertStatus(200);
+
+        // Reposted entry (item 0)
+        $repostEntry = $response->json('data.0');
+        $this->assertEquals('repost', $repostEntry['type']);
+        $this->assertNotNull($repostEntry['actor']);
+        $this->assertEquals($friend->id, $repostEntry['actor']['id']);
+        $this->assertEquals('Jane Doe', $repostEntry['actor']['name']);
+        $this->assertEquals($post->id, $repostEntry['post']['id']);
+        $this->assertEquals(1, $repostEntry['post']['reposts_count']);
+        $this->assertTrue($repostEntry['post']['is_reposted']);
+
+        // Original post entry (item 1)
+        $postEntry = $response->json('data.1');
+        $this->assertEquals('post', $postEntry['type']);
+        $this->assertNull($postEntry['actor']);
+        $this->assertEquals($post->id, $postEntry['post']['id']);
+        $this->assertEquals(1, $postEntry['post']['reposts_count']);
+        $this->assertTrue($postEntry['post']['is_reposted']);
     }
 }

@@ -14,13 +14,14 @@ class FeedItemResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $actor = ($this->relationLoaded('actor') && $this->actor)
+        $type = $this->type ?? 'post';
+        $actor = ($type !== 'post' && $this->relationLoaded('actor') && $this->actor !== null)
             ? $this->actor
-            : ($this->relationLoaded('post') ? $this->post?->user : null);
+            : null;
 
         return [
             'id' => $this->id,
-            'type' => $this->type ?? 'post',
+            'type' => $type,
             'published_at' => $this->published_at?->toISOString(),
             'actor' => $actor ? new UserResource($actor) : null,
             'post' => new PostResource($this->whenLoaded('post')),
