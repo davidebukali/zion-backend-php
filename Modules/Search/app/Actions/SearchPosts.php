@@ -48,6 +48,7 @@ class SearchPosts
                 }
             })
             ->with(['user.profile.avatar', 'media'])
+            ->withViewerState($viewer)
             ->orderByDesc('created_at')
             ->orderByDesc('id');
 

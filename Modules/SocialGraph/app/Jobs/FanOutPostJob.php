@@ -18,7 +18,10 @@ class FanOutPostJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public function __construct(
-        public string $postId
+        public string $postId,
+        public string $type = 'post',
+        public ?string $actorId = null,
+        public ?string $publishedAt = null
     ) {
         $this->onQueue('feed');
     }
@@ -26,32 +29,38 @@ class FanOutPostJob implements ShouldQueue
     public function handle(): void
     {
         $post = Post::withoutGlobalScopes()->findOrFail($this->postId);
-        $publishedAt = $post->created_at?->toDateTimeString() ?? now()->toDateTimeString();
+        $actorId = $this->actorId ?? $post->user_id;
+        $publishedAt = $this->publishedAt ?? ($post->created_at?->toDateTimeString() ?? now()->toDateTimeString());
 
-        // 1. Insert feed item for the author
+        // 1. Insert feed item for the actor
         FeedItem::insertOrIgnore([
             [
-                'user_id' => $post->user_id,
+                'user_id' => $actorId,
                 'post_id' => $post->id,
+                'type' => $this->type,
+                'actor_id' => $actorId,
                 'published_at' => $publishedAt,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
         ]);
 
-        // 2. Prepare chunk jobs for followers
+        // 2. Prepare chunk jobs for followers of the actor
         $jobs = [];
+        $type = $this->type;
         Follow::query()
-            ->where('following_id', $post->user_id)
+            ->where('following_id', $actorId)
             ->where('status', 'accepted')
-            ->chunkById(1000, function ($follows) use (&$jobs, $post, $publishedAt) {
+            ->chunkById(1000, function ($follows) use (&$jobs, $post, $publishedAt, $type, $actorId) {
                 $followerIds = $follows->pluck('follower_id')->all();
 
                 if (!empty($followerIds)) {
                     $jobs[] = new FanOutPostChunkJob(
                         postId: $post->id,
                         followerIds: $followerIds,
-                        publishedAt: $publishedAt
+                        publishedAt: $publishedAt,
+                        type: $type,
+                        actorId: $actorId
                     );
                 }
             });
@@ -60,7 +69,7 @@ class FanOutPostJob implements ShouldQueue
         if (!empty($jobs)) {
             Bus::batch($jobs)
                 ->onQueue('feed')
-                ->name("fanout-post-{$post->id}")
+                ->name("fanout-{$this->type}-{$post->id}-actor-{$actorId}")
                 ->allowFailures()
                 ->dispatch();
         }

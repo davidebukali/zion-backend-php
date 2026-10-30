@@ -7,6 +7,7 @@ use Modules\Comments\Events\CommentCreated;
 use Modules\Interactions\Events\CommentLiked;
 use Modules\Interactions\Events\PostLiked;
 use Modules\Interactions\Events\PostReported;
+use Modules\Interactions\Events\PostReposted;
 use Modules\Interactions\Events\PostShared;
 use Modules\Notifications\Listeners\SendCommentCreatedNotification;
 use Modules\Notifications\Listeners\SendCommentLikedNotification;
@@ -15,6 +16,7 @@ use Modules\Notifications\Listeners\SendFollowRequestAcceptedNotification;
 use Modules\Notifications\Listeners\SendFollowRequestedNotification;
 use Modules\Notifications\Listeners\SendPostLikedNotification;
 use Modules\Notifications\Listeners\SendPostReportedNotification;
+use Modules\Notifications\Listeners\SendPostRepostedNotification;
 use Modules\Notifications\Listeners\SendPostSharedNotification;
 use Modules\SocialGraph\Events\FollowRequestAccepted;
 use Modules\SocialGraph\Events\FollowRequested;
@@ -33,6 +35,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         PostLiked::class => [
             SendPostLikedNotification::class,
+        ],
+        PostReposted::class => [
+            SendPostRepostedNotification::class,
         ],
         PostReported::class => [
             SendPostReportedNotification::class,

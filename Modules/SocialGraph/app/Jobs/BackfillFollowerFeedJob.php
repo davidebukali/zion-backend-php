@@ -43,6 +43,8 @@ class BackfillFollowerFeedJob implements ShouldQueue
             return [
                 'user_id' => $this->followerId,
                 'post_id' => $post->id,
+                'type' => 'post',
+                'actor_id' => $this->followingId,
                 'published_at' => $post->created_at?->toDateTimeString() ?? $now->toDateTimeString(),
                 'created_at' => $now,
                 'updated_at' => $now,

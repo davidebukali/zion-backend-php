@@ -2,9 +2,9 @@
 
 namespace Modules\Posts\Actions;
 
+use Illuminate\Pagination\CursorPaginator;
 use Modules\Auth\Models\User;
 use Modules\Posts\Models\Post;
-use Illuminate\Pagination\CursorPaginator;
 
 class ListPosts
 {
@@ -13,14 +13,10 @@ class ListPosts
      */
     public function __invoke(int $perPage = 15, ?User $viewer = null): CursorPaginator
     {
-        $query = Post::feed()->with('media');
-
-        if ($viewer) {
-            $query->withExists([
-                'likes as is_liked' => fn ($q) => $q->where('user_id', $viewer->id),
-            ]);
-        }
-
-        return $query->cursorPaginate($perPage)->withQueryString();
+        return Post::feed()
+            ->with('media')
+            ->withViewerState($viewer)
+            ->cursorPaginate($perPage)
+            ->withQueryString();
     }
 }

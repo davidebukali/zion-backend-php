@@ -14,18 +14,27 @@ class FeedItem extends Model
     protected $fillable = [
         'user_id',
         'post_id',
+        'type',
+        'actor_id',
         'published_at',
     ];
 
     protected $casts = [
         'user_id' => 'string',
         'post_id' => 'string',
+        'type' => 'string',
+        'actor_id' => 'string',
         'published_at' => 'datetime',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function actor()
+    {
+        return $this->belongsTo(User::class, 'actor_id');
     }
 
     public function post()

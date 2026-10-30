@@ -18,11 +18,15 @@ class FanOutPostChunkJob implements ShouldQueue
      * @param string $postId
      * @param array<string> $followerIds
      * @param string $publishedAt
+     * @param string $type
+     * @param string|null $actorId
      */
     public function __construct(
         public string $postId,
         public array $followerIds,
-        public string $publishedAt
+        public string $publishedAt,
+        public string $type = 'post',
+        public ?string $actorId = null
     ) {
         $this->onQueue('feed');
     }
@@ -42,6 +46,8 @@ class FanOutPostChunkJob implements ShouldQueue
             return [
                 'user_id' => $followerId,
                 'post_id' => $this->postId,
+                'type' => $this->type,
+                'actor_id' => $this->actorId,
                 'published_at' => $this->publishedAt,
                 'created_at' => $now,
                 'updated_at' => $now,

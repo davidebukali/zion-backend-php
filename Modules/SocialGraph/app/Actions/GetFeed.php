@@ -11,15 +11,16 @@ class GetFeed
     {
         return FeedItem::query()
             ->where('user_id', $user->id)
+            ->whereHas('post')
             ->with([
+                'actor.profile',
                 'post' => function ($query) use ($user) {
-                    $query->with(['user', 'media'])
-                        ->withExists([
-                            'likes as is_liked' => fn ($q) => $q->where('user_id', $user->id),
-                        ]);
+                    $query->with(['user.profile', 'media'])
+                        ->withViewerState($user);
                 },
             ])
             ->orderByDesc('published_at')
+            ->orderByDesc('id')
             ->cursorPaginate($perPage);
     }
 }

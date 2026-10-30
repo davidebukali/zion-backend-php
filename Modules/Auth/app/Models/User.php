@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Modules\Interactions\Models\Repost;
 use Modules\Posts\Models\Post;
 
 class User extends Authenticatable
@@ -66,5 +67,10 @@ class User extends Authenticatable
     public function profile()
     {
         return $this->hasOne(Profile::class);
+    }
+
+    public function reposts()
+    {
+        return $this->hasMany(Repost::class);
     }
 }

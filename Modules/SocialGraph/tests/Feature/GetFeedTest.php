@@ -212,4 +212,114 @@ class GetFeedTest extends TestCase
         $this->assertEquals(0, $unlikedItem['post']['likes_count']);
         $this->assertEquals(0, $unlikedItem['post']['comments_count']);
     }
+
+    public function test_feed_includes_reposts_from_followed_users(): void
+    {
+        $friend = User::create([
+            'name' => 'Friend User',
+            'email' => 'friend@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $post = $this->author->posts()->create([
+            'content' => 'Post to be reposted',
+            'visibility' => 'public',
+        ]);
+        $post->forceFill(['reposts_count' => 1])->save();
+        $post->reposts()->create(['user_id' => $friend->id]);
+
+        FeedItem::create([
+            'user_id' => $this->user->id,
+            'post_id' => $post->id,
+            'type' => 'repost',
+            'actor_id' => $friend->id,
+            'published_at' => now(),
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->getJson(route('api.feed.index'));
+
+        $response->assertStatus(200);
+        $item = $response->json('data.0');
+
+        $this->assertEquals('repost', $item['type']);
+        $this->assertEquals($friend->id, $item['actor']['id']);
+        $this->assertEquals('Friend User', $item['actor']['name']);
+        $this->assertEquals($post->id, $item['post']['id']);
+        $this->assertEquals(1, $item['post']['reposts_count']);
+        $this->assertFalse($item['post']['is_reposted']);
+    }
+
+    public function test_feed_includes_likes_and_comments_from_followed_users(): void
+    {
+        $friend = User::create([
+            'name' => 'Liking Friend',
+            'email' => 'liker_friend@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $post = $this->author->posts()->create([
+            'content' => 'Post liked by friend',
+            'visibility' => 'public',
+        ]);
+
+        FeedItem::create([
+            'user_id' => $this->user->id,
+            'post_id' => $post->id,
+            'type' => 'like',
+            'actor_id' => $friend->id,
+            'published_at' => now(),
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->getJson(route('api.feed.index'));
+
+        $response->assertStatus(200);
+        $item = $response->json('data.0');
+
+        $this->assertEquals('like', $item['type']);
+        $this->assertEquals($friend->id, $item['actor']['id']);
+        $this->assertEquals('Liking Friend', $item['actor']['name']);
+        $this->assertEquals($post->id, $item['post']['id']);
+    }
+
+    public function test_unrepost_and_unlike_remove_interaction_from_feed(): void
+    {
+        $friend = User::create([
+            'name' => 'Active Friend',
+            'email' => 'active_friend@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $post = $this->author->posts()->create([
+            'content' => 'Active Post',
+            'visibility' => 'public',
+        ]);
+
+        FeedItem::create([
+            'user_id' => $this->user->id,
+            'post_id' => $post->id,
+            'type' => 'repost',
+            'actor_id' => $friend->id,
+            'published_at' => now(),
+        ]);
+
+        $this->assertDatabaseHas('feed_items', [
+            'user_id' => $this->user->id,
+            'post_id' => $post->id,
+            'type' => 'repost',
+            'actor_id' => $friend->id,
+        ]);
+
+        event(new \Modules\Interactions\Events\PostUnreposted($post, $friend));
+
+        $this->assertDatabaseMissing('feed_items', [
+            'user_id' => $this->user->id,
+            'post_id' => $post->id,
+            'type' => 'repost',
+            'actor_id' => $friend->id,
+        ]);
+    }
 }

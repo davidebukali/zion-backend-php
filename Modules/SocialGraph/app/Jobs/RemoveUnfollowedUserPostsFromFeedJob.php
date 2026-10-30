@@ -23,10 +23,16 @@ class RemoveUnfollowedUserPostsFromFeedJob implements ShouldQueue
     public function handle(): void
     {
         FeedItem::where('user_id', $this->followerId)
-            ->whereIn('post_id', function ($query) {
-                $query->select('id')
-                    ->from('posts')
-                    ->where('user_id', $this->unfollowedUserId);
+            ->where(function ($query) {
+                $query->where('actor_id', $this->unfollowedUserId)
+                    ->orWhere(function ($q) {
+                        $q->whereNull('actor_id')
+                            ->whereIn('post_id', function ($subQuery) {
+                                $subQuery->select('id')
+                                    ->from('posts')
+                                    ->where('user_id', $this->unfollowedUserId);
+                            });
+                    });
             })
             ->delete();
     }

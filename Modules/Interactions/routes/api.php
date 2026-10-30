@@ -1,15 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Interactions\Http\Controllers\PostLikeController;
-use Modules\Interactions\Http\Controllers\CommentLikeController;
-use Modules\Interactions\Http\Controllers\PostShareController;
 use Modules\Interactions\Http\Controllers\BookmarkController;
+use Modules\Interactions\Http\Controllers\CommentLikeController;
+use Modules\Interactions\Http\Controllers\PostLikeController;
+use Modules\Interactions\Http\Controllers\PostShareController;
 use Modules\Interactions\Http\Controllers\ReportController;
+use Modules\Interactions\Http\Controllers\RepostController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::post('/posts/{post}/like', [PostLikeController::class, 'likePost'])->name('post.like');
     Route::delete('/posts/{post}/like', [PostLikeController::class, 'unlikePost'])->name('post.unlike');
+
+    Route::post('/posts/{post}/repost', [RepostController::class, 'store'])->name('post.repost');
+    Route::delete('/posts/{post}/repost', [RepostController::class, 'destroy'])->name('post.unrepost');
 
     Route::post('/posts/{post}/internal-share', [PostShareController::class, 'internalSharePost'])->name('post.internal-share');
     Route::post('/posts/{post}/external-share', [PostShareController::class, 'externalSharePost'])->name('post.external-share');

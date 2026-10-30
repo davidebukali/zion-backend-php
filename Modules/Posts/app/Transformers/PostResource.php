@@ -15,16 +15,7 @@ class PostResource extends JsonResource
     public function toArray(Request $request): array
     {
         $viewer = $request->user();
-
-        if ($this->getAttribute('is_liked') !== null) {
-            $isLiked = (bool) $this->getAttribute('is_liked');
-        } elseif ($this->relationLoaded('likes')) {
-            $isLiked = $viewer ? $this->likes->contains('user_id', $viewer->id) : false;
-        } elseif ($viewer) {
-            $isLiked = $this->likes()->where('user_id', $viewer->id)->exists();
-        } else {
-            $isLiked = false;
-        }
+        $userResource = new UserResource($this->whenLoaded('user'));
 
         return [
             'id' => $this->id,
@@ -32,13 +23,33 @@ class PostResource extends JsonResource
             'visibility' => $this->visibility,
             'likes_count' => (int) ($this->likes_count ?? 0),
             'comments_count' => (int) ($this->comments_count ?? 0),
-            'is_liked' => $isLiked,
-            'user' => new UserResource($this->whenLoaded('user')),
+            'reposts_count' => (int) ($this->reposts_count ?? 0),
+            'is_liked' => $this->resolveInteractionFlag($viewer, 'is_liked', 'likes'),
+            'is_reposted' => $this->resolveInteractionFlag($viewer, 'is_reposted', 'reposts'),
+            'user' => $userResource,
+            'author' => $userResource,
             'media' => MediaResource::collection(
                 $this->whenLoaded('media')
             ),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];
+    }
+
+    private function resolveInteractionFlag($viewer, string $attribute, string $relation): bool
+    {
+        if ($this->getAttribute($attribute) !== null) {
+            return (bool) $this->getAttribute($attribute);
+        }
+
+        if ($this->relationLoaded($relation)) {
+            return $viewer ? $this->{$relation}->contains('user_id', $viewer->id) : false;
+        }
+
+        if ($viewer) {
+            return $this->{$relation}()->where('user_id', $viewer->id)->exists();
+        }
+
+        return false;
     }
 }

@@ -12,13 +12,14 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Auth\Models\User;
 use Modules\Comments\Models\Comment;
+use Modules\Interactions\Models\Bookmark;
 use Modules\Interactions\Models\PostLike;
+use Modules\Interactions\Models\PostReports;
+use Modules\Interactions\Models\Repost;
 use Modules\Media\Models\Media;
 use Modules\Posts\Enums\PostModerationStatus;
 use Modules\Posts\Enums\PostVisibility;
 use Modules\Posts\Scopes\PostModerationScope;
-use Modules\Interactions\Models\Bookmark;
-use Modules\Interactions\Models\PostReports;
 
 #[ScopedBy([PostModerationScope::class])]
 class Post extends Model
@@ -100,5 +101,40 @@ class Post extends Model
     public function reports(): HasMany
     {
         return $this->hasMany(PostReports::class, 'post_id');
+    }
+
+    public function reposts(): HasMany
+    {
+        return $this->hasMany(Repost::class);
+    }
+
+    public function isLikedBy(?User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        return $this->likes()->where('user_id', $user->id)->exists();
+    }
+
+    public function isRepostedBy(?User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        return $this->reposts()->where('user_id', $user->id)->exists();
+    }
+
+    public function scopeWithViewerState($query, ?User $viewer)
+    {
+        if (! $viewer) {
+            return $query;
+        }
+
+        return $query->withExists([
+            'likes as is_liked' => fn ($q) => $q->where('user_id', $viewer->id),
+            'reposts as is_reposted' => fn ($q) => $q->where('user_id', $viewer->id),
+        ]);
     }
 }

@@ -18,6 +18,7 @@ class ListBookmarks
                 $query->where('user_id', $user->id);
             })
             ->with('user')
+            ->withViewerState($user)
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->cursorPaginate($perPage);

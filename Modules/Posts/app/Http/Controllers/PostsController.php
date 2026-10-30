@@ -156,25 +156,13 @@ class PostsController extends Controller
         if ($viewer) {
             $post->loadExists([
                 'likes as is_liked' => fn ($q) => $q->where('user_id', $viewer->id),
+                'reposts as is_reposted' => fn ($q) => $q->where('user_id', $viewer->id),
             ]);
         }
         $post->loadMissing(['user', 'media']);
 
         return $this->success(new PostResource($post));
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        return view('posts::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
 
     /**
      * @group Posts
