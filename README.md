@@ -4,8 +4,8 @@
   <a href="https://php.net"><img src="https://img.shields.io/badge/PHP-%3E%3D%208.4-777bb4?logo=php&logoColor=white" alt="PHP Version"></a>
   <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white" alt="Laravel 13"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
-  <a href="https://laravel.com/docs/pint"><img src="https://img.shields.io/badge/code%20style-pint-f43f5e.svg" alt="Code Style: Pint"></a>
   <a href="docker-compose.yml"><img src="https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white" alt="Docker Ready"></a>
+  <a href="https://github.com/davidebukali/zion-backend-php/actions"><img src="https://github.com/davidebukali/zion-backend-php/actions/workflows/deploy.yml/badge.svg" alt="CI/CD"></a>
 </p>
 
 Zion Backend is a clean, modular REST API built with **Laravel 13** and **PHP 8.4+**. It leverages a decoupled modular architecture to isolate domain concerns, ensuring scalability, high performance, and ease of maintenance.
@@ -30,9 +30,10 @@ Zion Backend is a clean, modular REST API built with **Laravel 13** and **PHP 8.
 - [Setup & Running the Application](#️-setup-running-the-application)
   - [Running with Docker (Recommended)](#-running-with-docker-recommended)
   - [Local (Non-Docker) Setup](#-local-non-docker-setup)
-- [Production Deployment & CI/CD](#-production-deployment--cicd)
-- [Code Quality & Formatting](#-code-quality-formatting)
-- [Testing](#-testing)
+- [Automated Testing & CI/CD](#-automated-testing--cicd)
+  - [GitHub Actions CI Pipeline](#-github-actions-ci-pipeline)
+  - [Running Tests Locally](#-running-tests-locally)
+  - [Production Deployment Pipeline](#-production-deployment-pipeline)
 - [Contributing](#-contributing)
 - [Security Policy](#-security-policy)
 - [License & Acknowledgments](#-license-acknowledgments)
@@ -283,26 +284,78 @@ docker compose exec app php artisan migrate
 
 ---
 
-## 🚀 Production Deployment & CI/CD
+## 🚀 Automated Testing & CI/CD
 
-Tsiyon Backend uses an automated, zero-downtime deployment pipeline powered by GitHub Actions and a hardened server-side deployment script ([`docker/scripts/tsiyon-deploy`](docker/scripts/tsiyon-deploy)).
+Tsiyon Backend uses a continuous integration and zero-downtime deployment pipeline powered by GitHub Actions ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)) and a hardened server deployment script ([`docker/scripts/tsiyon-deploy`](docker/scripts/tsiyon-deploy)).
 
-### Architecture Overview
-1. **Push to `main`** or manual **`workflow_dispatch`** triggers the GitHub Actions workflow ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)).
-2. Runner connects via OpenSSH (using an ephemeral private key and host key verification) to the `deploy` user.
-3. The server executes a restricted forced command via `authorized_keys` running `/usr/local/sbin/tsiyon-deploy <commit-sha>`.
-4. The deployment script:
-   - Acquires an exclusive lock (`flock`) to prevent concurrent deployments.
-   - Strictly enforces deploying only the tip of `origin/main`.
-   - Builds production images tagged with the commit SHA prefix.
-   - Runs database migrations under `www-data` to protect volume permissions.
-   - Switches containers gracefully (`docker compose up -d`).
-   - Clears and warms route/config caches via `php artisan optimize`.
-   - Verifies system health locally via `https://tsiyonapp.com/up` directly resolving to `127.0.0.1:443`.
-   - Automatically initiates a full zero-downtime rollback if the health check fails.
+### 🧪 GitHub Actions CI Pipeline
+On every **pull request** targeting `main` and on every **push** to `main`, GitHub Actions executes the automated test suite:
+
+1. **100% Isolated Ephemeral Testing Database**:
+   * Spins up disposable **PostgreSQL 17** (`services.postgres`) and **Redis 7** (`services.redis`) service containers in the GitHub runner.
+   * Runs tests strictly against the ephemeral `zionweb_test` database with **zero connection to or risk for production data**.
+2. **Modular Test Suite Discovery**:
+   * Automatically discovers and runs all **180+ tests** across root `tests/` and domain modules (`Modules/*/tests/`).
+3. **Optimized Caching**:
+   * Caches Composer archives (`~/.composer/cache/files`) based on `composer.lock` and all `Modules/*/composer.json` manifests for rapid test runs.
+4. **Deployment Gate**:
+   * Deployment only runs on the `main` branch if all automated tests pass with 0 failures (`needs: test`).
+
+```bash
+# What GitHub Actions runs in CI:
+composer install --prefer-dist --no-interaction --no-progress
+php artisan test
+```
+
+### 💻 Running Tests Locally
+
+Run the complete test suite across all modules:
+
+```bash
+docker compose exec app php artisan test
+```
+
+To run tests for a specific domain module:
+
+```bash
+docker compose exec app php artisan test Modules/Auth
+docker compose exec app php artisan test Modules/Posts
+docker compose exec app php artisan test Modules/SocialGraph
+docker compose exec app php artisan test Modules/Search
+docker compose exec app php artisan test Modules/Notifications
+docker compose exec app php artisan test Modules/Interactions
+docker compose exec app php artisan test Modules/Comments
+docker compose exec app php artisan test Modules/Media
+```
+
+To run a specific test class:
+
+```bash
+docker compose exec app php artisan test --filter=MediaAttachmentTest
+```
+
+---
+
+### 🚢 Production Deployment Pipeline
+
+When tests pass on `main` (or upon manual `workflow_dispatch` trigger):
+
+1. **Secure SSH Handshake**:
+   * Runner connects to the production host via OpenSSH (custom port `22022`) using an ephemeral `chmod 600` key file cleaned up immediately on exit.
+   * The host matches the restricted public key in `/home/deploy/.ssh/authorized_keys` and executes `/usr/local/sbin/tsiyon-deploy <commit-sha>`.
+2. **Production Image Builds & Release Order**:
+   * Acquires an exclusive lock (`flock`) on `/var/lock/tsiyon-deploy.lock`.
+   * Enforces strict **tip-of-main** verification (`[ "$SHA" = "$TARGET_SHA" ]`).
+   * Builds production container images (`zion/app:${SHA:0:12}` and `zion/web:${SHA:0:12}`).
+   * Runs database migrations under `www-data` (`migrate --force`) to protect storage permissions.
+   * Switches containers gracefully with zero downtime (`docker compose up -d`).
+   * Clears and compiles configuration, route, and event caches (`php artisan optimize`).
+   * Performs a local SNI health check via `https://tsiyonapp.com/up` directly resolving to `127.0.0.1:443`.
+   * Automatically triggers a self-healing rollback to the previous commit if the health check fails.
+   * Prunes Docker BuildKit cache and unused images to preserve VPS disk space.
 
 ### One-Time Server Setup
-On your production host (e.g. `/src/tsiyon`):
+On your production host (`/src/tsiyon`):
 
 1. **Symlink the Deploy Script**:
    ```bash
@@ -318,7 +371,7 @@ On your production host (e.g. `/src/tsiyon`):
    ```
 
 3. **Install Restricted SSH Key**:
-   In `/home/deploy/.ssh/authorized_keys`, add the GitHub Actions public key with strict forced-command restrictions:
+   In `/home/deploy/.ssh/authorized_keys`, add the GitHub Actions public key with forced-command restrictions:
    ```text
    restrict,command="sudo /usr/local/sbin/tsiyon-deploy \"$SSH_ORIGINAL_COMMAND\"" ssh-ed25519 <PUBLIC_KEY> github-actions-deploy
    ```
@@ -336,46 +389,9 @@ Set these under **Settings > Environments > production** (or **Settings > Secret
 
 ---
 
-## 🎨 Code Quality & Formatting
-
-This project uses [Laravel Pint](https://laravel.com/docs/pint) to enforce clean and consistent PHP code styling across all modules.
-
-```bash
-# Check code style without modifying files
-docker compose exec app ./vendor/bin/pint --test
-
-# Automatically fix code formatting issues
-docker compose exec app ./vendor/bin/pint
-```
-
----
-
-## 🧪 Testing
-
-Run the automated test suite across all modules:
-
-```bash
-docker compose exec app php artisan test
-```
-
-To run tests for individual domain modules:
-
-```bash
-docker compose exec app php artisan test Modules/Auth
-docker compose exec app php artisan test Modules/Posts
-docker compose exec app php artisan test Modules/SocialGraph
-docker compose exec app php artisan test Modules/Search
-docker compose exec app php artisan test Modules/Notifications
-docker compose exec app php artisan test Modules/Interactions
-docker compose exec app php artisan test Modules/Comments
-docker compose exec app php artisan test Modules/Media
-```
-
----
-
 ## 🤝 Contributing
 
-We welcome community contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on our branching model, Conventional Commits specification, Pint styling checks, and pull request checklist.
+We welcome community contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on our branching model, Conventional Commits specification, automated test suite, and pull request checklist.
 
 ---
 
@@ -393,7 +409,6 @@ Special thanks to the open-source projects powering this platform:
 - [Laravel](https://laravel.com)
 - [nwidart/laravel-modules](https://github.com/nWidart/laravel-modules)
 - [Laravel Horizon](https://laravel.com/docs/horizon)
-- [Laravel Pint](https://laravel.com/docs/pint)
 - [Knuckles Scribe](https://scribe.knuckles.wtf)
 
 
