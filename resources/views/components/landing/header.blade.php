@@ -41,7 +41,7 @@
             <!-- Join Waitlist Button -->
             <a href="{{ url('/#waitlist') }}"
                 class="hidden sm:inline-flex items-center justify-center bg-primary-container text-on-primary-container text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-full transition-all duration-200 glow-primary glow-primary-hover active:scale-95">
-                Join Waitlist
+                Reserve Your Spot
             </a>
 
             <!-- Mobile Hamburger Button -->
@@ -75,7 +75,7 @@
                         class="text-base font-medium text-on-surface py-2 border-b border-outline-variant/10">Features</a>
                     <a href="{{ url('/#waitlist') }}" @click="close()"
                         class="w-full text-center bg-primary-container text-on-primary-container font-bold text-sm uppercase tracking-wider py-3 rounded-full mt-2 glow-primary">
-                        Request Beta Invite
+                        Reserve Your Beta Spot
                     </a>
                 </div>
             </div>

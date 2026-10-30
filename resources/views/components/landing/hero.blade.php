@@ -20,9 +20,9 @@
                             class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                     </span>
-                    <span class="text-xs text-primary font-bold tracking-wider uppercase">Early Beta Access</span>
+                    <span class="text-xs text-primary font-bold tracking-wider uppercase">Be a Founding Member</span>
                     <span class="text-outline-variant text-xs mx-0.5">•</span>
-                    <span class="text-xs text-on-surface-variant font-medium">Limited Slots Available</span>
+                    <span class="text-xs text-on-surface-variant font-medium">iOS &amp; Android</span>
                 </div>
 
                 <!-- Main Headline -->
@@ -34,7 +34,7 @@
                             Matters Most</span>
                     </h1>
                     <p class="text-base sm:text-lg text-on-surface-variant font-normal leading-relaxed">
-                        A sanctified social home free from toxic algorithms, built for prayer, fellowship, and faith.
+                        A distraction-free social home for believers to share Scripture, pray together, and fellowship in peace—100% free from toxic feeds and intrusive algorithms.
                     </p>
                 </div>
 
@@ -52,7 +52,7 @@
                         <button
                             class="px-6 py-3 rounded-full bg-primary-container text-on-primary-container text-xs uppercase tracking-wider font-bold glow-primary glow-primary-hover active:scale-95 transition-all duration-200 flex items-center justify-center gap-1.5 shrink-0 disabled:opacity-50"
                             type="submit" :disabled="status === 'submitting'">
-                            <span x-show="status !== 'submitting'">Get Early Beta Access</span>
+                            <span x-show="status !== 'submitting'">Reserve Your Beta Spot</span>
                             <span x-show="status === 'submitting'" x-cloak class="flex items-center gap-2">
                                 <span
                                     class="animate-spin h-3.5 w-3.5 border-2 border-on-primary-container border-t-transparent rounded-full"></span>
@@ -68,7 +68,7 @@
                         <p class="text-xs text-on-surface-variant flex items-center gap-1.5">
                             <span
                                 class="material-symbols-outlined text-[15px] text-primary icon-fill">verified_user</span>
-                            <span>Join believers reserving early beta access on iOS &amp; Android.</span>
+                            <span>Reserve your spot on iOS &amp; Android. Free forever. No ads, no spam, no data selling.</span>
                         </p>
                     </div>
 

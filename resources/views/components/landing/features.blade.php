@@ -73,11 +73,10 @@
                         class="w-12 h-12 rounded-2xl bg-primary-container text-on-primary-container flex items-center justify-center glow-primary">
                         <span class="material-symbols-outlined text-[26px]">verified_user</span>
                     </div>
-                    <h3 class="text-xl sm:text-2xl font-bold text-on-surface">A Clean Feed That Builds Up Your Life</h3>
+                    <h3 class="text-xl sm:text-2xl font-bold text-on-surface">A Protected Sanctuary for Your Family</h3>
                     <p class="text-sm sm:text-base text-on-surface-variant leading-relaxed">
-                        Everything you see and hear affects your thoughts and daily life. Tsiyon combines smart AI
-                        content moderation with community reporting mechanisms to filter out content that does not align
-                        with Christian values, ensuring your feed remains wholesome and uplifting.
+                        Smart, Biblically-grounded moderation ensures your family never stumbles across toxic or
+                        explicit content, keeping your daily feed wholesome and life-giving.
                     </p>
                 </div>
 
@@ -116,11 +115,10 @@
                         class="w-12 h-12 rounded-2xl bg-secondary-container/60 text-secondary flex items-center justify-center">
                         <span class="material-symbols-outlined text-[26px]">public</span>
                     </div>
-                    <h3 class="text-xl sm:text-2xl font-bold text-on-surface">Global Uplifting Content</h3>
+                    <h3 class="text-xl sm:text-2xl font-bold text-on-surface">Uplifting Community, Worldwide</h3>
                     <p class="text-sm sm:text-base text-on-surface-variant leading-relaxed">
-                        Explore inspiring posts, photos, threads, and creators across the globe. Experience a feed free
-                        from invasive, random algorithms—focusing purely on life-giving content curated for your
-                        spiritual growth.
+                        Discover global faith testimonies, daily devotionals, and life-giving creators focused entirely
+                        on spiritual encouragement, free from manipulative feeds.
                     </p>
                 </div>
 
@@ -158,12 +156,12 @@
                             class="w-12 h-12 rounded-2xl bg-tertiary-container/40 text-tertiary flex items-center justify-center">
                             <span class="material-symbols-outlined text-[26px]">forum</span>
                         </div>
-                        <h3 class="text-2xl sm:text-3xl font-bold text-on-surface">Real Conversations in a Safe Space
+                        <h3 class="text-2xl sm:text-3xl font-bold text-on-surface">Faith-Centered Fellowship &amp;
+                            Prayer Chains
                         </h3>
                         <p class="text-sm sm:text-base text-on-surface-variant leading-relaxed">
-                            Connect deeply with 1:1 direct messaging, instant reactions, and group chats that feel
-                            alive. Share encouragement and stay in touch with friends and creators who share your vibe
-                            and values.
+                            Dedicated prayer request chains, devotionals, and encrypted circles where your prayer
+                            life isn't buried under commercial ads.
                         </p>
                         <div class="flex flex-wrap gap-space-sm pt-2">
                             <span

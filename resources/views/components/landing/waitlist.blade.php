@@ -16,10 +16,10 @@
         <!-- Section Copy -->
         <div class="max-w-2xl space-y-space-xs z-10">
             <h2 class="text-3xl sm:text-4xl lg:text-[40px] font-extrabold text-on-surface tracking-tight leading-tight">
-                Be Part of the Tsiyon Community
+                Be a Founding Believer in the Tsiyon Community
             </h2>
             <p class="text-sm sm:text-base text-on-surface-variant leading-relaxed">
-                Join believers reserving early beta access on iOS &amp; Android. Enter your email below to reserve your slot.
+                Help us build a cleaner social home for the Body of Christ. Reserve your early beta spot on iOS &amp; Android.
             </p>
         </div>
 
@@ -37,13 +37,13 @@
                 <button
                     class="px-8 py-3.5 rounded-full bg-primary-container text-on-primary-container text-xs uppercase tracking-wider font-bold glow-primary glow-primary-hover active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 shrink-0 disabled:opacity-50"
                     type="submit" :disabled="status === 'submitting'">
-                    <span x-show="status !== 'submitting'">Request Beta Invite</span>
+                    <span x-show="status !== 'submitting'">Reserve Your Beta Spot</span>
                     <span x-show="status === 'submitting'" x-cloak class="flex items-center gap-2">
                         <span
                             class="animate-spin h-3.5 w-3.5 border-2 border-on-primary-container border-t-transparent rounded-full"></span>
                         Recording...
                     </span>
-                    <span class="material-symbols-outlined text-[18px]" x-show="status !== 'submitting'">send</span>
+                    <span class="material-symbols-outlined text-[18px]" x-show="status !== 'submitting'">arrow_forward</span>
                 </button>
             </form>
 
