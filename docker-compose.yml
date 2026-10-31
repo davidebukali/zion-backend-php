@@ -186,4 +186,5 @@ volumes:
 # -----------------------------------------------------------------------------
 networks:
   zion_network:
+    name: zion_network
     driver: bridge
