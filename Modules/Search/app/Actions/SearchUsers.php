@@ -37,6 +37,10 @@ class SearchUsers
             });
         }
 
+        if ($viewer) {
+            $builder->where('id', '!=', $viewer->id);
+        }
+
         $builder->with(['profile.avatar', 'profile.cover'])
             ->withViewerFollowStatus($viewer)
             ->orderByDesc('created_at');

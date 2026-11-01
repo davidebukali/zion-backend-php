@@ -147,11 +147,11 @@ class SearchTest extends TestCase
         $resStranger->assertStatus(200);
         $this->assertFalse($resStranger->json('data.0.is_following'));
 
-        // Author searches for self -> is_following is false
+        // Author searches for self -> author is excluded from results
         Sanctum::actingAs($this->author);
         $resSelf = $this->getJson(route('api.search', ['q' => 'alice', 'type' => 'users']));
         $resSelf->assertStatus(200);
-        $this->assertFalse($resSelf->json('data.0.is_following'));
+        $this->assertEmpty($resSelf->json('data'));
     }
 
     public function test_user_search_matches_username_display_name_and_bio(): void
@@ -266,8 +266,22 @@ class SearchTest extends TestCase
             ->assertJsonPath('success', true);
 
         $data = $response->json('data');
-        // All 3 users created in setUp should be returned
+        // All 3 users created in setUp should be returned when unauthenticated
         $this->assertCount(3, $data);
         $this->assertEquals(3, $response->json('meta.meta.total'));
+
+        // Authenticated user excludes self
+        Sanctum::actingAs($this->author);
+        $resAuth = $this->getJson(route('api.search', [
+            'type' => 'users',
+            'q' => '*',
+            'page' => 1,
+            'per_page' => 20,
+        ]));
+        $resAuth->assertStatus(200);
+        $this->assertCount(2, $resAuth->json('data'));
+        $this->assertEquals(2, $resAuth->json('meta.meta.total'));
+        $returnedUserIds = collect($resAuth->json('data'))->pluck('id')->all();
+        $this->assertNotContains($this->author->id, $returnedUserIds);
     }
 }
