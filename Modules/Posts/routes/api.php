@@ -14,6 +14,7 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('posts', [PostsController::class, 'store'])->name('post.store');
+        Route::match(['put', 'patch'], 'posts/{post}', [PostsController::class, 'update'])->name('post.update');
         Route::get('posts', [PostsController::class, 'index'])->name('post.index');
         Route::get('posts/{post}', [PostsController::class, 'show'])->name('post.show');
         Route::delete('posts/{post}', [PostsController::class, 'destroy'])->name('post.destroy');

@@ -11,7 +11,9 @@ use Modules\Posts\Actions\CreatePost;
 use Modules\Posts\Actions\DeletePost;
 use Modules\Posts\Actions\GetUserPosts;
 use Modules\Posts\Actions\ListPosts;
+use Modules\Posts\Actions\UpdatePost;
 use Modules\Posts\Http\Requests\StorePostRequest;
+use Modules\Posts\Http\Requests\UpdatePostRequest;
 use Modules\Posts\Models\Post;
 use Modules\Posts\Transformers\PostResource;
 
@@ -122,6 +124,50 @@ class PostsController extends Controller
     public function store(StorePostRequest $request, CreatePost $createPost) {
         $post = $createPost($request->user(), $request->validated());
         return $this->success($post, 'Post created successfully', 201);
+    }
+
+    /**
+     * @group Posts
+     * @authenticated
+     * 
+     * Update Post
+     * 
+     * Update an existing post owned by the authenticated user. Allows partial updates
+     * to text content, visibility, and attached media assets.
+     * 
+     * @urlParam post string required The ID (ULID) of the post to update. Example: 01j9wz1234567890abcdefghij
+     * @bodyParam content string The updated text body of the post. Example: Updated post content!
+     * @bodyParam visibility string The post visibility (public, followers, private). Example: public
+     * @bodyParam media_ids string[] Optional array of media UUIDs to attach/sync. Example: ["9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"]
+     * 
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Post updated successfully",
+     *   "data": {
+     *     "id": "01j9wz1234567890abcdefghij",
+     *     "content": "Updated post content!",
+     *     "visibility": "public",
+     *     "moderation_status": "approved",
+     *     "likes_count": 0,
+     *     "comments_count": 0,
+     *     "is_liked": false,
+     *     "media": [],
+     *     "created_at": "2026-09-24T12:00:00.000000Z",
+     *     "updated_at": "2026-11-01T21:30:00.000000Z"
+     *   }
+     * }
+     * @response 403 status=403 scenario="Unauthorized user" {
+     *   "message": "This action is unauthorized."
+     * }
+     * @response 422 status=422 scenario="Validation error" {
+     *   "message": "A post must contain either text content or at least one media file."
+     * }
+     */
+    public function update(UpdatePostRequest $request, Post $post, UpdatePost $updatePost)
+    {
+        $updatedPost = $updatePost($post, $request->user(), $request->validated());
+
+        return $this->success($updatedPost, 'Post updated successfully');
     }
 
     /**
