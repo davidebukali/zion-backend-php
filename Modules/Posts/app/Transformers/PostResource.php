@@ -14,7 +14,7 @@ class PostResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $viewer = $request->user();
+        $viewer = $request->user('sanctum') ?? $request->user();
         $userResource = new UserResource($this->whenLoaded('user'));
 
         return [

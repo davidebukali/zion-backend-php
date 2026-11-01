@@ -19,6 +19,8 @@ class SearchController extends Controller
     /**
      * @group Search
      *
+     * @authenticated
+     *
      * Unified Search
      *
      * Search across users and posts with optional type filtering.

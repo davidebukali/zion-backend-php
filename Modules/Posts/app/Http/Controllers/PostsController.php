@@ -84,7 +84,7 @@ class PostsController extends Controller
         $perPage = (int) ($request->query('per_page') ?? $request->input('per_page') ?? 15);
         $posts = ($getUserPosts)(
             targetUser: $user,
-            viewer: $request->user(),
+            viewer: $request->user('sanctum') ?? $request->user(),
             perPage: $perPage
         );
 

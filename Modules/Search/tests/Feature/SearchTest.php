@@ -80,8 +80,17 @@ class SearchTest extends TestCase
         ]);
     }
 
+    public function test_unauthenticated_user_cannot_access_search_endpoint(): void
+    {
+        $response = $this->getJson(route('api.search', ['q' => 'Laravel']));
+
+        $response->assertStatus(401);
+    }
+
     public function test_unified_search_returns_both_matching_users_and_posts(): void
     {
+        Sanctum::actingAs($this->stranger);
+
         $response = $this->getJson(route('api.search', ['q' => 'Laravel']));
 
         $response->assertStatus(200)
@@ -109,6 +118,8 @@ class SearchTest extends TestCase
 
     public function test_user_search_returns_paginated_users(): void
     {
+        Sanctum::actingAs($this->stranger);
+
         $response = $this->getJson(route('api.search', [
             'q' => 'alice',
             'type' => 'users',
@@ -156,6 +167,8 @@ class SearchTest extends TestCase
 
     public function test_user_search_matches_username_display_name_and_bio(): void
     {
+        Sanctum::actingAs($this->stranger);
+
         // Search by bio keyword "architect"
         $responseBio = $this->getJson(route('api.search', ['q' => 'architect', 'type' => 'users']));
         $responseBio->assertStatus(200)
@@ -169,11 +182,12 @@ class SearchTest extends TestCase
 
     public function test_post_search_returns_paginated_posts(): void
     {
+        Sanctum::actingAs($this->stranger);
+
         $response = $this->getJson(route('api.search', [
             'q' => 'features',
             'type' => 'posts',
         ]));
-
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
             ->assertJsonPath('message', 'Posts retrieved successfully')
@@ -192,9 +206,10 @@ class SearchTest extends TestCase
         $this->assertStringContainsString('Exploring Laravel 13', $data[0]['content']);
     }
 
-    public function test_post_search_respects_visibility_rules_for_guest_and_stranger(): void
+    public function test_post_search_respects_visibility_rules_for_stranger(): void
     {
-        // Unauthenticated / Stranger search
+        Sanctum::actingAs($this->stranger);
+
         $response = $this->getJson(route('api.search', ['q' => 'Laravel', 'type' => 'posts']));
 
         $response->assertStatus(200);
@@ -237,6 +252,8 @@ class SearchTest extends TestCase
 
     public function test_search_requires_query_parameter(): void
     {
+        Sanctum::actingAs($this->stranger);
+
         $response = $this->getJson(route('api.search'));
 
         $response->assertStatus(422)
@@ -245,6 +262,8 @@ class SearchTest extends TestCase
 
     public function test_empty_search_returns_empty_results(): void
     {
+        Sanctum::actingAs($this->stranger);
+
         $response = $this->getJson(route('api.search', ['q' => 'NonExistentTerm12345']));
 
         $response->assertStatus(200)
@@ -254,7 +273,8 @@ class SearchTest extends TestCase
 
     public function test_search_with_asterisk_wildcard_returns_all_results(): void
     {
-        // Wildcard user search
+        // Wildcard user search as stranger excludes stranger
+        Sanctum::actingAs($this->stranger);
         $response = $this->getJson(route('api.search', [
             'type' => 'users',
             'q' => '*',
@@ -266,9 +286,8 @@ class SearchTest extends TestCase
             ->assertJsonPath('success', true);
 
         $data = $response->json('data');
-        // All 3 users created in setUp should be returned when unauthenticated
-        $this->assertCount(3, $data);
-        $this->assertEquals(3, $response->json('meta.meta.total'));
+        $this->assertCount(2, $data);
+        $this->assertEquals(2, $response->json('meta.meta.total'));
 
         // Authenticated user excludes self
         Sanctum::actingAs($this->author);
@@ -283,5 +302,36 @@ class SearchTest extends TestCase
         $this->assertEquals(2, $resAuth->json('meta.meta.total'));
         $returnedUserIds = collect($resAuth->json('data'))->pluck('id')->all();
         $this->assertNotContains($this->author->id, $returnedUserIds);
+    }
+
+    public function test_search_endpoint_with_bearer_token_reflects_follow_and_unfollow(): void
+    {
+        $token = $this->follower->createToken('test-token')->plainTextToken;
+
+        // Follow author via API
+        $followResponse = $this->withToken($token)->postJson(route('api.users.follow', $this->author));
+        $followResponse->assertStatus(201);
+
+        // Search with Bearer token
+        $searchResponse = $this->withToken($token)->getJson(route('api.search', [
+            'type' => 'users',
+            'q' => 'Alice',
+        ]));
+
+        $searchResponse->assertStatus(200);
+        $this->assertTrue($searchResponse->json('data.0.is_following'));
+
+        // Unfollow author via API
+        $unfollowResponse = $this->withToken($token)->deleteJson(route('api.users.unfollow', $this->author));
+        $unfollowResponse->assertStatus(200);
+
+        // Search again with Bearer token
+        $searchResponseAfter = $this->withToken($token)->getJson(route('api.search', [
+            'type' => 'users',
+            'q' => 'Alice',
+        ]));
+
+        $searchResponseAfter->assertStatus(200);
+        $this->assertFalse($searchResponseAfter->json('data.0.is_following'));
     }
 }
