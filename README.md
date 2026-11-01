@@ -341,7 +341,7 @@ docker compose exec app php artisan test --filter=MediaAttachmentTest
 When tests pass on `main` (or upon manual `workflow_dispatch` trigger):
 
 1. **Secure SSH Handshake**:
-   * Runner connects to the production host via OpenSSH (custom port `22022`) using an ephemeral `chmod 600` key file cleaned up immediately on exit.
+   * Runner connects to the production host via OpenSSH (custom configured port) using an ephemeral `chmod 600` key file cleaned up immediately on exit.
    * The host matches the restricted public key in `/home/deploy/.ssh/authorized_keys` and executes `/usr/local/sbin/tsiyon-deploy <commit-sha>`.
 2. **Production Image Builds & Release Order**:
    * Acquires an exclusive lock (`flock`) on `/var/lock/tsiyon-deploy.lock`.
@@ -350,17 +350,17 @@ When tests pass on `main` (or upon manual `workflow_dispatch` trigger):
    * Runs database migrations under `www-data` (`migrate --force`) to protect storage permissions.
    * Switches containers gracefully with zero downtime (`docker compose up -d`).
    * Clears and compiles configuration, route, and event caches (`php artisan optimize`).
-   * Performs a local SNI health check via `https://tsiyonapp.com/up` directly resolving to `127.0.0.1:443`.
+   * Performs a local SNI health check via the application domain health route (`/up`) directly resolving to `127.0.0.1:443`.
    * Automatically triggers a self-healing rollback to the previous commit if the health check fails.
    * Prunes Docker BuildKit cache and unused images to preserve VPS disk space.
 
 ### One-Time Server Setup
-On your production host (`/src/tsiyon`):
+On your production host (`/path/to/project`):
 
 1. **Symlink the Deploy Script**:
    ```bash
-   sudo ln -sf /src/tsiyon/docker/scripts/tsiyon-deploy /usr/local/sbin/tsiyon-deploy
-   sudo chmod 755 /src/tsiyon/docker/scripts/tsiyon-deploy
+   sudo ln -sf /path/to/project/docker/scripts/tsiyon-deploy /usr/local/sbin/tsiyon-deploy
+   sudo chmod 755 /path/to/project/docker/scripts/tsiyon-deploy
    ```
 
 2. **Configure Sudoers Permission**:
@@ -381,9 +381,9 @@ Set these under **Settings > Environments > production** (or **Settings > Secret
 
 | Secret / Variable | Description | Example |
 | :--- | :--- | :--- |
-| `SSH_HOST` | Production server IP or hostname | `209.74.82.49` or `tsiyonapp.com` |
+| `SSH_HOST` | Production server IP or hostname | `your-server-ip-or-domain.com` |
 | `SSH_USER` | Deployment user on the server | `deploy` |
-| `SSH_PORT` | Custom SSH port (defaults to `22022`) | `22022` |
+| `SSH_PORT` | Custom SSH port (defaults to `22` or configured port) | `22` |
 | `SSH_PRIVATE_KEY` | Dedicated OpenSSH private key for GitHub Actions | `-----BEGIN OPENSSH PRIVATE KEY-----...` |
 | `SSH_KNOWN_HOSTS` | Output of `ssh-keyscan -p <PORT> -H -t ed25519,rsa <HOST>` | `\|1\|... ssh-ed25519 AAAAC...` |
 
