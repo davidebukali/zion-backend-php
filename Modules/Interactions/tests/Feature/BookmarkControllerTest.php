@@ -13,6 +13,7 @@ class BookmarkControllerTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Post $post;
 
     protected function setUp(): void
@@ -81,6 +82,21 @@ class BookmarkControllerTest extends TestCase
         ]);
     }
 
+    public function test_bookmark_and_unbookmark_updates_is_bookmarked_flag(): void
+    {
+        Sanctum::actingAs($this->user);
+
+        $this->postJson(route('api.bookmark.store', ['post' => $this->post->id]))->assertStatus(200);
+        $this->assertTrue($this->post->fresh()->isBookmarkedBy($this->user));
+
+        $this->deleteJson(route('api.bookmark.destroy', ['post' => $this->post->id]))->assertStatus(200);
+        $this->assertFalse($this->post->fresh()->isBookmarkedBy($this->user));
+        $this->assertDatabaseMissing('bookmarks', [
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id,
+        ]);
+    }
+
     public function test_can_list_bookmarked_posts(): void
     {
         $post2 = $this->user->posts()->create([
@@ -113,12 +129,12 @@ class BookmarkControllerTest extends TestCase
                     'visibility',
                     'created_at',
                     'updated_at',
-                ]
+                ],
             ],
             'meta' => [
                 'links' => ['first', 'last', 'prev', 'next'],
-                'meta' => ['path', 'per_page', 'next_cursor', 'prev_cursor']
-            ]
+                'meta' => ['path', 'per_page', 'next_cursor', 'prev_cursor'],
+            ],
         ]);
 
         $response->assertJsonCount(2, 'data');

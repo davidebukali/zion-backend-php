@@ -23,15 +23,16 @@ class PostsController extends Controller
 
     /**
      * @group Posts
+     *
      * @authenticated
-     * 
+     *
      * List Posts
-     * 
+     *
      * Retrieve a paginated list of posts.
-     * 
+     *
      * @queryParam per_page integer Number of items per page. Example: 15
      * @queryParam page integer Page number. Example: 1
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "data": [
@@ -57,6 +58,7 @@ class PostsController extends Controller
         $perPage = (int) ($request->query('per_page') ?? $request->input('per_page') ?? 15);
         $posts = $listPosts($perPage, $request->user());
         $paginated = PostResource::collection($posts)->toResponse($request)->getData(true);
+
         return $this->success(
             data: $paginated['data'],
             meta: [
@@ -68,12 +70,13 @@ class PostsController extends Controller
 
     /**
      * @group Posts
-     * 
+     *
      * Get User Posts
-     * 
+     *
      * Retrieve paginated posts for a specific user with visibility filtering.
-     * 
+     *
      * @urlParam user string required The ID of the user.
+     *
      * @queryParam per_page integer Number of items per page. Example: 15
      */
     public function userPosts(Request $request, User $user, GetUserPosts $getUserPosts)
@@ -98,15 +101,16 @@ class PostsController extends Controller
 
     /**
      * @group Posts
+     *
      * @authenticated
-     * 
+     *
      * Create Post
-     * 
+     *
      * Create a new post with optional text content and attached media assets.
-     * 
+     *
      * @bodyParam content string The text body of the post. Example: Exploring Laravel and Scribe!
      * @bodyParam media_ids string[] Optional array of media UUIDs to attach. Example: ["9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"]
-     * 
+     *
      * @response 201 {
      *   "success": true,
      *   "message": "Post created successfully",
@@ -121,25 +125,29 @@ class PostsController extends Controller
      *   "message": "The media_ids.0 field must be a valid existing media ID."
      * }
      */
-    public function store(StorePostRequest $request, CreatePost $createPost) {
+    public function store(StorePostRequest $request, CreatePost $createPost)
+    {
         $post = $createPost($request->user(), $request->validated());
+
         return $this->success($post, 'Post created successfully', 201);
     }
 
     /**
      * @group Posts
+     *
      * @authenticated
-     * 
+     *
      * Update Post
-     * 
+     *
      * Update an existing post owned by the authenticated user. Allows partial updates
      * to text content, visibility, and attached media assets.
-     * 
+     *
      * @urlParam post string required The ID (ULID) of the post to update. Example: 01j9wz1234567890abcdefghij
+     *
      * @bodyParam content string The updated text body of the post. Example: Updated post content!
      * @bodyParam visibility string The post visibility (public, followers, private). Example: public
      * @bodyParam media_ids string[] Optional array of media UUIDs to attach/sync. Example: ["9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"]
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Post updated successfully",
@@ -172,14 +180,15 @@ class PostsController extends Controller
 
     /**
      * @group Posts
+     *
      * @authenticated
-     * 
+     *
      * Get Post Details
-     * 
+     *
      * Retrieve single post details by post ID.
-     * 
+     *
      * @urlParam post integer required The ID of the post. Example: 1
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "data": {
@@ -203,6 +212,7 @@ class PostsController extends Controller
             $post->loadExists([
                 'likes as is_liked' => fn ($q) => $q->where('user_id', $viewer->id),
                 'reposts as is_reposted' => fn ($q) => $q->where('user_id', $viewer->id),
+                'bookmarks as is_bookmarked' => fn ($q) => $q->where('user_id', $viewer->id),
             ]);
         }
         $post->loadMissing(['user', 'media']);
@@ -212,14 +222,15 @@ class PostsController extends Controller
 
     /**
      * @group Posts
+     *
      * @authenticated
-     * 
+     *
      * Delete Post
-     * 
+     *
      * Delete a post owned by the authenticated user.
-     * 
+     *
      * @urlParam post integer required The ID of the post to delete. Example: 1
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Post deleted successfully"

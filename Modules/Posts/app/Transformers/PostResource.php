@@ -26,6 +26,7 @@ class PostResource extends JsonResource
             'reposts_count' => (int) ($this->reposts_count ?? 0),
             'is_liked' => $this->resolveInteractionFlag($viewer, 'is_liked', 'likes'),
             'is_reposted' => $this->resolveInteractionFlag($viewer, 'is_reposted', 'reposts'),
+            'is_bookmarked' => $this->resolveInteractionFlag($viewer, 'is_bookmarked', 'bookmarks'),
             'user' => $userResource,
             'author' => $userResource,
             'media' => MediaResource::collection(

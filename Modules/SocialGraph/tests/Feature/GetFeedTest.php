@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Modules\Auth\Models\User;
+use Modules\Interactions\Events\PostUnreposted;
 use Modules\Media\Enums\MediaStatus;
 use Modules\Media\Models\Media;
 use Modules\Posts\Models\Post;
@@ -17,6 +18,7 @@ class GetFeedTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private User $author;
 
     protected function setUp(): void
@@ -205,14 +207,41 @@ class GetFeedTest extends TestCase
         $likedItem = $items->firstWhere('post.id', $likedPost->id);
         $this->assertNotNull($likedItem);
         $this->assertTrue($likedItem['post']['is_liked']);
+        $this->assertFalse($likedItem['post']['is_bookmarked']);
         $this->assertEquals(1, $likedItem['post']['likes_count']);
         $this->assertEquals(3, $likedItem['post']['comments_count']);
 
         $unlikedItem = $items->firstWhere('post.id', $unlikedPost->id);
         $this->assertNotNull($unlikedItem);
         $this->assertFalse($unlikedItem['post']['is_liked']);
+        $this->assertFalse($unlikedItem['post']['is_bookmarked']);
         $this->assertEquals(0, $unlikedItem['post']['likes_count']);
         $this->assertEquals(0, $unlikedItem['post']['comments_count']);
+    }
+
+    public function test_feed_includes_is_bookmarked_for_viewer(): void
+    {
+        $bookmarkedPost = $this->author->posts()->create([
+            'content' => 'Bookmarked Feed Post',
+            'visibility' => 'public',
+        ]);
+        $bookmarkedPost->bookmarks()->create(['user_id' => $this->user->id]);
+
+        FeedItem::create([
+            'user_id' => $this->user->id,
+            'post_id' => $bookmarkedPost->id,
+            'published_at' => now(),
+        ]);
+
+        Sanctum::actingAs($this->user);
+
+        $response = $this->getJson(route('api.feed.index'));
+
+        $response->assertStatus(200);
+        $items = collect($response->json('data'));
+        $item = $items->firstWhere('post.id', $bookmarkedPost->id);
+        $this->assertNotNull($item);
+        $this->assertTrue($item['post']['is_bookmarked']);
     }
 
     public function test_feed_includes_reposts_from_followed_users(): void
@@ -315,7 +344,7 @@ class GetFeedTest extends TestCase
             'actor_id' => $friend->id,
         ]);
 
-        event(new \Modules\Interactions\Events\PostUnreposted($post, $friend));
+        event(new PostUnreposted($post, $friend));
 
         $this->assertDatabaseMissing('feed_items', [
             'user_id' => $this->user->id,

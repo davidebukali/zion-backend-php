@@ -84,8 +84,8 @@ class Post extends Model
             Media::class,
             'post_media'
         )
-        ->withPivot('sort_order')
-        ->orderByPivot('sort_order');
+            ->withPivot('sort_order')
+            ->orderByPivot('sort_order');
     }
 
     public function moderationRequests(): HasMany
@@ -126,6 +126,15 @@ class Post extends Model
         return $this->reposts()->where('user_id', $user->id)->exists();
     }
 
+    public function isBookmarkedBy(?User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        return $this->bookmarks()->where('user_id', $user->id)->exists();
+    }
+
     public function scopeWithViewerState($query, ?User $viewer)
     {
         if (! $viewer) {
@@ -135,6 +144,7 @@ class Post extends Model
         return $query->withExists([
             'likes as is_liked' => fn ($q) => $q->where('user_id', $viewer->id),
             'reposts as is_reposted' => fn ($q) => $q->where('user_id', $viewer->id),
+            'bookmarks as is_bookmarked' => fn ($q) => $q->where('user_id', $viewer->id),
         ]);
     }
 }
