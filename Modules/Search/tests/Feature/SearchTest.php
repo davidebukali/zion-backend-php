@@ -251,4 +251,23 @@ class SearchTest extends TestCase
             ->assertJsonPath('data.users', [])
             ->assertJsonPath('data.posts', []);
     }
+
+    public function test_search_with_asterisk_wildcard_returns_all_results(): void
+    {
+        // Wildcard user search
+        $response = $this->getJson(route('api.search', [
+            'type' => 'users',
+            'q' => '*',
+            'page' => 1,
+            'per_page' => 20,
+        ]));
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true);
+
+        $data = $response->json('data');
+        // All 3 users created in setUp should be returned
+        $this->assertCount(3, $data);
+        $this->assertEquals(3, $response->json('meta.meta.total'));
+    }
 }

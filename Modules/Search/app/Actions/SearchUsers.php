@@ -24,15 +24,20 @@ class SearchUsers
         $term = trim($query);
         $operator = DB::connection()->getDriverName() === 'pgsql' ? 'ILIKE' : 'like';
 
-        $builder = User::where(function ($q) use ($term, $operator) {
-            $q->where('name', $operator, "%{$term}%")
-                ->orWhereHas('profile', function ($pq) use ($term, $operator) {
-                    $pq->where('username', $operator, "%{$term}%")
-                        ->orWhere('display_name', $operator, "%{$term}%")
-                        ->orWhere('bio', $operator, "%{$term}%");
-                });
-        })
-            ->with(['profile.avatar', 'profile.cover'])
+        $builder = User::query();
+
+        if ($term !== '' && $term !== '*') {
+            $builder->where(function ($q) use ($term, $operator) {
+                $q->where('name', $operator, "%{$term}%")
+                    ->orWhereHas('profile', function ($pq) use ($term, $operator) {
+                        $pq->where('username', $operator, "%{$term}%")
+                            ->orWhere('display_name', $operator, "%{$term}%")
+                            ->orWhere('bio', $operator, "%{$term}%");
+                    });
+            });
+        }
+
+        $builder->with(['profile.avatar', 'profile.cover'])
             ->withViewerFollowStatus($viewer)
             ->orderByDesc('created_at');
 

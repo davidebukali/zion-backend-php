@@ -21,28 +21,33 @@ class SearchPosts
         $term = trim($query);
         $operator = DB::connection()->getDriverName() === 'pgsql' ? 'ILIKE' : 'like';
 
-        $builder = Post::where('content', $operator, "%{$term}%")
-            ->where(function ($q) use ($viewer) {
-                // 1. Always include public posts
-                $q->where('visibility', PostVisibility::PUBLIC);
+        $builder = Post::query();
 
-                if ($viewer) {
-                    // 2. Author's own posts (including followers and private)
-                    $q->orWhere('user_id', $viewer->id);
+        if ($term !== '' && $term !== '*') {
+            $builder->where('content', $operator, "%{$term}%");
+        }
 
-                    // 3. Posts with followers visibility where viewer is an accepted follower
-                    $followingIds = Follow::where('follower_id', $viewer->id)
-                        ->where('status', FollowStatus::ACCEPTED)
-                        ->pluck('following_id');
+        $builder->where(function ($q) use ($viewer) {
+            // 1. Always include public posts
+            $q->where('visibility', PostVisibility::PUBLIC);
 
-                    if ($followingIds->isNotEmpty()) {
-                        $q->orWhere(function ($fq) use ($followingIds) {
-                            $fq->whereIn('user_id', $followingIds)
-                                ->where('visibility', PostVisibility::FOLLOWERS);
-                        });
-                    }
+            if ($viewer) {
+                // 2. Author's own posts (including followers and private)
+                $q->orWhere('user_id', $viewer->id);
+
+                // 3. Posts with followers visibility where viewer is an accepted follower
+                $followingIds = Follow::where('follower_id', $viewer->id)
+                    ->where('status', FollowStatus::ACCEPTED)
+                    ->pluck('following_id');
+
+                if ($followingIds->isNotEmpty()) {
+                    $q->orWhere(function ($fq) use ($followingIds) {
+                        $fq->whereIn('user_id', $followingIds)
+                            ->where('visibility', PostVisibility::FOLLOWERS);
+                    });
                 }
-            })
+            }
+        })
             ->with(['user.profile.avatar', 'media'])
             ->withViewerState($viewer)
             ->orderByDesc('created_at')
