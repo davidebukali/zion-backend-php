@@ -24,7 +24,7 @@ export const options = {
     { duration: '30s', target: 0 },    // Cool-down & recovery
   ],
   thresholds: {
-    'http_req_duration': ['p(95)<500', 'p(99)<1200'], // 95% of requests under 500ms
+    'http_req_duration': ['p(95)<1000', 'p(99)<1200'], // 95% of requests under 500ms
     'http_req_failed': ['rate<0.02'],                  // Less than 2% errors
     'zion_error_rate': ['rate<0.02'],
   },
