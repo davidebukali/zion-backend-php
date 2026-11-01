@@ -1,3 +1,5 @@
+name: zion-monitoring
+
 services:
   # ---------------------------------------------------------------------------
   # InfluxDB (v1.8 Time-Series Storage for k6 metrics)

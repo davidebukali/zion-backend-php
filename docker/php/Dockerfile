@@ -58,6 +58,7 @@ RUN if ! getent group ${GID} >/dev/null; then \
     fi
 
 COPY docker/php/local.ini $PHP_INI_DIR/conf.d/local.ini
+COPY docker/php/fpm-pool.conf /usr/local/etc/php-fpm.d/zz-pool.conf
 COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
@@ -84,6 +85,7 @@ FROM base AS production
 
 # Copy configuration
 COPY docker/php/local.ini $PHP_INI_DIR/conf.d/local.ini
+COPY docker/php/fpm-pool.conf /usr/local/etc/php-fpm.d/zz-pool.conf
 COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 

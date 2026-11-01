@@ -1,3 +1,5 @@
+name: zion-dev
+
 services:
   # ---------------------------------------------------------------------------
   # Application Runtime (PHP 8.3 FPM)
@@ -17,6 +19,7 @@ services:
     volumes:
       - ./:/var/www
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini:ro
+      - ./docker/php/fpm-pool.conf:/usr/local/etc/php-fpm.d/zz-pool.conf:ro
     environment:
       DB_HOST: db
       DB_PORT: 5432
@@ -106,6 +109,7 @@ services:
     volumes:
       - ./:/var/www
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini:ro
+      - ./docker/php/fpm-pool.conf:/usr/local/etc/php-fpm.d/zz-pool.conf:ro
     environment:
       DB_HOST: db
       DB_PORT: 5432
@@ -140,6 +144,7 @@ services:
     volumes:
       - ./:/var/www
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini:ro
+      - ./docker/php/fpm-pool.conf:/usr/local/etc/php-fpm.d/zz-pool.conf:ro
     environment:
       DB_HOST: db
       DB_PORT: 5432
