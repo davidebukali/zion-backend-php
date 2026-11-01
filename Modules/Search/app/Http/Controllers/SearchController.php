@@ -18,11 +18,11 @@ class SearchController extends Controller
 
     /**
      * @group Search
-     * 
+     *
      * Unified Search
-     * 
+     *
      * Search across users and posts with optional type filtering.
-     * 
+     *
      * @queryParam q string required The search term. Example: laravel
      * @queryParam type string Filter by result type (all, users, posts). Defaults to all. Example: all
      * @queryParam per_page integer Number of items per page. Example: 15
@@ -39,7 +39,7 @@ class SearchController extends Controller
         $viewer = $request->user();
 
         if ($type === 'users') {
-            $users = ($searchUsers)($query, $perPage);
+            $users = ($searchUsers)($query, $viewer, $perPage);
             $paginated = UserResource::collection($users)->toResponse($request)->getData(true);
 
             return $this->success(

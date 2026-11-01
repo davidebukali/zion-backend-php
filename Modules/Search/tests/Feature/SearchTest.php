@@ -16,7 +16,9 @@ class SearchTest extends TestCase
     use RefreshDatabase;
 
     private User $author;
+
     private User $follower;
+
     private User $stranger;
 
     protected function setUp(): void
@@ -128,6 +130,28 @@ class SearchTest extends TestCase
         $data = $response->json('data');
         $this->assertCount(1, $data);
         $this->assertEquals('alice_dev', $data[0]['profile']['username']);
+        $this->assertFalse($data[0]['is_following']);
+    }
+
+    public function test_user_search_includes_is_following_flag_for_authenticated_viewer(): void
+    {
+        // Follower searches for author -> is_following is true
+        Sanctum::actingAs($this->follower);
+        $resFollower = $this->getJson(route('api.search', ['q' => 'alice', 'type' => 'users']));
+        $resFollower->assertStatus(200);
+        $this->assertTrue($resFollower->json('data.0.is_following'));
+
+        // Stranger searches for author -> is_following is false
+        Sanctum::actingAs($this->stranger);
+        $resStranger = $this->getJson(route('api.search', ['q' => 'alice', 'type' => 'users']));
+        $resStranger->assertStatus(200);
+        $this->assertFalse($resStranger->json('data.0.is_following'));
+
+        // Author searches for self -> is_following is false
+        Sanctum::actingAs($this->author);
+        $resSelf = $this->getJson(route('api.search', ['q' => 'alice', 'type' => 'users']));
+        $resSelf->assertStatus(200);
+        $this->assertFalse($resSelf->json('data.0.is_following'));
     }
 
     public function test_user_search_matches_username_display_name_and_bio(): void

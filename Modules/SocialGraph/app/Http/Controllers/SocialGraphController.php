@@ -21,15 +21,17 @@ class SocialGraphController extends Controller
 
     /**
      * @group Social Graph
+     *
      * @subgroup Follows
+     *
      * @authenticated
-     * 
+     *
      * Follow User
-     * 
+     *
      * Follow another user or send a follow request.
-     * 
+     *
      * @urlParam user string required The ULID of the user to follow. Example: 01j7b9k5v6abcdef0123456789
-     * 
+     *
      * @response 201 {
      *   "success": true,
      *   "message": "User followed successfully.",
@@ -68,15 +70,17 @@ class SocialGraphController extends Controller
 
     /**
      * @group Social Graph
+     *
      * @subgroup Follows
+     *
      * @authenticated
-     * 
+     *
      * Unfollow User
-     * 
+     *
      * Unfollow a previously followed user.
-     * 
+     *
      * @urlParam user string required The ULID of the user to unfollow. Example: 01j7b9k5v6abcdef0123456789
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "User unfollowed successfully.",
@@ -102,15 +106,17 @@ class SocialGraphController extends Controller
 
     /**
      * @group Social Graph
+     *
      * @subgroup Follow Requests
+     *
      * @authenticated
-     * 
+     *
      * Accept Follow Request
-     * 
+     *
      * Accept a pending follow request received by the authenticated user.
-     * 
+     *
      * @urlParam follow integer required The ID of the follow record. Example: 1
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Follow request accepted successfully.",
@@ -153,15 +159,17 @@ class SocialGraphController extends Controller
 
     /**
      * @group Social Graph
+     *
      * @subgroup Follow Requests
+     *
      * @authenticated
-     * 
+     *
      * Reject Follow Request
-     * 
+     *
      * Reject a pending follow request received by the authenticated user.
-     * 
+     *
      * @urlParam follow integer required The ID of the follow record. Example: 1
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Follow request rejected successfully.",
@@ -204,17 +212,20 @@ class SocialGraphController extends Controller
 
     /**
      * @group Social Graph
+     *
      * @subgroup Follows
+     *
      * @authenticated
-     * 
+     *
      * Get Followers
-     * 
+     *
      * Retrieve a paginated list of all users following the specified user.
-     * 
+     *
      * @urlParam user string required The ULID of the user. Example: 01j7b9k5v6abcdef0123456789
+     *
      * @queryParam per_page integer Items per page. Example: 15
      * @queryParam page integer Page number. Example: 1
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Followers retrieved successfully.",
@@ -247,8 +258,11 @@ class SocialGraphController extends Controller
         Request $request,
         User $user
     ) {
+        $viewer = $request->user();
         $perPage = (int) $request->query('per_page', 15);
-        $followers = Follow::with('follower')
+        $followers = Follow::with([
+            'follower' => fn ($q) => $q->with(['profile.avatar'])->withViewerFollowStatus($viewer),
+        ])
             ->where('following_id', $user->id)
             ->paginate($perPage);
 
@@ -264,17 +278,20 @@ class SocialGraphController extends Controller
 
     /**
      * @group Social Graph
+     *
      * @subgroup Follows
+     *
      * @authenticated
-     * 
+     *
      * Get Following
-     * 
+     *
      * Retrieve a paginated list of all users followed by the specified user.
-     * 
+     *
      * @urlParam user string required The ULID of the user. Example: 01j7b9k5v6abcdef0123456789
+     *
      * @queryParam per_page integer Items per page. Example: 15
      * @queryParam page integer Page number. Example: 1
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Following retrieved successfully.",
@@ -307,8 +324,11 @@ class SocialGraphController extends Controller
         Request $request,
         User $user
     ) {
+        $viewer = $request->user();
         $perPage = (int) $request->query('per_page', 15);
-        $following = Follow::with('following')
+        $following = Follow::with([
+            'following' => fn ($q) => $q->with(['profile.avatar'])->withViewerFollowStatus($viewer),
+        ])
             ->where('follower_id', $user->id)
             ->paginate($perPage);
 
@@ -324,16 +344,18 @@ class SocialGraphController extends Controller
 
     /**
      * @group Social Graph
+     *
      * @subgroup Feed
+     *
      * @authenticated
-     * 
+     *
      * Get Feed
-     * 
+     *
      * Retrieve the authenticated user's personalized timeline feed with cursor pagination.
-     * 
+     *
      * @queryParam per_page integer Number of items per page. Default: 20. Example: 20
      * @queryParam cursor string Cursor token for pagination. Example: eyJpZCI6MX0
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Feed retrieved successfully.",

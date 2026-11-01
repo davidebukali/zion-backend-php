@@ -14,6 +14,7 @@ class SocialGraphTest extends TestCase
     use RefreshDatabase;
 
     private User $userA;
+
     private User $userB;
 
     protected function setUp(): void
@@ -224,5 +225,29 @@ class SocialGraphTest extends TestCase
             'id' => $follow->id,
             'status' => FollowStatus::REJECTED->value,
         ]);
+    }
+
+    public function test_followers_and_following_lists_include_is_following_for_viewer(): void
+    {
+        // userA follows userB
+        Follow::create([
+            'follower_id' => $this->userA->id,
+            'following_id' => $this->userB->id,
+            'status' => FollowStatus::ACCEPTED,
+        ]);
+
+        // userB views their followers: userA is the follower
+        Sanctum::actingAs($this->userB);
+        $resFollowers = $this->getJson(route('api.users.followers', $this->userB));
+        $resFollowers->assertStatus(200);
+        // userB does not follow userA back yet
+        $this->assertFalse($resFollowers->json('data.0.follower.is_following'));
+
+        // userA views their following list: userB is the following user
+        Sanctum::actingAs($this->userA);
+        $resFollowing = $this->getJson(route('api.users.following', $this->userA));
+        $resFollowing->assertStatus(200);
+        // userA does follow userB
+        $this->assertTrue($resFollowing->json('data.0.following.is_following'));
     }
 }

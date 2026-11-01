@@ -4,6 +4,7 @@ namespace Modules\Search\Actions;
 
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
 
 class SearchUsers
@@ -11,25 +12,29 @@ class SearchUsers
     /**
      * Search users by name, username, or display name.
      *
-     * @param string $query
-     * @param int $perPage
-     * @param bool $paginate
-     * @return Paginator|Collection
+     * @param  User|int|null  $viewer
      */
-    public function __invoke(string $query, int $perPage = 15, bool $paginate = true): Paginator|Collection
+    public function __invoke(string $query, $viewer = null, int $perPage = 15, bool $paginate = true): Paginator|Collection
     {
-        $term = trim($query);
+        if (is_int($viewer)) {
+            $perPage = $viewer;
+            $viewer = null;
+        }
 
-        $builder = User::where(function ($q) use ($term) {
-            $q->where('name', 'ILIKE', "%{$term}%")
-                ->orWhereHas('profile', function ($pq) use ($term) {
-                    $pq->where('username', 'ILIKE', "%{$term}%")
-                        ->orWhere('display_name', 'ILIKE', "%{$term}%")
-                        ->orWhere('bio', 'ILIKE', "%{$term}%");
+        $term = trim($query);
+        $operator = DB::connection()->getDriverName() === 'pgsql' ? 'ILIKE' : 'like';
+
+        $builder = User::where(function ($q) use ($term, $operator) {
+            $q->where('name', $operator, "%{$term}%")
+                ->orWhereHas('profile', function ($pq) use ($term, $operator) {
+                    $pq->where('username', $operator, "%{$term}%")
+                        ->orWhere('display_name', $operator, "%{$term}%")
+                        ->orWhere('bio', $operator, "%{$term}%");
                 });
         })
-        ->with(['profile.avatar', 'profile.cover'])
-        ->orderByDesc('created_at');
+            ->with(['profile.avatar', 'profile.cover'])
+            ->withViewerFollowStatus($viewer)
+            ->orderByDesc('created_at');
 
         if (! $paginate) {
             return $builder->limit($perPage)->get();

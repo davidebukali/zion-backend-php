@@ -2,16 +2,17 @@
 
 namespace Modules\Auth\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Modules\Interactions\Models\Repost;
+use Modules\Notifications\Models\Notification;
 use Modules\Posts\Models\Post;
+use Modules\SocialGraph\Enums\FollowStatus;
+use Modules\SocialGraph\Models\Follow;
 
 class User extends Authenticatable
 {
@@ -48,7 +49,7 @@ class User extends Authenticatable
     // {
     //     // return UserFactory::new();
     // }
-    
+
     public function posts()
     {
         return $this->hasMany(Post::class);
@@ -61,7 +62,7 @@ class User extends Authenticatable
 
     public function notifications()
     {
-        return $this->hasMany(\Modules\Notifications\Models\Notification::class, 'user_id');
+        return $this->hasMany(Notification::class, 'user_id');
     }
 
     public function profile()
@@ -72,5 +73,56 @@ class User extends Authenticatable
     public function reposts()
     {
         return $this->hasMany(Repost::class);
+    }
+
+    public function followers(): HasMany
+    {
+        return $this->hasMany(Follow::class, 'following_id');
+    }
+
+    public function following(): HasMany
+    {
+        return $this->hasMany(Follow::class, 'follower_id');
+    }
+
+    public function isFollowing(User|string|null $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        $userId = $user instanceof User ? $user->id : $user;
+
+        return $this->following()
+            ->where('following_id', $userId)
+            ->where('status', FollowStatus::ACCEPTED)
+            ->exists();
+    }
+
+    public function isFollowedBy(User|string|null $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        $userId = $user instanceof User ? $user->id : $user;
+
+        return $this->followers()
+            ->where('follower_id', $userId)
+            ->where('status', FollowStatus::ACCEPTED)
+            ->exists();
+    }
+
+    public function scopeWithViewerFollowStatus($query, ?User $viewer)
+    {
+        if (! $viewer) {
+            return $query;
+        }
+
+        return $query->withExists([
+            'followers as is_following' => fn ($q) => $q
+                ->where('follower_id', $viewer->id)
+                ->where('status', FollowStatus::ACCEPTED),
+        ]);
     }
 }

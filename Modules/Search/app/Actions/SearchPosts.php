@@ -4,6 +4,7 @@ namespace Modules\Search\Actions;
 
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
 use Modules\Posts\Enums\PostVisibility;
 use Modules\Posts\Models\Post;
@@ -14,18 +15,13 @@ class SearchPosts
 {
     /**
      * Search posts by text content with viewer visibility rules.
-     *
-     * @param string $query
-     * @param User|null $viewer
-     * @param int $perPage
-     * @param bool $paginate
-     * @return Paginator|Collection
      */
     public function __invoke(string $query, ?User $viewer = null, int $perPage = 15, bool $paginate = true): Paginator|Collection
     {
         $term = trim($query);
+        $operator = DB::connection()->getDriverName() === 'pgsql' ? 'ILIKE' : 'like';
 
-        $builder = Post::where('content', 'ILIKE', "%{$term}%")
+        $builder = Post::where('content', $operator, "%{$term}%")
             ->where(function ($q) use ($viewer) {
                 // 1. Always include public posts
                 $q->where('visibility', PostVisibility::PUBLIC);
@@ -42,7 +38,7 @@ class SearchPosts
                     if ($followingIds->isNotEmpty()) {
                         $q->orWhere(function ($fq) use ($followingIds) {
                             $fq->whereIn('user_id', $followingIds)
-                               ->where('visibility', PostVisibility::FOLLOWERS);
+                                ->where('visibility', PostVisibility::FOLLOWERS);
                         });
                     }
                 }
