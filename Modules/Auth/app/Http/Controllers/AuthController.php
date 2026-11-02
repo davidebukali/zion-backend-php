@@ -179,7 +179,7 @@ class AuthController extends Controller
      */
     public function me(Request $request)
     {
-        return new UserResource($request->user()->load(['profile.avatar', 'profile.cover']));
+        return new UserResource($request->user()->load(['profile.avatar', 'profile.cover', 'profile.church']));
     }
 
     /**

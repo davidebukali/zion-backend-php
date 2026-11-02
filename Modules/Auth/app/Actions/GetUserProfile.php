@@ -23,6 +23,6 @@ class GetUserProfile
             ]
         );
 
-        return $profile->load(['avatar', 'cover']);
+        return $profile->load(['avatar', 'cover', 'church']);
     }
 }

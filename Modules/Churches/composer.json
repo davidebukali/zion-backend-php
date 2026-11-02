@@ -1,0 +1,24 @@
+{
+    "name": "zion/churches",
+    "description": "Church management module",
+    "authors": [],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Churches\\": "app/",
+            "Modules\\Churches\\Database\\Factories\\": "database/factories/",
+            "Modules\\Churches\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Churches\\Tests\\": "tests/"
+        }
+    }
+}
+

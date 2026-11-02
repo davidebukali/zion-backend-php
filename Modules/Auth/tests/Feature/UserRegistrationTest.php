@@ -120,4 +120,30 @@ class UserRegistrationTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['email']);
     }
+
+    public function test_user_can_register_with_church_and_profile_fields(): void
+    {
+        $response = $this->postJson(route('api.register'), [
+            'name' => 'pastorjohn',
+            'email' => 'john@example.com',
+            'password' => 'secret1234',
+            'account_type' => 'organization',
+            'category' => 'Church Lead',
+            'location' => 'Kampala, Uganda',
+            'church_name' => 'Miracle Life Church',
+        ]);
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('profiles', [
+            'username' => 'pastorjohn',
+            'account_type' => 'organization',
+            'category' => 'Church Lead',
+            'location' => 'Kampala, Uganda',
+        ]);
+
+        $this->assertDatabaseHas('churches', [
+            'name' => 'Miracle Life Church',
+        ]);
+    }
 }

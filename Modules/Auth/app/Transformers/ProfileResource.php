@@ -5,6 +5,7 @@ namespace Modules\Auth\Transformers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Modules\Auth\Models\User;
+use Modules\Churches\Transformers\ChurchResource;
 use Modules\Media\Transformers\MediaResource;
 
 class ProfileResource extends JsonResource
@@ -22,6 +23,11 @@ class ProfileResource extends JsonResource
             'username' => $this->username,
             'display_name' => $this->display_name,
             'bio' => $this->bio,
+            'account_type' => $this->account_type instanceof \BackedEnum ? $this->account_type->value : $this->account_type,
+            'category' => $this->category,
+            'location' => $this->location,
+            'church_id' => $this->church_id,
+            'church' => new ChurchResource($this->whenLoaded('church')),
             'is_following' => $this->resolveIsFollowing($viewer),
             'avatar_media_id' => $this->avatar_media_id,
             'avatar' => new MediaResource($this->whenLoaded('avatar')),

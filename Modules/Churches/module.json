@@ -1,0 +1,12 @@
+{
+    "name": "Churches",
+    "alias": "churches",
+    "description": "Church directory and church management",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Churches\\Providers\\ChurchesServiceProvider"
+    ],
+    "files": []
+}
+

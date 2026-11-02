@@ -3,6 +3,8 @@
 namespace Modules\Auth\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Modules\Auth\Enums\AccountType;
 
 class StoreUserRequest extends FormRequest
 {
@@ -15,6 +17,12 @@ class StoreUserRequest extends FormRequest
             'name' => ['nullable', 'string', 'max:255', 'unique:profiles,username'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
+            'account_type' => ['nullable', Rule::enum(AccountType::class)],
+            'category' => ['nullable', 'string', 'max:255'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'church_id' => ['nullable', 'string', 'exists:churches,id'],
+            'church_name' => ['nullable', 'string', 'max:255'],
+            'church_location' => ['nullable', 'string', 'max:255'],
         ];
     }
 

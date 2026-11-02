@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Modules\Auth\Models\Profile;
 use Modules\Auth\Models\User;
+use Modules\Churches\Models\Church;
 use Modules\Media\Models\Media;
 use Tests\TestCase;
 
@@ -161,5 +162,85 @@ class ProfileTest extends TestCase
         ]);
 
         $response->assertStatus(401);
+    }
+
+    public function test_user_can_update_account_type_category_and_location(): void
+    {
+        Sanctum::actingAs($this->userA);
+
+        $response = $this->putJson(route('api.profile.update'), [
+            'account_type' => 'organization',
+            'category' => 'Youth Ministry',
+            'location' => 'Kampala, Uganda',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.account_type', 'organization')
+            ->assertJsonPath('data.category', 'Youth Ministry')
+            ->assertJsonPath('data.location', 'Kampala, Uganda');
+
+        $this->assertDatabaseHas('profiles', [
+            'user_id' => $this->userA->id,
+            'account_type' => 'organization',
+            'category' => 'Youth Ministry',
+            'location' => 'Kampala, Uganda',
+        ]);
+    }
+
+    public function test_user_can_update_profile_with_existing_church_id(): void
+    {
+        $church = Church::where('name', 'Watoto Church')->first()
+            ?? Church::create([
+                'name' => 'Watoto Church',
+                'location' => 'Kampala',
+            ]);
+
+        Sanctum::actingAs($this->userA);
+
+        $response = $this->putJson(route('api.profile.update'), [
+            'church_id' => $church->id,
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.church_id', $church->id)
+            ->assertJsonPath('data.church.name', 'Watoto Church');
+
+        $this->assertDatabaseHas('profiles', [
+            'user_id' => $this->userA->id,
+            'church_id' => $church->id,
+        ]);
+    }
+
+    public function test_user_can_update_profile_with_inline_church_name_and_location(): void
+    {
+        Sanctum::actingAs($this->userA);
+
+        $response = $this->putJson(route('api.profile.update'), [
+            'church_name' => 'New Hope Community Church',
+            'church_location' => 'Entebbe, Uganda',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.church.name', 'New Hope Community Church')
+            ->assertJsonPath('data.church.location', 'Entebbe, Uganda');
+
+        $this->assertDatabaseHas('churches', [
+            'name' => 'New Hope Community Church',
+            'location' => 'Entebbe, Uganda',
+            'created_by_user_id' => $this->userA->id,
+        ]);
+    }
+
+    public function test_validation_errors_for_invalid_account_type_and_nonexistent_church_id(): void
+    {
+        Sanctum::actingAs($this->userA);
+
+        $response = $this->putJson(route('api.profile.update'), [
+            'account_type' => 'invalid_type',
+            'church_id' => '01j98z3q4x6y7w8v9u0t1s2nonexistent',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['account_type', 'church_id']);
     }
 }

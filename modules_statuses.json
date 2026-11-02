@@ -6,5 +6,6 @@
     "Media": true,
     "SocialGraph": true,
     "Notifications": true,
-    "Search": true
+    "Search": true,
+    "Churches": true
 }

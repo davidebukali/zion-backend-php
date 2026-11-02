@@ -4,6 +4,7 @@ namespace Modules\Auth\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Modules\Auth\Enums\AccountType;
 
 class UpdateProfileRequest extends FormRequest
 {
@@ -31,6 +32,12 @@ class UpdateProfileRequest extends FormRequest
             ],
             'display_name' => ['nullable', 'string', 'max:255'],
             'bio' => ['nullable', 'string', 'max:1000'],
+            'account_type' => ['nullable', Rule::enum(AccountType::class)],
+            'category' => ['nullable', 'string', 'max:255'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'church_id' => ['nullable', 'string', 'exists:churches,id'],
+            'church_name' => ['nullable', 'string', 'max:255'],
+            'church_location' => ['nullable', 'string', 'max:255'],
             'avatar_media_id' => ['nullable', 'string', 'exists:media,id'],
             'cover_media_id' => ['nullable', 'string', 'exists:media,id'],
             'website' => ['nullable', 'string', 'url', 'max:255'],

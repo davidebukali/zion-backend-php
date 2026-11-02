@@ -58,6 +58,12 @@ class ProfileController extends Controller
      * @bodyParam username string The unique handle for the user. Example: janedoe
      * @bodyParam display_name string The public display name. Example: Jane Doe
      * @bodyParam bio string A short biography (max 1000 chars). Example: Building scalable backend microservices.
+     * @bodyParam account_type string The account type ('individual' or 'organization'). Example: individual
+     * @bodyParam category string Role or organization category. Example: Software Engineer
+     * @bodyParam location string Free-form location. Example: Kampala, Uganda
+     * @bodyParam church_id string The ULID of an existing church. Example: 01j98z3q4x6y7w8v9u0t1s2c01
+     * @bodyParam church_name string The name of a church to find or create inline. Example: Watoto Church
+     * @bodyParam church_location string Optional location for a new church. Example: Kampala, Uganda
      * @bodyParam avatar_media_id string The ULID of an uploaded avatar media asset. Example: 01j98z3q4x6y7w8v9u0t1s2r05
      * @bodyParam cover_media_id string The ULID of an uploaded cover media asset. Example: 01j98z3q4x6y7w8v9u0t1s2r06
      * @bodyParam website string A valid URL link. Example: https://janedoe.dev
