@@ -41,6 +41,7 @@ class UpdateProfileRequest extends FormRequest
             'avatar_media_id' => ['nullable', 'string', 'exists:media,id'],
             'cover_media_id' => ['nullable', 'string', 'exists:media,id'],
             'website' => ['nullable', 'string', 'url', 'max:255'],
+            'is_private' => ['nullable', 'boolean'],
         ];
     }
 }

@@ -34,6 +34,7 @@ class ProfileResource extends JsonResource
             'cover_media_id' => $this->cover_media_id,
             'cover' => new MediaResource($this->whenLoaded('cover')),
             'website' => $this->website,
+            'is_private' => (bool) ($this->is_private ?? false),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

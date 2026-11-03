@@ -26,10 +26,12 @@ class Profile extends Model
         'avatar_media_id',
         'cover_media_id',
         'website',
+        'is_private',
     ];
 
     protected $casts = [
         'account_type' => AccountType::class,
+        'is_private' => 'boolean',
     ];
 
     public function user(): BelongsTo

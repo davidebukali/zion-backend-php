@@ -152,4 +152,92 @@ class UserPostsTest extends TestCase
         $this->assertFalse($unliked['is_liked']);
         $this->assertEquals(0, $unliked['likes_count']);
     }
+
+    public function test_non_follower_cannot_view_posts_of_private_account(): void
+    {
+        $this->author->profile()->create([
+            'username' => 'author_private',
+            'is_private' => true,
+        ]);
+
+        Sanctum::actingAs($this->nonFollower);
+
+        $response = $this->getJson(route('api.users.posts', $this->author));
+
+        $response->assertStatus(403)
+            ->assertJson([
+                'success' => false,
+                'message' => 'This account is private.',
+            ]);
+    }
+
+    public function test_guest_cannot_view_posts_of_private_account(): void
+    {
+        $this->author->profile()->create([
+            'username' => 'author_private_guest',
+            'is_private' => true,
+        ]);
+
+        $response = $this->getJson(route('api.users.posts', $this->author));
+
+        $response->assertStatus(403)
+            ->assertJson([
+                'success' => false,
+                'message' => 'This account is private.',
+            ]);
+    }
+
+    public function test_follower_can_view_posts_of_private_account(): void
+    {
+        $this->author->profile()->create([
+            'username' => 'author_private_follower',
+            'is_private' => true,
+        ]);
+
+        Sanctum::actingAs($this->follower);
+
+        $response = $this->getJson(route('api.users.posts', $this->author));
+
+        $response->assertStatus(200);
+
+        $data = $response->json('data');
+        $this->assertCount(2, $data);
+        $ids = collect($data)->pluck('id')->all();
+        $this->assertContains($this->publicPost->id, $ids);
+        $this->assertContains($this->followersPost->id, $ids);
+        $this->assertNotContains($this->privatePost->id, $ids);
+    }
+
+    public function test_non_follower_cannot_view_individual_post_of_private_account(): void
+    {
+        $this->author->profile()->create([
+            'username' => 'author_private_single',
+            'is_private' => true,
+        ]);
+
+        Sanctum::actingAs($this->nonFollower);
+
+        $response = $this->getJson(route('api.post.show', $this->publicPost));
+
+        $response->assertStatus(403)
+            ->assertJson([
+                'success' => false,
+                'message' => 'This account is private.',
+            ]);
+    }
+
+    public function test_follower_can_view_individual_post_of_private_account(): void
+    {
+        $this->author->profile()->create([
+            'username' => 'author_private_single_ok',
+            'is_private' => true,
+        ]);
+
+        Sanctum::actingAs($this->follower);
+
+        $response = $this->getJson(route('api.post.show', $this->publicPost));
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.id', $this->publicPost->id);
+    }
 }

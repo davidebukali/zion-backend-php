@@ -58,6 +58,34 @@ class SocialGraphTest extends TestCase
         ]);
     }
 
+    public function test_following_private_user_creates_pending_request(): void
+    {
+        $this->userB->profile()->create([
+            'username' => 'private_b',
+            'is_private' => true,
+        ]);
+
+        Sanctum::actingAs($this->userA);
+
+        $response = $this->postJson(route('api.users.follow', $this->userB));
+
+        $response->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'follower_id' => $this->userA->id,
+                    'following_id' => $this->userB->id,
+                    'status' => FollowStatus::PENDING->value,
+                ],
+            ]);
+
+        $this->assertDatabaseHas('follows', [
+            'follower_id' => $this->userA->id,
+            'following_id' => $this->userB->id,
+            'status' => FollowStatus::PENDING->value,
+        ]);
+    }
+
     public function test_user_cannot_follow_self(): void
     {
         Sanctum::actingAs($this->userA);

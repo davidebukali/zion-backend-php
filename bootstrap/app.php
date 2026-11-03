@@ -63,7 +63,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'This action is unauthorized.',
+                    'message' => $e->getMessage() ?: 'This action is unauthorized.',
                     'errors' => null,
                 ], 403);
             }

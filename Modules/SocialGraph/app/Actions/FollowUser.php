@@ -23,13 +23,15 @@ class FollowUser
             $follower,
             $following
         ) {
+            $isPrivate = (bool) ($following->profile?->is_private ?? false);
+
             $follow = Follow::firstOrCreate(
                 [
                     'follower_id' => $follower->id,
                     'following_id' => $following->id,
                 ],
                 [
-                    'status' => FollowStatus::ACCEPTED,
+                    'status' => $isPrivate ? FollowStatus::PENDING : FollowStatus::ACCEPTED,
                 ]
             );
 

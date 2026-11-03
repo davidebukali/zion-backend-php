@@ -243,4 +243,31 @@ class ProfileTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['account_type', 'church_id']);
     }
+
+    public function test_user_can_update_profile_privacy(): void
+    {
+        Sanctum::actingAs($this->userA);
+
+        $response = $this->putJson(route('api.profile.update'), [
+            'is_private' => true,
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.is_private', true);
+
+        $this->assertDatabaseHas('profiles', [
+            'user_id' => $this->userA->id,
+            'is_private' => true,
+        ]);
+    }
+
+    public function test_profile_shows_is_private_status(): void
+    {
+        $this->userB->profile->update(['is_private' => true]);
+
+        $response = $this->getJson(route('api.users.profile', $this->userB));
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.is_private', true);
+    }
 }

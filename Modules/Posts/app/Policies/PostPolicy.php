@@ -3,6 +3,7 @@
 namespace Modules\Posts\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Auth\Access\Response;
 use Modules\Auth\Models\User;
 use Modules\Posts\Enums\PostVisibility;
 use Modules\Posts\Enums\PostModerationStatus;
@@ -20,35 +21,38 @@ class PostPolicy
     /**
      * Determine whether the user can view the post based on visibility and moderation.
      */
-    public function view(?User $user, Post $post): bool
+    public function view(?User $user, Post $post): Response|bool
     {
+        $isAuthor = $user && $user->id === $post->user_id;
+        $isStaff = $user && ((bool) ($user->is_admin ?? false) || (bool) ($user->is_moderator ?? false));
+
         if ($post->moderation_status !== PostModerationStatus::APPROVED) {
-            if (! $user) {
-                return false;
-            }
-
-            $isAuthor = $user->id === $post->user_id;
-            $isStaff = (bool) ($user->is_admin ?? false) || (bool) ($user->is_moderator ?? false);
-
             if (! $isAuthor && ! $isStaff) {
                 return false;
             }
+        }
+
+        if ($isAuthor || $isStaff) {
+            return true;
+        }
+
+        $authorIsPrivate = (bool) ($post->user?->profile?->is_private ?? false);
+        $isFollower = $user && method_exists($user, 'isFollowing') && $user->isFollowing($post->user_id);
+
+        if ($authorIsPrivate) {
+            if (! $isFollower) {
+                return Response::denyWithStatus(403, 'This account is private.');
+            }
+
+            return $post->visibility !== PostVisibility::PRIVATE;
         }
 
         if ($post->visibility === PostVisibility::PUBLIC) {
             return true;
         }
 
-        if (! $user) {
-            return false;
-        }
-
-        if ($user->id === $post->user_id) {
-            return true;
-        }
-
         if ($post->visibility === PostVisibility::FOLLOWERS) {
-            return method_exists($user, 'isFollowing') && $user->isFollowing($post->user_id);
+            return (bool) $isFollower;
         }
 
         return false;

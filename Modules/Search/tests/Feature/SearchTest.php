@@ -334,4 +334,34 @@ class SearchTest extends TestCase
         $searchResponseAfter->assertStatus(200);
         $this->assertFalse($searchResponseAfter->json('data.0.is_following'));
     }
+
+    public function test_posts_from_private_profiles_are_hidden_from_non_followers_in_search(): void
+    {
+        $this->author->profile->update(['is_private' => true]);
+
+        Post::create([
+            'user_id' => $this->author->id,
+            'content' => 'Secret private profile topic',
+            'visibility' => PostVisibility::PUBLIC->value,
+            'moderation_status' => \Modules\Posts\Enums\PostModerationStatus::APPROVED->value,
+        ]);
+
+        // Stranger (non-follower) searches
+        Sanctum::actingAs($this->stranger);
+        $response = $this->getJson(route('api.search', [
+            'type' => 'posts',
+            'q' => 'Secret private',
+        ]));
+        $response->assertStatus(200);
+        $this->assertCount(0, $response->json('data'));
+
+        // Follower searches
+        Sanctum::actingAs($this->follower);
+        $responseFollower = $this->getJson(route('api.search', [
+            'type' => 'posts',
+            'q' => 'Secret private',
+        ]));
+        $responseFollower->assertStatus(200);
+        $this->assertCount(1, $responseFollower->json('data'));
+    }
 }

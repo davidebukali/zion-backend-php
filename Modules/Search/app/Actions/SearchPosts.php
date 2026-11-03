@@ -28,14 +28,19 @@ class SearchPosts
         }
 
         $builder->where(function ($q) use ($viewer) {
-            // 1. Always include public posts
-            $q->where('visibility', PostVisibility::PUBLIC);
+            // 1. Posts from public profiles that are marked public
+            $q->where(function ($publicQ) {
+                $publicQ->where('visibility', PostVisibility::PUBLIC)
+                    ->whereHas('user.profile', function ($pq) {
+                        $pq->where('is_private', false);
+                    });
+            });
 
             if ($viewer) {
                 // 2. Author's own posts (including followers and private)
                 $q->orWhere('user_id', $viewer->id);
 
-                // 3. Posts with followers visibility where viewer is an accepted follower
+                // 3. Posts from followed accounts (including private accounts)
                 $followingIds = Follow::where('follower_id', $viewer->id)
                     ->where('status', FollowStatus::ACCEPTED)
                     ->pluck('following_id');
@@ -43,7 +48,10 @@ class SearchPosts
                 if ($followingIds->isNotEmpty()) {
                     $q->orWhere(function ($fq) use ($followingIds) {
                         $fq->whereIn('user_id', $followingIds)
-                            ->where('visibility', PostVisibility::FOLLOWERS);
+                            ->whereIn('visibility', [
+                                PostVisibility::PUBLIC,
+                                PostVisibility::FOLLOWERS,
+                            ]);
                     });
                 }
             }

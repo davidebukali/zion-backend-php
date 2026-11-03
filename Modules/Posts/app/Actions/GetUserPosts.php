@@ -41,6 +41,11 @@ class GetUserPosts
                 ->exists();
         }
 
+        $isPrivate = (bool) ($targetUser->profile?->is_private ?? false);
+        if ($isPrivate && ! $isFollower) {
+            abort(403, 'This account is private.');
+        }
+
         if ($isFollower) {
             $query->whereIn('visibility', [
                 PostVisibility::PUBLIC,

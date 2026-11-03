@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\RespondsWithApi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Modules\Auth\Models\User;
 use Modules\Posts\Actions\CreatePost;
 use Modules\Posts\Actions\DeletePost;
@@ -208,6 +209,8 @@ class PostsController extends Controller
      */
     public function show(Request $request, Post $post)
     {
+        Gate::authorize('view', $post);
+
         $viewer = $request->user();
         if ($viewer) {
             $post->loadExists([
