@@ -33,5 +33,17 @@ class ChurchesServiceProvider extends ModuleServiceProvider
         parent::boot();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
     }
+
+    /**
+     * Register views.
+     */
+    protected function registerViews(): void
+    {
+        $sourcePath = module_path($this->name, 'resources/views');
+
+        if (is_dir($sourcePath)) {
+            parent::registerViews();
+        }
+    }
 }
 
