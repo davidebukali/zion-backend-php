@@ -74,6 +74,14 @@ Alpine.data('waitlistForm', (defaultSource = 'hero') => ({
             const data = await response.json();
 
             if (response.ok) {
+                if (typeof window.gtag === 'function') {
+                    window.gtag('event', 'generate_lead', {
+                        event_category: 'waitlist',
+                        event_label: customSource || defaultSource,
+                        status: data.status
+                    });
+                }
+
                 if (data.status === 'already_registered') {
                     this.status = 'already_registered';
                     this.message = data.message || "You're already on the waitlist! We'll reach out as soon as your invite is ready.";
