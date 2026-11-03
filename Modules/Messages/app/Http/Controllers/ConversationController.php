@@ -123,8 +123,8 @@ class ConversationController extends Controller
 
     public function typing(Request $request, Conversation $conversation)
     {
-        if (Gate::forUser($request->user())->denies('view', $conversation)) {
-            abort(403, 'You are not a participant in this conversation.');
+        if (Gate::forUser($request->user())->denies('sendMessage', $conversation)) {
+            abort(403, 'You cannot send typing indicators in this conversation.');
         }
 
         event(new TypingStarted($conversation, $request->user()));

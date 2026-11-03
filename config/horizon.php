@@ -199,7 +199,7 @@ return [
     'defaults' => [
         'supervisor-general' => [
             'connection' => 'redis',
-            'queue' => ['notifications', 'default'],
+            'queue' => ['broadcasts', 'notifications', 'default'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'minProcesses' => 1,

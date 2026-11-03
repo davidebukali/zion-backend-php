@@ -25,6 +25,9 @@ x-laravel: &laravel
     APP_URL: https://tsiyonapp.com
     DB_HOST: db
     REDIS_HOST: redis
+    REVERB_HOST: reverb
+    REVERB_PORT: "8080"
+    REVERB_SCHEME: http
     LOG_STACK: "single,stderr"
   entrypoint: ["/usr/local/bin/entrypoint.sh"]
   cap_add:
@@ -120,6 +123,14 @@ services:
       redis:
         condition: service_healthy
     mem_limit: 128m
+
+  reverb:
+    <<: *laravel
+    command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
+    depends_on:
+      redis:
+        condition: service_healthy
+    mem_limit: 256m
 
   db:
     <<: *hardening
