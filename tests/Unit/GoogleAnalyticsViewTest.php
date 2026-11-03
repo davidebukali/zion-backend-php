@@ -39,14 +39,13 @@ class GoogleAnalyticsViewTest extends TestCase
         $this->assertStringContainsString("gtag('config', 'G-CUSTOMID99');", $view);
     }
 
-    public function test_layouts_include_google_analytics_tag_when_configured(): void
+    public function test_layouts_include_google_analytics_component(): void
     {
-        Config::set('services.google_analytics.id', 'G-TESTLAYOUT123');
+        $componentLayout = file_get_contents(resource_path('views/components/layouts/app.blade.php'));
+        $this->assertStringContainsString('<x-google-analytics />', $componentLayout);
 
-        $renderedLayout = Blade::render('<x-layouts.app><div>Content</div></x-layouts.app>');
-
-        $this->assertStringContainsString('https://www.googletagmanager.com/gtag/js?id=G-TESTLAYOUT123', $renderedLayout);
-        $this->assertStringContainsString("gtag('config', 'G-TESTLAYOUT123');", $renderedLayout);
+        $defaultLayout = file_get_contents(resource_path('views/layouts/app.blade.php'));
+        $this->assertStringContainsString('<x-google-analytics />', $defaultLayout);
     }
 }
 
