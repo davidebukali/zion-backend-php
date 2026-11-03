@@ -40,6 +40,7 @@ Zion Backend is a clean, modular REST API built with **Laravel 13** and **PHP 8.
 
 ---
 
+<a id="key-features"></a>
 ## 🚀 Key Features
 
 - **Modular Architecture**: Built using `nwidart/laravel-modules` to strictly isolate domain packages (`Auth`, `Posts`, `SocialGraph`, `Media`, `Comments`, `Interactions`, `Notifications`, `Search`).
@@ -57,6 +58,7 @@ Zion Backend is a clean, modular REST API built with **Laravel 13** and **PHP 8.
 
 ---
 
+<a id="modules-overview"></a>
 ## 📦 Modules Overview
 
 The application is organized into the following decoupled modules:
@@ -72,6 +74,7 @@ The application is organized into the following decoupled modules:
 
 ---
 
+<a id="api-endpoints-summary"></a>
 ## 📡 API Endpoints Summary
 
 ### Authentication & Profiles (`Modules/Auth`)
@@ -146,6 +149,7 @@ The application is organized into the following decoupled modules:
 
 ---
 
+<a id="technology-stack"></a>
 ## 🛠️ Technology Stack
 
 - **Framework**: Laravel 13
@@ -158,6 +162,8 @@ The application is organized into the following decoupled modules:
 
 ---
 
+<a id="queue--background-workers"></a>
+<a id="queue-background-workers"></a>
 ## ⚡ Queue & Background Workers
 
 Queue workers are grouped into specialized supervisor pools in `config/horizon.php` to ensure resource-intensive jobs never block real-time operations:
@@ -170,6 +176,7 @@ Queue workers are grouped into specialized supervisor pools in `config/horizon.p
 
 ---
 
+<a id="api-documentation"></a>
 ## 📖 API Documentation
 
 All endpoints, request payloads, query parameters, and response schemas are generated using **Scribe**.
@@ -187,8 +194,11 @@ php artisan scribe:generate
 
 ---
 
+<a id="setup--running-the-application"></a>
+<a id="setup-running-the-application"></a>
 ## ⚙️ Setup & Running the Application
 
+<a id="running-with-docker-recommended"></a>
 ### 🐳 Running with Docker (Recommended)
 
 The easiest way to run the entire stack (PHP 8.4 FPM, Nginx, PostgreSQL 17, Redis, Laravel Horizon, Task Scheduler, and Vite HMR) is using Docker Compose.
@@ -238,6 +248,7 @@ docker compose exec app php artisan migrate
 
 ---
 
+<a id="local-non-docker-setup"></a>
 ### 💻 Local (Non-Docker) Setup
 
 #### Prerequisites
@@ -284,10 +295,13 @@ docker compose exec app php artisan migrate
 
 ---
 
+<a id="automated-testing--cicd"></a>
+<a id="automated-testing-cicd"></a>
 ## 🚀 Automated Testing & CI/CD
 
 Tsiyon Backend uses a continuous integration and zero-downtime deployment pipeline powered by GitHub Actions ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)) and a hardened server deployment script ([`docker/scripts/tsiyon-deploy`](docker/scripts/tsiyon-deploy)).
 
+<a id="github-actions-ci-pipeline"></a>
 ### 🧪 GitHub Actions CI Pipeline
 On every **pull request** targeting `main` and on every **push** to `main`, GitHub Actions executes the automated test suite:
 
@@ -307,6 +321,7 @@ composer install --prefer-dist --no-interaction --no-progress
 php artisan test
 ```
 
+<a id="running-tests-locally"></a>
 ### 💻 Running Tests Locally
 
 Run the complete test suite across all modules:
@@ -336,6 +351,7 @@ docker compose exec app php artisan test --filter=MediaAttachmentTest
 
 ---
 
+<a id="production-deployment-pipeline"></a>
 ### 🚢 Production Deployment Pipeline
 
 When tests pass on `main` (or upon manual `workflow_dispatch` trigger):
@@ -389,18 +405,22 @@ Set these under **Settings > Environments > production** (or **Settings > Secret
 
 ---
 
+<a id="contributing"></a>
 ## 🤝 Contributing
 
 We welcome community contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on our branching model, Conventional Commits specification, automated test suite, and pull request checklist.
 
 ---
 
+<a id="security-policy"></a>
 ## 🔒 Security Policy
 
 If you discover a security vulnerability within Zion Backend, please review our [Security Policy](SECURITY.md) and report it privately via [GitHub Private Vulnerability Reporting](https://github.com/davidebukali/zion-backend-php/security/advisories/new). Please **do not** open public issues for security vulnerabilities.
 
 ---
 
+<a id="license--acknowledgments"></a>
+<a id="license-acknowledgments"></a>
 ## 📄 License & Acknowledgments
 
 Zion Backend is open-source software licensed under the [MIT License](LICENSE). Copyright &copy; 2026 Tsiyon App.
