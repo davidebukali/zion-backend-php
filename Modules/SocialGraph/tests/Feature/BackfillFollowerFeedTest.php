@@ -119,4 +119,20 @@ class BackfillFollowerFeedTest extends TestCase
         $feedCount = FeedItem::where('user_id', $this->david->id)->count();
         $this->assertEquals(5, $feedCount);
     }
+
+    public function test_following_public_user_dispatches_backfill_job(): void
+    {
+        \Illuminate\Support\Facades\Queue::fake();
+
+        Sanctum::actingAs($this->david);
+
+        $response = $this->postJson(route('api.users.follow', $this->alice));
+
+        $response->assertStatus(201);
+
+        \Illuminate\Support\Facades\Queue::assertPushed(BackfillFollowerFeedJob::class, function ($job) {
+            return $job->followerId === $this->david->id
+                && $job->followingId === $this->alice->id;
+        });
+    }
 }

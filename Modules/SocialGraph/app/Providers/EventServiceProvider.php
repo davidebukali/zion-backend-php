@@ -11,6 +11,7 @@ use Modules\Interactions\Events\PostUnliked;
 use Modules\Interactions\Events\PostUnreposted;
 use Modules\Posts\Events\PostCreated;
 use Modules\SocialGraph\Events\FollowRequestAccepted;
+use Modules\SocialGraph\Events\UserFollowed;
 use Modules\SocialGraph\Events\UserUnfollowed;
 use Modules\SocialGraph\Listeners\BackfillFollowerFeedListener;
 use Modules\SocialGraph\Listeners\CleanUnfollowedUserFeedListener;
@@ -25,6 +26,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array<string, array<int, string>>
      */
     protected $listen = [
+        UserFollowed::class => [
+            BackfillFollowerFeedListener::class,
+        ],
         UserUnfollowed::class => [
             CleanUnfollowedUserFeedListener::class,
         ],
