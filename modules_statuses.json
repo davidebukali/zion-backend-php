@@ -7,5 +7,6 @@
     "SocialGraph": true,
     "Notifications": true,
     "Search": true,
-    "Churches": true
+    "Churches": true,
+    "Messages": true
 }

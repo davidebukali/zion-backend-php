@@ -19,9 +19,12 @@ class FollowUser
             abort(422, 'You cannot follow yourself.');
         }
 
-        return DB::transaction(function () use (
+        $wasRecentlyCreated = false;
+
+        $follow = DB::transaction(function () use (
             $follower,
-            $following
+            $following,
+            &$wasRecentlyCreated
         ) {
             $isPrivate = (bool) ($following->profile?->is_private ?? false);
 
@@ -35,15 +38,19 @@ class FollowUser
                 ]
             );
 
-            if ($follow->wasRecentlyCreated) {
-                if ($follow->status === FollowStatus::ACCEPTED) {
-                    UserFollowed::dispatch($follower->id, $following->id);
-                } elseif ($follow->status === FollowStatus::PENDING) {
-                    FollowRequested::dispatch($follower->id, $following->id, $follow->id);
-                }
-            }
+            $wasRecentlyCreated = $follow->wasRecentlyCreated;
 
             return $follow;
         });
+
+        if ($wasRecentlyCreated) {
+            if ($follow->status === FollowStatus::ACCEPTED) {
+                UserFollowed::dispatch($follower->id, $following->id);
+            } elseif ($follow->status === FollowStatus::PENDING) {
+                FollowRequested::dispatch($follower->id, $following->id, $follow->id);
+            }
+        }
+
+        return $follow;
     }
 }

@@ -13,5 +13,9 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::post('follows/{follow}/accept', [SocialGraphController::class, 'acceptFollowRequest'])->name('follows.accept');
     Route::post('follows/{follow}/reject', [SocialGraphController::class, 'rejectFollowRequest'])->name('follows.reject');
 
+    Route::post('users/{user}/block', [SocialGraphController::class, 'block'])->name('users.block');
+    Route::delete('users/{user}/block', [SocialGraphController::class, 'unblock'])->name('users.unblock');
+    Route::get('blocks', [SocialGraphController::class, 'getBlockedUsers'])->name('blocks.index');
+
     Route::get('feed', [SocialGraphController::class, 'feed'])->name('feed.index');
 });

@@ -1,0 +1,23 @@
+{
+    "name": "nwidart/messages",
+    "description": "Messages module for Tsiyon",
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Messages\\": "app/",
+            "Modules\\Messages\\Database\\Factories\\": "database/factories/",
+            "Modules\\Messages\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Messages\\Tests\\": "tests/"
+        }
+    }
+}
+

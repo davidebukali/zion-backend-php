@@ -1,0 +1,12 @@
+{
+    "name": "Messages",
+    "alias": "messages",
+    "description": "Messages module for Tsiyon",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Messages\\Providers\\MessagesServiceProvider"
+    ],
+    "files": []
+}
+

@@ -7,13 +7,17 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Auth\Models\User;
 use Modules\SocialGraph\Actions\AcceptFollowRequest;
+use Modules\SocialGraph\Actions\BlockUser;
 use Modules\SocialGraph\Actions\FollowUser;
 use Modules\SocialGraph\Actions\GetFeed;
+use Modules\SocialGraph\Actions\ListBlockedUsers;
 use Modules\SocialGraph\Actions\RejectFollowRequest;
+use Modules\SocialGraph\Actions\UnblockUser;
 use Modules\SocialGraph\Actions\UnfollowUser;
 use Modules\SocialGraph\Models\Follow;
 use Modules\SocialGraph\Transformers\FeedItemResource;
 use Modules\SocialGraph\Transformers\FollowResource;
+use Modules\SocialGraph\Transformers\UserBlockResource;
 
 class SocialGraphController extends Controller
 {
@@ -437,6 +441,120 @@ class SocialGraphController extends Controller
         return $this->success(
             data: $paginated['data'] ?? [],
             message: 'Feed retrieved successfully.',
+            status: 200,
+            meta: [
+                'prev_cursor' => $paginated['meta']['prev_cursor'] ?? null,
+                'next_cursor' => $paginated['meta']['next_cursor'] ?? null,
+                'per_page' => $paginated['meta']['per_page'] ?? $perPage,
+            ]
+        );
+    }
+
+    /**
+     * @group Social Graph
+     *
+     * @subgroup Blocks
+     *
+     * @authenticated
+     *
+     * Block User
+     *
+     * Block another user.
+     *
+     * @urlParam user string required The ULID of the user to block. Example: 01j7b9k5v6abcdef0123456789
+     *
+     * @response 201 {
+     *   "success": true,
+     *   "message": "User blocked successfully.",
+     *   "data": {
+     *     "id": 1,
+     *     "blocker_id": "01j7b9k5v6abcdef0123456789",
+     *     "blocked_id": "01j7b9k5v6abcdef9876543210",
+     *     "created_at": "2026-11-03T12:00:00.000000Z",
+     *     "updated_at": "2026-11-03T12:00:00.000000Z"
+     *   },
+     *   "meta": null
+     * }
+     */
+    public function block(
+        Request $request,
+        User $user,
+        BlockUser $blockUser
+    ) {
+        $block = $blockUser(
+            $request->user(),
+            $user
+        );
+
+        return $this->success(
+            new UserBlockResource($block),
+            'User blocked successfully.',
+            201
+        );
+    }
+
+    /**
+     * @group Social Graph
+     *
+     * @subgroup Blocks
+     *
+     * @authenticated
+     *
+     * Unblock User
+     *
+     * Unblock a previously blocked user.
+     *
+     * @urlParam user string required The ULID of the user to unblock. Example: 01j7b9k5v6abcdef0123456789
+     *
+     * @response 200 {
+     *   "success": true,
+     *   "message": "User unblocked successfully.",
+     *   "data": null,
+     *   "meta": null
+     * }
+     */
+    public function unblock(
+        Request $request,
+        User $user,
+        UnblockUser $unblockUser
+    ) {
+        $unblockUser(
+            $request->user(),
+            $user
+        );
+
+        return $this->success(
+            null,
+            'User unblocked successfully.'
+        );
+    }
+
+    /**
+     * @group Social Graph
+     *
+     * @subgroup Blocks
+     *
+     * @authenticated
+     *
+     * Get Blocked Users
+     *
+     * Retrieve a cursor-paginated list of blocked users.
+     *
+     * @queryParam per_page integer Number of items per page. Default: 20. Example: 20
+     * @queryParam cursor string Cursor token for pagination. Example: eyJpZCI6MX0
+     */
+    public function getBlockedUsers(
+        Request $request,
+        ListBlockedUsers $listBlockedUsers
+    ) {
+        $perPage = (int) $request->query('per_page', 20);
+        $blocks = $listBlockedUsers($request->user(), $perPage);
+
+        $paginated = UserBlockResource::collection($blocks)->response()->getData(true);
+
+        return $this->success(
+            data: $paginated['data'] ?? [],
+            message: 'Blocked users retrieved successfully.',
             status: 200,
             meta: [
                 'prev_cursor' => $paginated['meta']['prev_cursor'] ?? null,

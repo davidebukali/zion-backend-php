@@ -7,7 +7,7 @@ use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class UserFollowed implements ShouldDispatchAfterCommit
+class UserFollowed
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 

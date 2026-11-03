@@ -23,6 +23,7 @@ Zion Backend is a clean, modular REST API built with **Laravel 13** and **PHP 8.
   - [Unified Search](#unified-search-modulessearch)
   - [Notifications](#notifications-modulesnotifications)
   - [Interactions & Comments](#interactions--comments-modulesinteractions-modulescomments)
+  - [In-App Messages](#in-app-messages-modulesmessages)
   - [Media](#media-modulesmedia)
 - [Technology Stack](#technology-stack)
 - [Queue & Background Workers](#queue--background-workers)
@@ -71,6 +72,7 @@ The application is organized into the following decoupled modules:
 - **Interactions**: User engagement actions including liking/unliking posts and comments, post sharing (internal & external with analytics counters), bookmarking, and reporting.
 - **Notifications**: In-app notification engine with queued listeners (`notifications` queue) handling `post_liked`, `comment_liked`, `post_shared`, `post_commented`, `user_followed`, `follow_requested`, `follow_request_accepted`, and `post_reported`. Includes REST API endpoints to fetch paginated notifications and mark individual or all notifications as read.
 - **Search**: Unified search engine (`GET /api/v1/search`) supporting combined overview results (`type=all`) and tabbed searches (`type=users`, `type=posts`) with real-time post visibility scoping.
+- **Messages**: In-app 1:1 messaging engine with deterministic thread pairing (`pair_key`), mutual-follow authorization, message editing/redaction, emoji reactions, conversation archiving/muting/hiding, message reporting, image attachments with orphan protection, and transaction-safe domain broadcast events.
 
 ---
 
@@ -105,6 +107,9 @@ The application is organized into the following decoupled modules:
 | `POST` | `/api/v1/follows/{follow}/reject` | Reject an incoming follow request | Yes |
 | `GET` | `/api/v1/users/{user}/followers` | List user followers (cursor-paginated) | Optional |
 | `GET` | `/api/v1/users/{user}/following` | List users followed by user (cursor-paginated) | Optional |
+| `POST` | `/api/v1/users/{user}/block` | Block a user | Yes |
+| `DELETE` | `/api/v1/users/{user}/block` | Unblock a user | Yes |
+| `GET` | `/api/v1/blocks` | List blocked users (cursor-paginated) | Yes |
 
 ### Unified Search (`Modules/Search`)
 | Method | Endpoint | Description | Auth Required |
@@ -138,6 +143,30 @@ The application is organized into the following decoupled modules:
 | `POST` | `/api/v1/comments/{comment}/replies` | Reply to a comment | Yes |
 | `POST` | `/api/v1/comments/{comment}/like` | Like a comment | Yes |
 | `DELETE` | `/api/v1/comments/{comment}/like` | Unlike a comment | Yes |
+
+### In-App Messages (`Modules/Messages`)
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/conversations` | List user inbox conversations (cursor-paginated, `?q=`, `?archived=`) | Yes |
+| `GET` | `/api/v1/conversations/recipients` | List messageable mutual non-blocked users (cursor-paginated, `?q=`) | Yes |
+| `POST` | `/api/v1/conversations` | Initialize or retrieve deterministic conversation with recipient | Yes |
+| `GET` | `/api/v1/conversations/{conversation}` | Retrieve conversation details and partner presence state | Yes |
+| `DELETE` | `/api/v1/conversations/{conversation}` | Hide conversation and clear message history for current user | Yes |
+| `POST` | `/api/v1/conversations/{conversation}/read` | Mark all conversation messages as read | Yes |
+| `POST` | `/api/v1/conversations/{conversation}/typing` | Dispatch typing indicator event to participants | Yes |
+| `POST` | `/api/v1/conversations/{conversation}/archive` | Archive conversation for current user | Yes |
+| `POST` | `/api/v1/conversations/{conversation}/unarchive` | Unarchive conversation for current user | Yes |
+| `POST` | `/api/v1/conversations/{conversation}/mute` | Mute conversation notifications for current user | Yes |
+| `POST` | `/api/v1/conversations/{conversation}/unmute` | Unmute conversation notifications for current user | Yes |
+| `POST` | `/api/v1/conversations/{conversation}/report` | Report a conversation for moderation | Yes |
+| `GET` | `/api/v1/conversations/{conversation}/messages` | Retrieve cursor-paginated messages in conversation | Yes |
+| `POST` | `/api/v1/conversations/{conversation}/messages` | Send message (text, replies, up to 4 images) | Yes |
+| `PATCH` | `/api/v1/messages/{message}` | Edit sent message (15-minute window) | Yes |
+| `DELETE` | `/api/v1/messages/{message}` | Delete message for everyone (redacts body & media) | Yes |
+| `POST` | `/api/v1/messages/{message}/delete-for-me` | Delete message for current user only | Yes |
+| `POST` | `/api/v1/messages/{message}/reactions` | Add or update emoji reaction on message | Yes |
+| `DELETE` | `/api/v1/messages/{message}/reactions` | Remove emoji reaction from message | Yes |
+| `POST` | `/api/v1/messages/{message}/report` | Report an individual message for moderation | Yes |
 
 ### Media (`Modules/Media`)
 | Method | Endpoint | Description | Auth Required |
@@ -341,6 +370,7 @@ docker compose exec app php artisan test Modules/Notifications
 docker compose exec app php artisan test Modules/Interactions
 docker compose exec app php artisan test Modules/Comments
 docker compose exec app php artisan test Modules/Media
+docker compose exec app php artisan test Modules/Messages
 ```
 
 To run a specific test class:

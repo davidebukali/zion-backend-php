@@ -162,6 +162,57 @@ class CleanupOrphanedMediaTest extends TestCase
         Storage::disk('r2')->assertExists('uploads/post-attached.jpg');
     }
 
+    public function test_does_not_clean_up_media_attached_to_messages(): void
+    {
+        Storage::fake('r2');
+        Storage::disk('r2')->put('uploads/message-attached.jpg', 'content');
+
+        $attachedToMessage = Media::create([
+            'user_id' => $this->user->id,
+            'disk' => 'r2',
+            'path' => 'uploads/message-attached.jpg',
+            'type' => 'image',
+            'mime_type' => 'image/jpeg',
+            'size' => 1024,
+            'status' => MediaStatus::Ready,
+        ]);
+        $attachedToMessage->created_at = now()->subHours(24);
+        $attachedToMessage->save();
+
+        $convId = (string) Str::ulid();
+        DB::table('conversations')->insert([
+            'id' => $convId,
+            'pair_key' => $this->user->id.':other',
+            'created_by' => $this->user->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $messageId = (string) Str::ulid();
+        DB::table('messages')->insert([
+            'id' => $messageId,
+            'conversation_id' => $convId,
+            'sender_id' => $this->user->id,
+            'body' => 'Photo message',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('message_media')->insert([
+            'message_id' => $messageId,
+            'media_id' => $attachedToMessage->id,
+            'sort_order' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->artisan('media:cleanup-orphaned', ['--unattached-hours' => 12])
+            ->assertSuccessful();
+
+        $this->assertDatabaseHas('media', ['id' => $attachedToMessage->id]);
+        Storage::disk('r2')->assertExists('uploads/message-attached.jpg');
+    }
+
     public function test_dry_run_mode_does_not_delete_media_or_files(): void
     {
         Storage::fake('r2');

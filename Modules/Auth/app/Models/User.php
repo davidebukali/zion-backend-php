@@ -9,10 +9,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Modules\Interactions\Models\Repost;
+use Modules\Messages\Models\Conversation;
+use Modules\Messages\Models\Message;
 use Modules\Notifications\Models\Notification;
 use Modules\Posts\Models\Post;
 use Modules\SocialGraph\Enums\FollowStatus;
 use Modules\SocialGraph\Models\Follow;
+use Modules\SocialGraph\Models\UserBlock;
 
 class User extends Authenticatable
 {
@@ -75,6 +78,16 @@ class User extends Authenticatable
         return $this->hasMany(Repost::class);
     }
 
+    public function conversations(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Conversation::class, 'conversation_participants', 'user_id', 'conversation_id');
+    }
+
+    public function sentMessages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
     public function followers(): HasMany
     {
         return $this->hasMany(Follow::class, 'following_id');
@@ -111,6 +124,81 @@ class User extends Authenticatable
             ->where('follower_id', $userId)
             ->where('status', FollowStatus::ACCEPTED)
             ->exists();
+    }
+
+    public function blockedUsers(): HasMany
+    {
+        return $this->hasMany(UserBlock::class, 'blocker_id');
+    }
+
+    public function blockedByUsers(): HasMany
+    {
+        return $this->hasMany(UserBlock::class, 'blocked_id');
+    }
+
+    public function hasBlocked(User|string|null $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        $userId = $user instanceof User ? $user->id : $user;
+
+        return $this->blockedUsers()
+            ->where('blocked_id', $userId)
+            ->exists();
+    }
+
+    public function isBlockedBy(User|string|null $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        $userId = $user instanceof User ? $user->id : $user;
+
+        return $this->blockedByUsers()
+            ->where('blocker_id', $userId)
+            ->exists();
+    }
+
+    public function hasBlockRelationshipWith(User|string|null $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        $userId = $user instanceof User ? $user->id : $user;
+
+        if ($this->id === $userId) {
+            return false;
+        }
+
+        return UserBlock::query()
+            ->where(function ($query) use ($userId) {
+                $query->where('blocker_id', $this->id)
+                    ->where('blocked_id', $userId);
+            })
+            ->orWhere(function ($query) use ($userId) {
+                $query->where('blocker_id', $userId)
+                    ->where('blocked_id', $this->id);
+            })
+            ->exists();
+    }
+
+    public function isMutualFollowWith(User|string|null $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        $userId = $user instanceof User ? $user->id : $user;
+
+        if ($this->id === $userId) {
+            return false;
+        }
+
+        return $this->isFollowing($userId) && $this->isFollowedBy($userId);
     }
 
     public function scopeWithViewerFollowStatus($query, ?User $viewer)

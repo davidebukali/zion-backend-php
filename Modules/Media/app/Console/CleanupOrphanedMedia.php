@@ -3,6 +3,7 @@
 namespace Modules\Media\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Modules\Media\Enums\MediaStatus;
 use Modules\Media\Models\Media;
@@ -93,6 +94,11 @@ class CleanupOrphanedMedia extends Command
             })
             ->whereNotIn('id', function ($query) {
                 $query->select('media_id')->from('comment_media');
+            })
+            ->when(Schema::hasTable('message_media'), function ($q) {
+                $q->whereNotIn('id', function ($query) {
+                    $query->select('media_id')->from('message_media');
+                });
             })
             ->get();
 
