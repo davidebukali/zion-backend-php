@@ -3,6 +3,8 @@
 namespace Modules\Posts\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Modules\Posts\Enums\PostVisibility;
 
 class StorePostRequest extends FormRequest
 {
@@ -18,6 +20,10 @@ class StorePostRequest extends FormRequest
                 'string',
                 'filled',
                 'max:5000',
+            ],
+            'visibility' => [
+                'nullable',
+                Rule::enum(PostVisibility::class),
             ],
             'media_ids' => [
                 'nullable',

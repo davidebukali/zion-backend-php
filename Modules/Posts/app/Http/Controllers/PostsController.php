@@ -109,6 +109,7 @@ class PostsController extends Controller
      * Create a new post with optional text content and attached media assets.
      *
      * @bodyParam content string The text body of the post. Example: Exploring Laravel and Scribe!
+     * @bodyParam visibility string The post visibility (public, followers, private). Default: public. Example: public
      * @bodyParam media_ids string[] Optional array of media UUIDs to attach. Example: ["9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"]
      *
      * @response 201 {

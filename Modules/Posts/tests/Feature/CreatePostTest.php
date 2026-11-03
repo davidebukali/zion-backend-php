@@ -65,6 +65,39 @@ class CreatePostTest extends TestCase
         ]);
     }
 
+    public function test_authenticated_user_can_create_post_with_followers_visibility(): void
+    {
+        Sanctum::actingAs($this->user);
+
+        $response = $this->postJson(route('api.post.store'), [
+            'content' => 'Followers-only post content',
+            'visibility' => PostVisibility::FOLLOWERS->value,
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.visibility', PostVisibility::FOLLOWERS->value);
+
+        $this->assertDatabaseHas('posts', [
+            'user_id' => $this->user->id,
+            'content' => 'Followers-only post content',
+            'visibility' => PostVisibility::FOLLOWERS->value,
+        ]);
+    }
+
+    public function test_post_creation_fails_with_invalid_visibility(): void
+    {
+        Sanctum::actingAs($this->user);
+
+        $response = $this->postJson(route('api.post.store'), [
+            'content' => 'Some post content',
+            'visibility' => 'everyone',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['visibility']);
+    }
+
     public function test_unauthenticated_user_cannot_create_post(): void
     {
         $response = $this->postJson(route('api.post.store'), [
