@@ -17,3 +17,8 @@ Schedule::command('backup:run --only-db')
     ->dailyAt('01:30')
     ->withoutOverlapping()
     ->onOneServer();
+
+Schedule::command('media:cleanup-orphans')
+    ->dailyAt('02:00')
+    ->withoutOverlapping()
+    ->onOneServer();
