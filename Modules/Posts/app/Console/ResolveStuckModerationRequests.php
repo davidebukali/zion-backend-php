@@ -25,6 +25,11 @@ class ResolveStuckModerationRequests extends Command
      */
     public function handle(): int
     {
+        if (! config('moderation.enabled', false)) {
+            $this->info('AI moderation is currently disabled.');
+            return self::SUCCESS;
+        }
+
         $maxAttempts = (int) config('moderation.max_retry_attempts', 3);
         $stuckThreshold = now()->subMinutes(5);
 

@@ -19,6 +19,10 @@ class TriggerModerationOnPostChange implements ShouldDispatchAfterCommit
      */
     public function handle(object $event): void
     {
+        if (! config('moderation.enabled', false)) {
+            return;
+        }
+
         $post = $event->post;
         $reportId = null;
 

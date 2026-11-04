@@ -42,5 +42,6 @@
         <env name="CLOUDFLARE_R2_SECRET_ACCESS_KEY" value="test-secret"/>
         <env name="CLOUDFLARE_R2_BUCKET" value="test-bucket"/>
         <env name="CLOUDFLARE_R2_ENDPOINT" value="https://test-account.r2.cloudflarestorage.com"/>
+        <env name="MODERATION_ENABLED" value="true"/>
     </php>
 </phpunit>

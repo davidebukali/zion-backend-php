@@ -3,6 +3,15 @@
 return [
     /*
     |--------------------------------------------------------------------------
+    | AI Moderation Pipeline Enabled
+    |--------------------------------------------------------------------------
+    | When disabled, posts bypass AI moderation checks and are treated as
+    | approved, preventing timeout errors until the webhook service is ready.
+    */
+    'enabled' => (bool) env('MODERATION_ENABLED', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Account Trust Settings
     |--------------------------------------------------------------------------
     | New or low-trust accounts start with 'pending' moderation status.

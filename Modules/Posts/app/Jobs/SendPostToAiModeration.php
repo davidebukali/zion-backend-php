@@ -29,6 +29,10 @@ class SendPostToAiModeration implements ShouldQueue, ShouldDispatchAfterCommit
 
     public function handle(): void
     {
+        if (! config('moderation.enabled', false)) {
+            return;
+        }
+
         $request = $this->moderationRequest->fresh(['post.media']);
 
         if (! $request || $request->status !== ModerationRequestStatus::PENDING) {

@@ -15,6 +15,10 @@ class PostModerationScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
+        if (! config('moderation.enabled', false)) {
+            return;
+        }
+
         $user = Auth::user();
 
         if ($user) {
