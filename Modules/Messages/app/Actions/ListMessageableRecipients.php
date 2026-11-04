@@ -16,10 +16,6 @@ class ListMessageableRecipients
                 $q->where('follower_id', $user->id)
                     ->where('status', FollowStatus::ACCEPTED);
             })
-            ->whereHas('following', function ($q) use ($user) {
-                $q->where('following_id', $user->id)
-                    ->where('status', FollowStatus::ACCEPTED);
-            })
             ->whereDoesntHave('blockedUsers', function ($q) use ($user) {
                 $q->where('blocked_id', $user->id);
             })

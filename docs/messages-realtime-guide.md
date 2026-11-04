@@ -221,8 +221,8 @@ interface TypingStartedEvent {
 
 | Action | HTTP Endpoint | Gating Rules & Constraints |
 |---|---|---|
-| **Start Conversation** | `POST /api/v1/conversations` | Requires mutual following (`isMutualFollowWith`). Fails with `403` if not mutual or if either user has blocked the other. Fails with `422` on self-target. Idempotent: returns existing thread if one exists. |
-| **List Recipients** | `GET /api/v1/conversations/recipients` | Returns eligible mutual followers only. Blocked accounts are automatically filtered out. |
+| **Start Conversation** | `POST /api/v1/conversations` | Requires that the initiator has an accepted follow toward the recipient (`isFollowing`), or that a conversation already exists between them. Fails with `403` if not following or if either user has blocked the other. Fails with `422` on self-target. Idempotent: returns existing thread if one exists. |
+| **List Recipients** | `GET /api/v1/conversations/recipients` | Returns eligible users that the authenticated user follows with follow status = 'accepted' (even if those users do not follow back). Blocked accounts in either direction are automatically filtered out. |
 | **Send Message** | `POST /api/v1/conversations/{id}/messages` | Participant only. Blocked conversations return `403`. Maximum 4 images per message. Attached images must be pre-uploaded via Media API (`status: ready`) and cannot be reused. |
 | **Send Typing** | `POST /api/v1/conversations/{id}/typing` | Rate limit: Throttle to max 1 request every 2.5–3 seconds. Blocked participants return `403`. |
 | **Edit Message** | `PATCH /api/v1/messages/{id}` | Author only. Strictly locked after 15 minutes (`403 Forbidden`). |

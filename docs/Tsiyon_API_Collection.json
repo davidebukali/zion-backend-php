@@ -1820,8 +1820,8 @@
                                 {
                                     "header": [],
                                     "code": 403,
-                                    "body": "{\n  \"success\": false,\n  \"message\": \"You can only start conversations with mutual followers.\",\n  \"errors\": null\n}",
-                                    "name": "Not Mutual Followers or Blocked"
+                                    "body": "{\n  \"success\": false,\n  \"message\": \"You can only start conversations with users you follow.\",\n  \"errors\": null\n}",
+                                    "name": "Not Following or Blocked"
                                 },
                                 {
                                     "header": [],

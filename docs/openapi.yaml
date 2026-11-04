@@ -2353,14 +2353,14 @@ paths:
                     example: null
                     nullable: true
         403:
-          description: 'Not Mutual Followers or Blocked'
+          description: 'Not Following or Blocked'
           content:
             application/json:
               schema:
                 type: object
                 example:
                   success: false
-                  message: 'You can only start conversations with mutual followers.'
+                  message: 'You can only start conversations with users you follow.'
                   errors: null
                 properties:
                   success:
@@ -2368,7 +2368,7 @@ paths:
                     example: false
                   message:
                     type: string
-                    example: 'You can only start conversations with mutual followers.'
+                    example: 'You can only start conversations with users you follow.'
                   errors:
                     type: string
                     example: null

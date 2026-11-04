@@ -35,8 +35,8 @@ class StartOrGetConversation
             return $conversation->load(['participants.user.profile.avatar']);
         }
 
-        if (! $initiator->isMutualFollowWith($recipient)) {
-            abort(403, 'You can only start conversations with mutual followers.');
+        if (! $initiator->isFollowing($recipient)) {
+            abort(403, 'You can only start conversations with users you follow.');
         }
 
         return DB::transaction(function () use ($initiator, $recipient, $pairKey) {

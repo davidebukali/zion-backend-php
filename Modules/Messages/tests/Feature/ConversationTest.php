@@ -57,20 +57,20 @@ class ConversationTest extends TestCase
         ]);
     }
 
-    public function test_starting_conversation_requires_mutual_follow(): void
+    public function test_starting_conversation_requires_accepted_follow(): void
     {
         Sanctum::actingAs($this->userA);
 
-        // No follow at all
+        // 1. No follow at all -> 403
         $response = $this->postJson(route('api.conversations.store'), [
             'recipient_id' => $this->userB->id,
         ]);
         $response->assertStatus(403);
 
-        // One-way follow only
-        Follow::create([
-            'follower_id' => $this->userA->id,
-            'following_id' => $this->userB->id,
+        // 2. User B follows User A, but User A does NOT follow User B -> 403 for User A
+        $reverseFollow = Follow::create([
+            'follower_id' => $this->userB->id,
+            'following_id' => $this->userA->id,
             'status' => FollowStatus::ACCEPTED,
         ]);
 
@@ -78,11 +78,25 @@ class ConversationTest extends TestCase
             'recipient_id' => $this->userB->id,
         ]);
         $response->assertStatus(403);
+        $reverseFollow->delete();
 
-        // Make mutual
+        // 3. Pending follow from User A to User B -> 403
+        $pendingFollow = Follow::create([
+            'follower_id' => $this->userA->id,
+            'following_id' => $this->userB->id,
+            'status' => FollowStatus::PENDING,
+        ]);
+
+        $response = $this->postJson(route('api.conversations.store'), [
+            'recipient_id' => $this->userB->id,
+        ]);
+        $response->assertStatus(403);
+        $pendingFollow->delete();
+
+        // 4. One-way accepted follow from User A to User B (B does not follow A) -> 201
         Follow::create([
-            'follower_id' => $this->userB->id,
-            'following_id' => $this->userA->id,
+            'follower_id' => $this->userA->id,
+            'following_id' => $this->userB->id,
             'status' => FollowStatus::ACCEPTED,
         ]);
 
@@ -101,6 +115,14 @@ class ConversationTest extends TestCase
         $this->assertDatabaseHas('conversations', [
             'pair_key' => Conversation::pairKeyFor($this->userA->id, $this->userB->id),
         ]);
+
+        // 5. Once the conversation exists, recipient (User B) can also message back even without following A
+        $convId = $response->json('data.id');
+        Sanctum::actingAs($this->userB);
+        $replyResponse = $this->postJson(route('api.conversations.messages.store', $convId), [
+            'body' => 'Thanks for reaching out!',
+        ]);
+        $replyResponse->assertStatus(201);
     }
 
     public function test_conversation_endpoint_is_deterministic_for_both_users(): void
@@ -250,14 +272,64 @@ class ConversationTest extends TestCase
         $this->assertEquals('New message', $messages->json('data.0.body'));
     }
 
-    public function test_recipients_endpoint_returns_only_mutual_non_blocked(): void
+    public function test_recipients_endpoint_returns_accepted_follows_without_requiring_mutual_follow(): void
     {
-        $this->makeMutualFollow($this->userA, $this->userB);
-        $this->makeMutualFollow($this->userA, $this->userC);
+        // User A follows User B (accepted one-way follow: B does NOT follow A back)
+        Follow::create([
+            'follower_id' => $this->userA->id,
+            'following_id' => $this->userB->id,
+            'status' => FollowStatus::ACCEPTED,
+        ]);
 
+        // User C follows User A (accepted, but A does NOT follow C back)
+        Follow::create([
+            'follower_id' => $this->userC->id,
+            'following_id' => $this->userA->id,
+            'status' => FollowStatus::ACCEPTED,
+        ]);
+
+        // User D: User A has a pending follow toward D
+        $userD = User::create([
+            'name' => 'User D',
+            'email' => 'user_d@example.com',
+            'password' => bcrypt('password'),
+        ]);
+        Follow::create([
+            'follower_id' => $this->userA->id,
+            'following_id' => $userD->id,
+            'status' => FollowStatus::PENDING,
+        ]);
+
+        // User E: User A follows E (accepted), but User A has blocked E
+        $userE = User::create([
+            'name' => 'User E',
+            'email' => 'user_e@example.com',
+            'password' => bcrypt('password'),
+        ]);
+        Follow::create([
+            'follower_id' => $this->userA->id,
+            'following_id' => $userE->id,
+            'status' => FollowStatus::ACCEPTED,
+        ]);
         UserBlock::create([
             'blocker_id' => $this->userA->id,
-            'blocked_id' => $this->userC->id,
+            'blocked_id' => $userE->id,
+        ]);
+
+        // User F: User A follows F (accepted), but User F has blocked A
+        $userF = User::create([
+            'name' => 'User F',
+            'email' => 'user_f@example.com',
+            'password' => bcrypt('password'),
+        ]);
+        Follow::create([
+            'follower_id' => $this->userA->id,
+            'following_id' => $userF->id,
+            'status' => FollowStatus::ACCEPTED,
+        ]);
+        UserBlock::create([
+            'blocker_id' => $userF->id,
+            'blocked_id' => $this->userA->id,
         ]);
 
         Sanctum::actingAs($this->userA);
@@ -265,6 +337,7 @@ class ConversationTest extends TestCase
         $response->assertStatus(200);
 
         $data = $response->json('data');
+        // Only User B should be returned
         $this->assertCount(1, $data);
         $this->assertEquals($this->userB->id, $data[0]['id']);
     }

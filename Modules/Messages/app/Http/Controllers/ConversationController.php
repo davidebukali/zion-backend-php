@@ -110,7 +110,7 @@ class ConversationController extends Controller
      *
      * List Messageable Recipients
      *
-     * Retrieve a cursor-paginated list of mutual followers eligible for starting a direct conversation. Excludes users with an active block relationship.
+     * Retrieve a cursor-paginated list of users that the authenticated user follows with an accepted follow status eligible for starting a direct conversation. Excludes users with an active block relationship.
      *
      * @queryParam per_page integer Number of recipients per page. Default: 20. Example: 20
      * @queryParam cursor string Cursor token for pagination. Example: eyJpZCI6MX0
@@ -163,7 +163,7 @@ class ConversationController extends Controller
      *
      * Start or Get Conversation
      *
-     * Initiates a deterministic 1-on-1 direct conversation with a mutual follower, or retrieves the existing conversation if one already exists.
+     * Initiates a deterministic 1-on-1 direct conversation with an accepted follow, or retrieves the existing conversation if one already exists.
      *
      * @bodyParam recipient_id string required The ULID of the recipient user. Example: 01JBD1USER0000000000000002
      *
@@ -188,9 +188,9 @@ class ConversationController extends Controller
      *   },
      *   "meta": null
      * }
-     * @response 403 scenario="Not Mutual Followers or Blocked" {
+     * @response 403 scenario="Not Following or Blocked" {
      *   "success": false,
-     *   "message": "You can only start conversations with mutual followers.",
+     *   "message": "You can only start conversations with users you follow.",
      *   "errors": null
      * }
      * @response 422 scenario="Self Conversation" {
