@@ -32,6 +32,7 @@
 }
 
 html.dark {
+  color-scheme: dark;
   --color-surface: #161212;
   --color-surface-dim: #161212;
   --color-surface-bright: #3d3838;
@@ -147,3 +148,15 @@ html.dark {
 .glow-card-hover:hover {
   box-shadow: 0 14px 40px -6px rgba(198, 40, 40, 0.25);
 }
+
+/* Prevent Chrome / Safari autofill yellow & white background box */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: var(--color-on-surface) !important;
+  transition: background-color 5000000s ease-in-out 0s;
+  caret-color: var(--color-on-surface);
+}
+
