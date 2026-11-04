@@ -29,6 +29,57 @@ class ConversationController extends Controller
 {
     use RespondsWithApi;
 
+    /**
+     * @group Messages
+     *
+     * @subgroup Conversations
+     *
+     * @authenticated
+     *
+     * List Conversations
+     *
+     * Retrieve a cursor-paginated inbox list of 1-on-1 conversations for the authenticated user, including unread count, last message preview, and recipient details.
+     *
+     * @queryParam per_page integer Number of conversations per page. Default: 20. Example: 20
+     * @queryParam cursor string Cursor token for pagination. Example: eyJpZCI6MX0
+     * @queryParam q string Search conversations by participant name or username. Example: john
+     * @queryParam archived boolean Filter by archived status. Default: false. Example: false
+     *
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Conversations retrieved successfully.",
+     *   "data": [
+     *     {
+     *       "id": "01JBD1EXAMPLE00000000000001",
+     *       "created_by": "01JBD1USER0000000000000001",
+     *       "last_message_at": "2026-11-03T18:30:00.000000Z",
+     *       "unread_count": 2,
+     *       "is_archived": false,
+     *       "is_muted": false,
+     *       "recipient": {
+     *         "id": "01JBD1USER0000000000000002",
+     *         "name": "Jane Doe",
+     *         "username": "janedoe",
+     *         "avatar": null
+     *       },
+     *       "last_message": {
+     *         "id": "01JBD1MSG00000000000000001",
+     *         "sender_id": "01JBD1USER0000000000000002",
+     *         "body": "Hey, how are you?",
+     *         "is_deleted_for_everyone": false,
+     *         "created_at": "2026-11-03T18:30:00.000000Z"
+     *       },
+     *       "created_at": "2026-11-03T18:00:00.000000Z",
+     *       "updated_at": "2026-11-03T18:30:00.000000Z"
+     *     }
+     *   ],
+     *   "meta": {
+     *     "prev_cursor": null,
+     *     "next_cursor": null,
+     *     "per_page": 20
+     *   }
+     * }
+     */
     public function index(Request $request, ListConversations $listConversations)
     {
         $perPage = (int) $request->query('per_page', 20);
@@ -50,6 +101,39 @@ class ConversationController extends Controller
         );
     }
 
+    /**
+     * @group Messages
+     *
+     * @subgroup Conversations
+     *
+     * @authenticated
+     *
+     * List Messageable Recipients
+     *
+     * Retrieve a cursor-paginated list of mutual followers eligible for starting a direct conversation. Excludes users with an active block relationship.
+     *
+     * @queryParam per_page integer Number of recipients per page. Default: 20. Example: 20
+     * @queryParam cursor string Cursor token for pagination. Example: eyJpZCI6MX0
+     * @queryParam q string Search recipients by name or username. Example: jane
+     *
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Messageable recipients retrieved successfully.",
+     *   "data": [
+     *     {
+     *       "id": "01JBD1USER0000000000000002",
+     *       "name": "Jane Doe",
+     *       "username": "janedoe",
+     *       "avatar": null
+     *     }
+     *   ],
+     *   "meta": {
+     *     "prev_cursor": null,
+     *     "next_cursor": null,
+     *     "per_page": 20
+     *   }
+     * }
+     */
     public function recipients(Request $request, ListMessageableRecipients $listMessageableRecipients)
     {
         $perPage = (int) $request->query('per_page', 20);
@@ -70,6 +154,51 @@ class ConversationController extends Controller
         );
     }
 
+    /**
+     * @group Messages
+     *
+     * @subgroup Conversations
+     *
+     * @authenticated
+     *
+     * Start or Get Conversation
+     *
+     * Initiates a deterministic 1-on-1 direct conversation with a mutual follower, or retrieves the existing conversation if one already exists.
+     *
+     * @bodyParam recipient_id string required The ULID of the recipient user. Example: 01JBD1USER0000000000000002
+     *
+     * @response 201 {
+     *   "success": true,
+     *   "message": "Conversation initialized successfully.",
+     *   "data": {
+     *     "id": "01JBD1EXAMPLE00000000000001",
+     *     "created_by": "01JBD1USER0000000000000001",
+     *     "last_message_at": null,
+     *     "unread_count": 0,
+     *     "is_archived": false,
+     *     "is_muted": false,
+     *     "recipient": {
+     *       "id": "01JBD1USER0000000000000002",
+     *       "name": "Jane Doe",
+     *       "username": "janedoe",
+     *       "avatar": null
+     *     },
+     *     "created_at": "2026-11-03T18:00:00.000000Z",
+     *     "updated_at": "2026-11-03T18:00:00.000000Z"
+     *   },
+     *   "meta": null
+     * }
+     * @response 403 scenario="Not Mutual Followers or Blocked" {
+     *   "success": false,
+     *   "message": "You can only start conversations with mutual followers.",
+     *   "errors": null
+     * }
+     * @response 422 scenario="Self Conversation" {
+     *   "success": false,
+     *   "message": "You cannot start a conversation with yourself.",
+     *   "errors": null
+     * }
+     */
     public function store(StartConversationRequest $request, StartOrGetConversation $startOrGetConversation)
     {
         $recipient = User::findOrFail($request->validated('recipient_id'));
@@ -82,6 +211,48 @@ class ConversationController extends Controller
         );
     }
 
+    /**
+     * @group Messages
+     *
+     * @subgroup Conversations
+     *
+     * @authenticated
+     *
+     * Get Conversation Details
+     *
+     * Retrieve the details of a specific conversation, including participant states, read receipts, and message transmission permissions.
+     *
+     * @urlParam conversation string required The ULID of the conversation. Example: 01JBD1EXAMPLE00000000000001
+     *
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Conversation retrieved successfully.",
+     *   "data": {
+     *     "id": "01JBD1EXAMPLE00000000000001",
+     *     "created_by": "01JBD1USER0000000000000001",
+     *     "last_message_at": "2026-11-03T18:30:00.000000Z",
+     *     "unread_count": 0,
+     *     "is_archived": false,
+     *     "is_muted": false,
+     *     "can_send_messages": true,
+     *     "has_blocked_participant": false,
+     *     "recipient": {
+     *       "id": "01JBD1USER0000000000000002",
+     *       "name": "Jane Doe",
+     *       "username": "janedoe",
+     *       "avatar": null
+     *     },
+     *     "created_at": "2026-11-03T18:00:00.000000Z",
+     *     "updated_at": "2026-11-03T18:30:00.000000Z"
+     *   },
+     *   "meta": null
+     * }
+     * @response 403 scenario="Not Participant" {
+     *   "success": false,
+     *   "message": "You are not a participant in this conversation.",
+     *   "errors": null
+     * }
+     */
     public function show(Request $request, Conversation $conversation)
     {
         if (Gate::forUser($request->user())->denies('view', $conversation)) {
@@ -101,6 +272,26 @@ class ConversationController extends Controller
         );
     }
 
+    /**
+     * @group Messages
+     *
+     * @subgroup Conversations
+     *
+     * @authenticated
+     *
+     * Hide and Clear Conversation
+     *
+     * Hides the conversation from the authenticated user's inbox and clears their message history. If the other user sends a new message later, the conversation resurfaces displaying only subsequent messages.
+     *
+     * @urlParam conversation string required The ULID of the conversation. Example: 01JBD1EXAMPLE00000000000001
+     *
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Conversation hidden successfully.",
+     *   "data": null,
+     *   "meta": null
+     * }
+     */
     public function destroy(Request $request, Conversation $conversation, HideConversation $hideConversation)
     {
         $hideConversation($request->user(), $conversation);
@@ -111,6 +302,26 @@ class ConversationController extends Controller
         );
     }
 
+    /**
+     * @group Messages
+     *
+     * @subgroup Conversations
+     *
+     * @authenticated
+     *
+     * Mark Conversation as Read
+     *
+     * Marks all received messages in the conversation as read, advancing the user's read watermark and broadcasting `message.read` to the sender over Reverb.
+     *
+     * @urlParam conversation string required The ULID of the conversation. Example: 01JBD1EXAMPLE00000000000001
+     *
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Conversation marked as read.",
+     *   "data": null,
+     *   "meta": null
+     * }
+     */
     public function read(Request $request, Conversation $conversation, MarkConversationAsRead $markConversationAsRead)
     {
         $markConversationAsRead($request->user(), $conversation);
@@ -121,6 +332,31 @@ class ConversationController extends Controller
         );
     }
 
+    /**
+     * @group Messages
+     *
+     * @subgroup Conversations
+     *
+     * @authenticated
+     *
+     * Send Typing Indicator
+     *
+     * Broadcasts a real-time `typing.started` event over Reverb to the other participant on private channel `private-conversations.{conversation_id}`.
+     *
+     * @urlParam conversation string required The ULID of the conversation. Example: 01JBD1EXAMPLE00000000000001
+     *
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Typing notification sent.",
+     *   "data": null,
+     *   "meta": null
+     * }
+     * @response 403 scenario="Blocked" {
+     *   "success": false,
+     *   "message": "You cannot send typing indicators in this conversation.",
+     *   "errors": null
+     * }
+     */
     public function typing(Request $request, Conversation $conversation)
     {
         if (Gate::forUser($request->user())->denies('sendMessage', $conversation)) {
@@ -135,6 +371,26 @@ class ConversationController extends Controller
         );
     }
 
+    /**
+     * @group Messages
+     *
+     * @subgroup Conversations
+     *
+     * @authenticated
+     *
+     * Archive Conversation
+     *
+     * Archives the conversation for the authenticated user, moving it out of the active inbox.
+     *
+     * @urlParam conversation string required The ULID of the conversation. Example: 01JBD1EXAMPLE00000000000001
+     *
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Conversation archived successfully.",
+     *   "data": null,
+     *   "meta": null
+     * }
+     */
     public function archive(Request $request, Conversation $conversation, ArchiveConversation $archiveConversation)
     {
         $archiveConversation($request->user(), $conversation);
@@ -145,6 +401,26 @@ class ConversationController extends Controller
         );
     }
 
+    /**
+     * @group Messages
+     *
+     * @subgroup Conversations
+     *
+     * @authenticated
+     *
+     * Unarchive Conversation
+     *
+     * Restores an archived conversation to the user's primary inbox view.
+     *
+     * @urlParam conversation string required The ULID of the conversation. Example: 01JBD1EXAMPLE00000000000001
+     *
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Conversation unarchived successfully.",
+     *   "data": null,
+     *   "meta": null
+     * }
+     */
     public function unarchive(Request $request, Conversation $conversation, UnarchiveConversation $unarchiveConversation)
     {
         $unarchiveConversation($request->user(), $conversation);
@@ -155,6 +431,26 @@ class ConversationController extends Controller
         );
     }
 
+    /**
+     * @group Messages
+     *
+     * @subgroup Conversations
+     *
+     * @authenticated
+     *
+     * Mute Conversation
+     *
+     * Mutes push notifications for incoming messages in this conversation.
+     *
+     * @urlParam conversation string required The ULID of the conversation. Example: 01JBD1EXAMPLE00000000000001
+     *
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Conversation muted successfully.",
+     *   "data": null,
+     *   "meta": null
+     * }
+     */
     public function mute(Request $request, Conversation $conversation, MuteConversation $muteConversation)
     {
         $muteConversation($request->user(), $conversation);
@@ -165,6 +461,26 @@ class ConversationController extends Controller
         );
     }
 
+    /**
+     * @group Messages
+     *
+     * @subgroup Conversations
+     *
+     * @authenticated
+     *
+     * Unmute Conversation
+     *
+     * Unmutes notifications for incoming messages in this conversation.
+     *
+     * @urlParam conversation string required The ULID of the conversation. Example: 01JBD1EXAMPLE00000000000001
+     *
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Conversation unmuted successfully.",
+     *   "data": null,
+     *   "meta": null
+     * }
+     */
     public function unmute(Request $request, Conversation $conversation, UnmuteConversation $unmuteConversation)
     {
         $unmuteConversation($request->user(), $conversation);
@@ -175,6 +491,36 @@ class ConversationController extends Controller
         );
     }
 
+    /**
+     * @group Messages
+     *
+     * @subgroup Moderation
+     *
+     * @authenticated
+     *
+     * Report Conversation
+     *
+     * Submits a moderation report against an entire conversation thread.
+     *
+     * @urlParam conversation string required The ULID of the conversation to report. Example: 01JBD1EXAMPLE00000000000001
+     * @bodyParam reason string required The category of violation. Must be one of: `spam`, `harassment`, `hate_speech`, `inappropriate_content`, `violence`, `other`. Example: harassment
+     * @bodyParam description string Optional additional details for the moderation team. Max: 1000 characters. Example: Abusive language in thread.
+     *
+     * @response 201 {
+     *   "success": true,
+     *   "message": "Conversation reported successfully.",
+     *   "data": {
+     *     "id": "01JBD1REP00000000000000001",
+     *     "conversation_id": "01JBD1EXAMPLE00000000000001",
+     *     "message_id": null,
+     *     "reason": "harassment",
+     *     "description": "Abusive language in thread.",
+     *     "status": "pending",
+     *     "created_at": "2026-11-03T19:00:00.000000Z"
+     *   },
+     *   "meta": null
+     * }
+     */
     public function report(ReportMessageRequest $request, Conversation $conversation, ReportConversation $reportConversation)
     {
         $report = $reportConversation($request->user(), $conversation, $request->validated());
