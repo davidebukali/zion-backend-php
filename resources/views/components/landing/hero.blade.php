@@ -74,19 +74,34 @@
 
                     <!-- New Registration Success Notification -->
                     <div x-show="status === 'success'" x-transition
-                        class="p-3 rounded-xl bg-secondary-container/40 border border-primary/20 text-xs text-primary font-semibold flex items-center gap-2 mt-1"
+                        class="p-3.5 rounded-2xl bg-secondary-container/40 border border-primary/20 text-xs text-primary font-semibold flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-1"
                         x-cloak>
-                        <span class="material-symbols-outlined text-[18px]">check_circle</span>
-                        <span x-text="message || 'Your early beta slot is reserved! God bless you.'"></span>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px] shrink-0">check_circle</span>
+                            <span x-text="message || 'Your early beta slot is reserved! God bless you.'"></span>
+                        </div>
+                        <button type="button"
+                                @click="$dispatch('open-waitlist-confirmation', { status: 'success', email: email })"
+                                class="inline-flex items-center gap-1 text-[11px] font-bold underline hover:no-underline text-primary shrink-0 self-end sm:self-auto cursor-pointer">
+                            <span>Help us test early: Share</span>
+                            <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                        </button>
                     </div>
 
                     <!-- Already Registered Notification -->
                     <div x-show="status === 'already_registered'" x-transition
-                        class="p-3 rounded-xl bg-surface-container-highest border border-primary/20 text-xs text-on-surface font-semibold flex items-center gap-2 mt-1"
+                        class="p-3.5 rounded-2xl bg-surface-container-highest border border-primary/20 text-xs text-on-surface font-semibold flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-1"
                         x-cloak>
-                        <span class="material-symbols-outlined text-[18px] text-primary">mark_email_read</span>
-                        <span
-                            x-text="message || 'You\'re already on the waitlist! We\'ll reach out as soon as your invite is ready.'"></span>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px] text-primary shrink-0">mark_email_read</span>
+                            <span x-text="message || 'You\'re already on the waitlist! We\'ll reach out as soon as your invite is ready.'"></span>
+                        </div>
+                        <button type="button"
+                                @click="$dispatch('open-waitlist-confirmation', { status: 'already_registered', email: email })"
+                                class="inline-flex items-center gap-1 text-[11px] font-bold underline hover:no-underline text-primary shrink-0 self-end sm:self-auto cursor-pointer">
+                            <span>Help us test early: Share</span>
+                            <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                        </button>
                     </div>
 
                     <div x-show="errorMessage" x-transition class="p-2 text-xs text-primary font-medium"

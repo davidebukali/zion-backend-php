@@ -82,6 +82,8 @@ Alpine.data('waitlistForm', (defaultSource = 'hero') => ({
                     });
                 }
 
+                const submittedEmail = this.email;
+
                 if (data.status === 'already_registered') {
                     this.status = 'already_registered';
                     this.message = data.message || "You're already on the waitlist! We'll reach out as soon as your invite is ready.";
@@ -90,6 +92,15 @@ Alpine.data('waitlistForm', (defaultSource = 'hero') => ({
                     this.message = data.message || "Your early beta slot is reserved! Check your inbox for confirmation.";
                     this.email = '';
                 }
+
+                // Trigger confirmation loop modal
+                window.dispatchEvent(new CustomEvent('open-waitlist-confirmation', {
+                    detail: {
+                        status: data.status,
+                        email: submittedEmail,
+                        message: this.message
+                    }
+                }));
 
                 setTimeout(() => {
                     this.status = 'idle';
@@ -108,6 +119,99 @@ Alpine.data('waitlistForm', (defaultSource = 'hero') => ({
         } catch (err) {
             this.status = 'idle';
             this.errorMessage = 'Network connection error. Please try again shortly.';
+        }
+    }
+}));
+
+Alpine.data('waitlistConfirmationModal', () => ({
+    open: false,
+    status: 'success', // 'success' | 'already_registered'
+    email: '',
+    copied: false,
+    copyToast: '',
+    canNativeShare: typeof navigator !== 'undefined' && typeof navigator.share === 'function',
+    shareUrl: window.location.origin || 'https://tsiyonapp.com',
+    shareText: 'I just reserved my early beta spot for Tsiyon — a distraction-free social home for believers to share Scripture and fellowship. Join the waitlist:',
+
+    init() {
+        window.addEventListener('open-waitlist-confirmation', (e) => {
+            this.status = e.detail?.status || 'success';
+            this.email = e.detail?.email || '';
+            this.open = true;
+            this.copied = false;
+            this.copyToast = '';
+            document.body.style.overflow = 'hidden';
+        });
+    },
+
+    close() {
+        this.open = false;
+        document.body.style.overflow = '';
+    },
+
+    async shareNative() {
+        if (this.canNativeShare) {
+            try {
+                await navigator.share({
+                    title: 'Tsiyon — A Social Home Built for What Matters Most',
+                    text: `${this.shareText} ${this.shareUrl}`,
+                    url: this.shareUrl
+                });
+            } catch (err) {
+                // User dismissed share sheet
+            }
+        }
+    },
+
+    shareWhatsApp() {
+        const text = encodeURIComponent(`${this.shareText} ${this.shareUrl}`);
+        window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank', 'noopener,noreferrer');
+    },
+
+    async shareLinkedIn() {
+        const fullShare = `${this.shareText} ${this.shareUrl}`;
+
+        // Copy to clipboard as safe backup
+        try {
+            await navigator.clipboard.writeText(fullShare);
+            this.copied = true;
+            this.copyToast = 'Invite text copied! Paste it into your LinkedIn post.';
+            setTimeout(() => {
+                this.copied = false;
+            }, 4000);
+        } catch (e) {}
+
+        // LinkedIn post composer intent with pre-filled message text & link
+        const linkedInUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(fullShare)}`;
+        window.open(linkedInUrl, '_blank', 'noopener,noreferrer');
+    },
+
+    shareTwitter() {
+        const text = encodeURIComponent(this.shareText);
+        const url = encodeURIComponent(this.shareUrl);
+        window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'noopener,noreferrer');
+    },
+
+    async copyForInstagram() {
+        const fullShare = `${this.shareText} ${this.shareUrl}`;
+        this.copyToast = 'Link and invite text copied! Paste it in your Instagram Story, Bio, or DM.';
+        try {
+            await navigator.clipboard.writeText(fullShare);
+            this.copied = true;
+            setTimeout(() => {
+                this.copied = false;
+            }, 3500);
+        } catch (e) {
+            const input = document.createElement('textarea');
+            input.value = fullShare;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            this.copied = true;
+            setTimeout(() => {
+                this.copied = false;
+            }, 3500);
         }
     }
 }));

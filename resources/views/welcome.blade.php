@@ -13,4 +13,7 @@
         <!-- Reusable Section 3: Community & Early Beta Waitlist -->
         <x-landing.waitlist />
     </div>
+
+    <!-- Waitlist Confirmation & Viral Sharing Modal -->
+    <x-landing.confirmation-modal />
 </x-layouts.app>
