@@ -3,8 +3,11 @@
 namespace Modules\Messages\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Modules\Auth\Models\User;
+use Modules\Media\Enums\MediaStatus;
+use Modules\Media\Models\Media;
 use Modules\Messages\Models\Conversation;
 use Modules\Messages\Models\Message;
 use Modules\SocialGraph\Enums\FollowStatus;
@@ -107,10 +110,16 @@ class ConversationTest extends TestCase
             ->assertJson([
                 'success' => true,
                 'data' => [
+                    'created_by' => $this->userA->id,
                     'can_send_messages' => true,
                     'has_blocked_participant' => false,
+                    'recipient' => [
+                        'id' => $this->userB->id,
+                        'name' => 'User B',
+                    ],
                 ],
             ]);
+        $this->assertArrayNotHasKey('participant', $response->json('data'));
 
         $this->assertDatabaseHas('conversations', [
             'pair_key' => Conversation::pairKeyFor($this->userA->id, $this->userB->id),
@@ -340,5 +349,96 @@ class ConversationTest extends TestCase
         // Only User B should be returned
         $this->assertCount(1, $data);
         $this->assertEquals($this->userB->id, $data[0]['id']);
+    }
+
+    public function test_conversation_recipient_structure_and_display_name_fallback(): void
+    {
+        $this->makeMutualFollow($this->userA, $this->userB);
+
+        // Scenario 1: User B has a profile with a display_name and username
+        $this->userB->profile()->create([
+            'username' => 'custom_handle',
+            'display_name' => 'Custom Display Name',
+        ]);
+
+        Sanctum::actingAs($this->userA);
+        $res = $this->postJson(route('api.conversations.store'), [
+            'recipient_id' => $this->userB->id,
+        ]);
+
+        $res->assertStatus(201);
+        $data = $res->json('data');
+        $this->assertArrayNotHasKey('participant', $data);
+        $this->assertEquals($this->userA->id, $data['created_by']);
+        $this->assertEquals($this->userB->id, $data['recipient']['id']);
+        $this->assertEquals('Custom Display Name', $data['recipient']['name']);
+        $this->assertEquals('custom_handle', $data['recipient']['username']);
+        $this->assertNull($data['recipient']['avatar']);
+
+        // Check show endpoint returns identical recipient structure
+        $showRes = $this->getJson(route('api.conversations.show', $data['id']));
+        $showRes->assertStatus(200);
+        $showData = $showRes->json('data');
+        $this->assertArrayNotHasKey('participant', $showData);
+        $this->assertEquals('Custom Display Name', $showData['recipient']['name']);
+
+        // Check inbox index endpoint returns recipient structure
+        $indexRes = $this->getJson(route('api.conversations.index'));
+        $indexRes->assertStatus(200);
+        $indexItem = collect($indexRes->json('data'))->firstWhere('id', $data['id']);
+        $this->assertNotNull($indexItem);
+        $this->assertArrayNotHasKey('participant', $indexItem);
+        $this->assertEquals('Custom Display Name', $indexItem['recipient']['name']);
+
+        // Scenario 2: When profile display_name is cleared, falls back to User's name
+        $this->userB->profile->update([
+            'display_name' => null,
+        ]);
+
+        $showRes2 = $this->getJson(route('api.conversations.show', $data['id']));
+        $showRes2->assertStatus(200);
+        $this->assertEquals('User B', $showRes2->json('data.recipient.name'));
+    }
+
+    public function test_conversation_recipient_avatar_lifecycle(): void
+    {
+        $this->makeMutualFollow($this->userA, $this->userB);
+
+        $media = Media::create([
+            'id' => (string) Str::ulid(),
+            'user_id' => $this->userB->id,
+            'disk' => 'r2',
+            'path' => 'avatars/test.jpg',
+            'type' => 'image',
+            'mime_type' => 'image/jpeg',
+            'size' => 2048,
+            'status' => MediaStatus::Pending,
+        ]);
+
+        $this->userB->profile()->create([
+            'username' => 'avatar_user',
+            'avatar_media_id' => $media->id,
+        ]);
+
+        Sanctum::actingAs($this->userA);
+        $res = $this->postJson(route('api.conversations.store'), [
+            'recipient_id' => $this->userB->id,
+        ]);
+        $res->assertStatus(201);
+
+        // When avatar status is pending, avatar must be null so clients don't receive null url
+        $this->assertNull($res->json('data.recipient.avatar'));
+
+        // When avatar status becomes ready, avatar object with id and non-null url is returned
+        $media->update(['status' => MediaStatus::Ready]);
+
+        $showRes = $this->getJson(route('api.conversations.show', $res->json('data.id')));
+        $showRes->assertStatus(200);
+
+        $avatar = $showRes->json('data.recipient.avatar');
+        $this->assertNotNull($avatar);
+        $this->assertEquals($media->id, $avatar['id']);
+        $this->assertNotNull($avatar['url']);
+        $this->assertIsString($avatar['url']);
     }
 }

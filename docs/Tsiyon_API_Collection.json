@@ -10,7 +10,7 @@
     ],
     "info": {
         "name": "Tsiyon API Documentation",
-        "_postman_id": "61181d75-38a8-47e6-afdb-430e86eeb425",
+        "_postman_id": "cff08750-08cc-4da2-8cb3-8415903342c1",
         "description": "",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
     },
@@ -41,7 +41,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"Jane Doe\",\"email\":\"jane@example.com\",\"password\":\"secret123\",\"account_type\":\"individual\",\"category\":\"a\",\"location\":\"y\",\"church_id\":\"architecto\",\"church_name\":\"n\",\"church_location\":\"g\"}"
+                            "raw": "{\"name\":\"Jane Doe\",\"email\":\"jane@example.com\",\"password\":\"secret123\",\"account_type\":\"organization\",\"category\":\"a\",\"location\":\"y\",\"church_id\":\"architecto\",\"church_name\":\"n\",\"church_location\":\"g\"}"
                         },
                         "description": "",
                         "auth": {
@@ -1728,7 +1728,7 @@
                                 {
                                     "header": [],
                                     "code": 200,
-                                    "body": "{\n  \"success\": true,\n  \"message\": \"Conversations retrieved successfully.\",\n  \"data\": [\n    {\n      \"id\": \"01JBD1EXAMPLE00000000000001\",\n      \"created_by\": \"01JBD1USER0000000000000001\",\n      \"last_message_at\": \"2026-11-03T18:30:00.000000Z\",\n      \"unread_count\": 2,\n      \"is_archived\": false,\n      \"is_muted\": false,\n      \"recipient\": {\n        \"id\": \"01JBD1USER0000000000000002\",\n        \"name\": \"Jane Doe\",\n        \"username\": \"janedoe\",\n        \"avatar\": null\n      },\n      \"last_message\": {\n        \"id\": \"01JBD1MSG00000000000000001\",\n        \"sender_id\": \"01JBD1USER0000000000000002\",\n        \"body\": \"Hey, how are you?\",\n        \"is_deleted_for_everyone\": false,\n        \"created_at\": \"2026-11-03T18:30:00.000000Z\"\n      },\n      \"created_at\": \"2026-11-03T18:00:00.000000Z\",\n      \"updated_at\": \"2026-11-03T18:30:00.000000Z\"\n    }\n  ],\n  \"meta\": {\n    \"prev_cursor\": null,\n    \"next_cursor\": null,\n    \"per_page\": 20\n  }\n}",
+                                    "body": "{\n  \"success\": true,\n  \"message\": \"Conversations retrieved successfully.\",\n  \"data\": [\n    {\n      \"id\": \"01JBD1EXAMPLE00000000000001\",\n      \"created_by\": \"01JBD1USER0000000000000001\",\n      \"recipient\": {\n        \"id\": \"01JBD1USER0000000000000002\",\n        \"name\": \"Jane Doe\",\n        \"username\": \"janedoe\",\n        \"avatar\": null\n      },\n      \"last_message\": {\n        \"id\": \"01JBD1MSG00000000000000001\",\n        \"sender_id\": \"01JBD1USER0000000000000002\",\n        \"body\": \"Hey, how are you?\",\n        \"is_deleted_for_everyone\": false,\n        \"created_at\": \"2026-11-03T18:30:00.000000Z\"\n      },\n      \"unread_count\": 2,\n      \"last_read_message_id\": null,\n      \"partner_last_read_message_id\": null,\n      \"is_muted\": false,\n      \"is_archived\": false,\n      \"can_send_messages\": true,\n      \"has_blocked_participant\": false,\n      \"last_message_at\": \"2026-11-03T18:30:00.000000Z\",\n      \"created_at\": \"2026-11-03T18:00:00.000000Z\",\n      \"updated_at\": \"2026-11-03T18:30:00.000000Z\"\n    }\n  ],\n  \"meta\": {\n    \"prev_cursor\": null,\n    \"next_cursor\": null,\n    \"per_page\": 20\n  }\n}",
                                     "name": ""
                                 }
                             ]
@@ -1814,7 +1814,7 @@
                                 {
                                     "header": [],
                                     "code": 201,
-                                    "body": "{\n  \"success\": true,\n  \"message\": \"Conversation initialized successfully.\",\n  \"data\": {\n    \"id\": \"01JBD1EXAMPLE00000000000001\",\n    \"created_by\": \"01JBD1USER0000000000000001\",\n    \"last_message_at\": null,\n    \"unread_count\": 0,\n    \"is_archived\": false,\n    \"is_muted\": false,\n    \"recipient\": {\n      \"id\": \"01JBD1USER0000000000000002\",\n      \"name\": \"Jane Doe\",\n      \"username\": \"janedoe\",\n      \"avatar\": null\n    },\n    \"created_at\": \"2026-11-03T18:00:00.000000Z\",\n    \"updated_at\": \"2026-11-03T18:00:00.000000Z\"\n  },\n  \"meta\": null\n}",
+                                    "body": "{\n  \"success\": true,\n  \"message\": \"Conversation initialized successfully.\",\n  \"data\": {\n    \"id\": \"01JBD1EXAMPLE00000000000001\",\n    \"created_by\": \"01JBD1USER0000000000000001\",\n    \"recipient\": {\n      \"id\": \"01JBD1USER0000000000000002\",\n      \"name\": \"Jane Doe\",\n      \"username\": \"janedoe\",\n      \"avatar\": null\n    },\n    \"last_message\": null,\n    \"unread_count\": 0,\n    \"last_read_message_id\": null,\n    \"partner_last_read_message_id\": null,\n    \"is_muted\": false,\n    \"is_archived\": false,\n    \"can_send_messages\": true,\n    \"has_blocked_participant\": false,\n    \"last_message_at\": \"2026-11-03T18:00:00.000000Z\",\n    \"created_at\": \"2026-11-03T18:00:00.000000Z\",\n    \"updated_at\": \"2026-11-03T18:00:00.000000Z\"\n  },\n  \"meta\": null\n}",
                                     "name": ""
                                 },
                                 {
@@ -1872,7 +1872,7 @@
                                 {
                                     "header": [],
                                     "code": 200,
-                                    "body": "{\n  \"success\": true,\n  \"message\": \"Conversation retrieved successfully.\",\n  \"data\": {\n    \"id\": \"01JBD1EXAMPLE00000000000001\",\n    \"created_by\": \"01JBD1USER0000000000000001\",\n    \"last_message_at\": \"2026-11-03T18:30:00.000000Z\",\n    \"unread_count\": 0,\n    \"is_archived\": false,\n    \"is_muted\": false,\n    \"can_send_messages\": true,\n    \"has_blocked_participant\": false,\n    \"recipient\": {\n      \"id\": \"01JBD1USER0000000000000002\",\n      \"name\": \"Jane Doe\",\n      \"username\": \"janedoe\",\n      \"avatar\": null\n    },\n    \"created_at\": \"2026-11-03T18:00:00.000000Z\",\n    \"updated_at\": \"2026-11-03T18:30:00.000000Z\"\n  },\n  \"meta\": null\n}",
+                                    "body": "{\n  \"success\": true,\n  \"message\": \"Conversation retrieved successfully.\",\n  \"data\": {\n    \"id\": \"01JBD1EXAMPLE00000000000001\",\n    \"created_by\": \"01JBD1USER0000000000000001\",\n    \"recipient\": {\n      \"id\": \"01JBD1USER0000000000000002\",\n      \"name\": \"Jane Doe\",\n      \"username\": \"janedoe\",\n      \"avatar\": null\n    },\n    \"last_message\": null,\n    \"unread_count\": 0,\n    \"last_read_message_id\": null,\n    \"partner_last_read_message_id\": null,\n    \"is_muted\": false,\n    \"is_archived\": false,\n    \"can_send_messages\": true,\n    \"has_blocked_participant\": false,\n    \"last_message_at\": \"2026-11-03T18:30:00.000000Z\",\n    \"created_at\": \"2026-11-03T18:00:00.000000Z\",\n    \"updated_at\": \"2026-11-03T18:30:00.000000Z\"\n  },\n  \"meta\": null\n}",
                                     "name": ""
                                 },
                                 {
@@ -3319,7 +3319,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"q\":\"b\",\"type\":\"all\",\"per_page\":22}"
+                            "raw": "{\"q\":\"b\",\"type\":\"posts\",\"per_page\":22}"
                         },
                         "description": ""
                     },

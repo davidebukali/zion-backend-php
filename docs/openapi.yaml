@@ -123,7 +123,7 @@ paths:
                 account_type:
                   type: string
                   description: ''
-                  example: individual
+                  example: organization
                   enum:
                     - individual
                     - organization
@@ -2139,10 +2139,6 @@ paths:
                     -
                       id: 01JBD1EXAMPLE00000000000001
                       created_by: 01JBD1USER0000000000000001
-                      last_message_at: '2026-11-03T18:30:00.000000Z'
-                      unread_count: 2
-                      is_archived: false
-                      is_muted: false
                       recipient:
                         id: 01JBD1USER0000000000000002
                         name: 'Jane Doe'
@@ -2154,6 +2150,14 @@ paths:
                         body: 'Hey, how are you?'
                         is_deleted_for_everyone: false
                         created_at: '2026-11-03T18:30:00.000000Z'
+                      unread_count: 2
+                      last_read_message_id: null
+                      partner_last_read_message_id: null
+                      is_muted: false
+                      is_archived: false
+                      can_send_messages: true
+                      has_blocked_participant: false
+                      last_message_at: '2026-11-03T18:30:00.000000Z'
                       created_at: '2026-11-03T18:00:00.000000Z'
                       updated_at: '2026-11-03T18:30:00.000000Z'
                   meta:
@@ -2173,10 +2177,6 @@ paths:
                       -
                         id: 01JBD1EXAMPLE00000000000001
                         created_by: 01JBD1USER0000000000000001
-                        last_message_at: '2026-11-03T18:30:00.000000Z'
-                        unread_count: 2
-                        is_archived: false
-                        is_muted: false
                         recipient:
                           id: 01JBD1USER0000000000000002
                           name: 'Jane Doe'
@@ -2188,6 +2188,14 @@ paths:
                           body: 'Hey, how are you?'
                           is_deleted_for_everyone: false
                           created_at: '2026-11-03T18:30:00.000000Z'
+                        unread_count: 2
+                        last_read_message_id: null
+                        partner_last_read_message_id: null
+                        is_muted: false
+                        is_archived: false
+                        can_send_messages: true
+                        has_blocked_participant: false
+                        last_message_at: '2026-11-03T18:30:00.000000Z'
                         created_at: '2026-11-03T18:00:00.000000Z'
                         updated_at: '2026-11-03T18:30:00.000000Z'
                     items:
@@ -2199,18 +2207,6 @@ paths:
                         created_by:
                           type: string
                           example: 01JBD1USER0000000000000001
-                        last_message_at:
-                          type: string
-                          example: '2026-11-03T18:30:00.000000Z'
-                        unread_count:
-                          type: integer
-                          example: 2
-                        is_archived:
-                          type: boolean
-                          example: false
-                        is_muted:
-                          type: boolean
-                          example: false
                         recipient:
                           type: object
                           properties:
@@ -2245,6 +2241,32 @@ paths:
                             created_at:
                               type: string
                               example: '2026-11-03T18:30:00.000000Z'
+                        unread_count:
+                          type: integer
+                          example: 2
+                        last_read_message_id:
+                          type: string
+                          example: null
+                          nullable: true
+                        partner_last_read_message_id:
+                          type: string
+                          example: null
+                          nullable: true
+                        is_muted:
+                          type: boolean
+                          example: false
+                        is_archived:
+                          type: boolean
+                          example: false
+                        can_send_messages:
+                          type: boolean
+                          example: true
+                        has_blocked_participant:
+                          type: boolean
+                          example: false
+                        last_message_at:
+                          type: string
+                          example: '2026-11-03T18:30:00.000000Z'
                         created_at:
                           type: string
                           example: '2026-11-03T18:00:00.000000Z'
@@ -2285,15 +2307,20 @@ paths:
                   data:
                     id: 01JBD1EXAMPLE00000000000001
                     created_by: 01JBD1USER0000000000000001
-                    last_message_at: null
-                    unread_count: 0
-                    is_archived: false
-                    is_muted: false
                     recipient:
                       id: 01JBD1USER0000000000000002
                       name: 'Jane Doe'
                       username: janedoe
                       avatar: null
+                    last_message: null
+                    unread_count: 0
+                    last_read_message_id: null
+                    partner_last_read_message_id: null
+                    is_muted: false
+                    is_archived: false
+                    can_send_messages: true
+                    has_blocked_participant: false
+                    last_message_at: '2026-11-03T18:00:00.000000Z'
                     created_at: '2026-11-03T18:00:00.000000Z'
                     updated_at: '2026-11-03T18:00:00.000000Z'
                   meta: null
@@ -2313,19 +2340,6 @@ paths:
                       created_by:
                         type: string
                         example: 01JBD1USER0000000000000001
-                      last_message_at:
-                        type: string
-                        example: null
-                        nullable: true
-                      unread_count:
-                        type: integer
-                        example: 0
-                      is_archived:
-                        type: boolean
-                        example: false
-                      is_muted:
-                        type: boolean
-                        example: false
                       recipient:
                         type: object
                         properties:
@@ -2342,6 +2356,36 @@ paths:
                             type: string
                             example: null
                             nullable: true
+                      last_message:
+                        type: string
+                        example: null
+                        nullable: true
+                      unread_count:
+                        type: integer
+                        example: 0
+                      last_read_message_id:
+                        type: string
+                        example: null
+                        nullable: true
+                      partner_last_read_message_id:
+                        type: string
+                        example: null
+                        nullable: true
+                      is_muted:
+                        type: boolean
+                        example: false
+                      is_archived:
+                        type: boolean
+                        example: false
+                      can_send_messages:
+                        type: boolean
+                        example: true
+                      has_blocked_participant:
+                        type: boolean
+                        example: false
+                      last_message_at:
+                        type: string
+                        example: '2026-11-03T18:00:00.000000Z'
                       created_at:
                         type: string
                         example: '2026-11-03T18:00:00.000000Z'
@@ -2530,17 +2574,20 @@ paths:
                   data:
                     id: 01JBD1EXAMPLE00000000000001
                     created_by: 01JBD1USER0000000000000001
-                    last_message_at: '2026-11-03T18:30:00.000000Z'
-                    unread_count: 0
-                    is_archived: false
-                    is_muted: false
-                    can_send_messages: true
-                    has_blocked_participant: false
                     recipient:
                       id: 01JBD1USER0000000000000002
                       name: 'Jane Doe'
                       username: janedoe
                       avatar: null
+                    last_message: null
+                    unread_count: 0
+                    last_read_message_id: null
+                    partner_last_read_message_id: null
+                    is_muted: false
+                    is_archived: false
+                    can_send_messages: true
+                    has_blocked_participant: false
+                    last_message_at: '2026-11-03T18:30:00.000000Z'
                     created_at: '2026-11-03T18:00:00.000000Z'
                     updated_at: '2026-11-03T18:30:00.000000Z'
                   meta: null
@@ -2560,24 +2607,6 @@ paths:
                       created_by:
                         type: string
                         example: 01JBD1USER0000000000000001
-                      last_message_at:
-                        type: string
-                        example: '2026-11-03T18:30:00.000000Z'
-                      unread_count:
-                        type: integer
-                        example: 0
-                      is_archived:
-                        type: boolean
-                        example: false
-                      is_muted:
-                        type: boolean
-                        example: false
-                      can_send_messages:
-                        type: boolean
-                        example: true
-                      has_blocked_participant:
-                        type: boolean
-                        example: false
                       recipient:
                         type: object
                         properties:
@@ -2594,6 +2623,36 @@ paths:
                             type: string
                             example: null
                             nullable: true
+                      last_message:
+                        type: string
+                        example: null
+                        nullable: true
+                      unread_count:
+                        type: integer
+                        example: 0
+                      last_read_message_id:
+                        type: string
+                        example: null
+                        nullable: true
+                      partner_last_read_message_id:
+                        type: string
+                        example: null
+                        nullable: true
+                      is_muted:
+                        type: boolean
+                        example: false
+                      is_archived:
+                        type: boolean
+                        example: false
+                      can_send_messages:
+                        type: boolean
+                        example: true
+                      has_blocked_participant:
+                        type: boolean
+                        example: false
+                      last_message_at:
+                        type: string
+                        example: '2026-11-03T18:30:00.000000Z'
                       created_at:
                         type: string
                         example: '2026-11-03T18:00:00.000000Z'
@@ -5174,7 +5233,7 @@ paths:
                 type:
                   type: string
                   description: ''
-                  example: all
+                  example: posts
                   enum:
                     - all
                     - users

@@ -38,7 +38,7 @@ class ConversationController extends Controller
      *
      * List Conversations
      *
-     * Retrieve a cursor-paginated inbox list of 1-on-1 conversations for the authenticated user, including unread count, last message preview, and recipient details.
+     * Retrieve a cursor-paginated inbox list of 1-on-1 conversations for the authenticated user, including unread count, last message preview, and recipient details (`recipient.username` and `recipient.avatar` may be null).
      *
      * @queryParam per_page integer Number of conversations per page. Default: 20. Example: 20
      * @queryParam cursor string Cursor token for pagination. Example: eyJpZCI6MX0
@@ -52,10 +52,6 @@ class ConversationController extends Controller
      *     {
      *       "id": "01JBD1EXAMPLE00000000000001",
      *       "created_by": "01JBD1USER0000000000000001",
-     *       "last_message_at": "2026-11-03T18:30:00.000000Z",
-     *       "unread_count": 2,
-     *       "is_archived": false,
-     *       "is_muted": false,
      *       "recipient": {
      *         "id": "01JBD1USER0000000000000002",
      *         "name": "Jane Doe",
@@ -69,6 +65,14 @@ class ConversationController extends Controller
      *         "is_deleted_for_everyone": false,
      *         "created_at": "2026-11-03T18:30:00.000000Z"
      *       },
+     *       "unread_count": 2,
+     *       "last_read_message_id": null,
+     *       "partner_last_read_message_id": null,
+     *       "is_muted": false,
+     *       "is_archived": false,
+     *       "can_send_messages": true,
+     *       "has_blocked_participant": false,
+     *       "last_message_at": "2026-11-03T18:30:00.000000Z",
      *       "created_at": "2026-11-03T18:00:00.000000Z",
      *       "updated_at": "2026-11-03T18:30:00.000000Z"
      *     }
@@ -163,7 +167,7 @@ class ConversationController extends Controller
      *
      * Start or Get Conversation
      *
-     * Initiates a deterministic 1-on-1 direct conversation with an accepted follow, or retrieves the existing conversation if one already exists.
+     * Initiates a deterministic 1-on-1 direct conversation with an accepted follow, or retrieves the existing conversation if one already exists (`recipient.username` and `recipient.avatar` may be null).
      *
      * @bodyParam recipient_id string required The ULID of the recipient user. Example: 01JBD1USER0000000000000002
      *
@@ -173,16 +177,21 @@ class ConversationController extends Controller
      *   "data": {
      *     "id": "01JBD1EXAMPLE00000000000001",
      *     "created_by": "01JBD1USER0000000000000001",
-     *     "last_message_at": null,
-     *     "unread_count": 0,
-     *     "is_archived": false,
-     *     "is_muted": false,
      *     "recipient": {
      *       "id": "01JBD1USER0000000000000002",
      *       "name": "Jane Doe",
      *       "username": "janedoe",
      *       "avatar": null
      *     },
+     *     "last_message": null,
+     *     "unread_count": 0,
+     *     "last_read_message_id": null,
+     *     "partner_last_read_message_id": null,
+     *     "is_muted": false,
+     *     "is_archived": false,
+     *     "can_send_messages": true,
+     *     "has_blocked_participant": false,
+     *     "last_message_at": "2026-11-03T18:00:00.000000Z",
      *     "created_at": "2026-11-03T18:00:00.000000Z",
      *     "updated_at": "2026-11-03T18:00:00.000000Z"
      *   },
@@ -220,7 +229,7 @@ class ConversationController extends Controller
      *
      * Get Conversation Details
      *
-     * Retrieve the details of a specific conversation, including participant states, read receipts, and message transmission permissions.
+     * Retrieve the details of a specific conversation, including participant states, read receipts, and message transmission permissions (`recipient.username` and `recipient.avatar` may be null).
      *
      * @urlParam conversation string required The ULID of the conversation. Example: 01JBD1EXAMPLE00000000000001
      *
@@ -230,18 +239,21 @@ class ConversationController extends Controller
      *   "data": {
      *     "id": "01JBD1EXAMPLE00000000000001",
      *     "created_by": "01JBD1USER0000000000000001",
-     *     "last_message_at": "2026-11-03T18:30:00.000000Z",
-     *     "unread_count": 0,
-     *     "is_archived": false,
-     *     "is_muted": false,
-     *     "can_send_messages": true,
-     *     "has_blocked_participant": false,
      *     "recipient": {
      *       "id": "01JBD1USER0000000000000002",
      *       "name": "Jane Doe",
      *       "username": "janedoe",
      *       "avatar": null
      *     },
+     *     "last_message": null,
+     *     "unread_count": 0,
+     *     "last_read_message_id": null,
+     *     "partner_last_read_message_id": null,
+     *     "is_muted": false,
+     *     "is_archived": false,
+     *     "can_send_messages": true,
+     *     "has_blocked_participant": false,
+     *     "last_message_at": "2026-11-03T18:30:00.000000Z",
      *     "created_at": "2026-11-03T18:00:00.000000Z",
      *     "updated_at": "2026-11-03T18:30:00.000000Z"
      *   },

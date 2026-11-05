@@ -4,7 +4,8 @@ namespace Modules\Messages\Transformers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Modules\Auth\Transformers\UserResource;
+use Modules\Media\Enums\MediaStatus;
+use Modules\Media\Transformers\MediaResource;
 use Modules\Messages\Models\Message;
 
 class ConversationResource extends JsonResource
@@ -40,7 +41,8 @@ class ConversationResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'participant' => $partnerUser ? new UserResource($partnerUser) : null,
+            'created_by' => $this->created_by,
+            'recipient' => $partnerUser ? $this->formatRecipient($partnerUser) : null,
             'last_message' => $lastMessage ? new MessageResource($lastMessage) : null,
             'unread_count' => $unreadCount,
             'last_read_message_id' => $viewerParticipant?->last_read_message_id,
@@ -52,6 +54,21 @@ class ConversationResource extends JsonResource
             'last_message_at' => $this->last_message_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+        ];
+    }
+
+    private function formatRecipient($user): array
+    {
+        $profile = $user->profile;
+        $avatar = $profile?->avatar;
+        $statusValue = $avatar?->status instanceof MediaStatus ? $avatar->status->value : ($avatar?->status?->value ?? $avatar?->status);
+        $avatarReady = $avatar && $statusValue === MediaStatus::Ready->value;
+
+        return [
+            'id' => $user->id,
+            'name' => $profile?->display_name ?: $user->name,
+            'username' => $profile?->username,
+            'avatar' => $avatarReady ? new MediaResource($avatar) : null,
         ];
     }
 

@@ -370,3 +370,50 @@ export const useSendTyping = (conversationId: string, apiToken: string) => {
 };
 ```
 
+---
+
+## 7. Conversation Data Contract
+
+Responses from `GET /api/v1/conversations`, `POST /api/v1/conversations`, and `GET /api/v1/conversations/{id}` encapsulate conversation details under a consistent `recipient` object:
+
+### TypeScript Interfaces
+
+```typescript
+export interface BackendAvatar {
+  id: string;
+  url: string;
+  user_id?: string;
+  type?: string;
+  mime_type?: string;
+  size?: number;
+  width?: number;
+  height?: number;
+  status?: string;
+}
+
+export interface ConversationRecipient {
+  id: string;
+  name: string; // profile.display_name, falling back to users.name (never null)
+  username: string | null; // Nullable if not set
+  avatar: BackendAvatar | null; // Null if no avatar or if avatar media status is not 'ready'
+}
+
+export interface Conversation {
+  id: string;
+  created_by: string; // ULID of initiator
+  recipient: ConversationRecipient | null;
+  last_message: Message | null;
+  unread_count: number;
+  last_read_message_id: string | null;
+  partner_last_read_message_id: string | null;
+  is_muted: boolean;
+  is_archived: boolean;
+  can_send_messages: boolean;
+  has_blocked_participant: boolean;
+  last_message_at: string | null; // ISO 8601
+  created_at: string;
+  updated_at: string;
+}
+```
+
+
