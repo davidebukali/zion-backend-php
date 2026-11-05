@@ -9,7 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Modules\Posts\Models\Post;
-use Modules\SocialGraph\Jobs\FanOutPostChunkJob;
+use Modules\SocialGraph\Events\NewFeedItemBroadcast;
 use Modules\SocialGraph\Models\FeedItem;
 use Modules\SocialGraph\Models\Follow;
 
@@ -45,6 +45,14 @@ class FanOutPostJob implements ShouldQueue
             ],
         ]);
 
+        NewFeedItemBroadcast::dispatch(
+            recipientUserIds: [$actorId],
+            postId: $post->id,
+            type: $this->type,
+            actorId: $actorId,
+            publishedAt: $publishedAt
+        );
+
         // 2. Prepare chunk jobs for followers of the actor
         $jobs = [];
         $type = $this->type;
@@ -54,7 +62,7 @@ class FanOutPostJob implements ShouldQueue
             ->chunkById(1000, function ($follows) use (&$jobs, $post, $publishedAt, $type, $actorId) {
                 $followerIds = $follows->pluck('follower_id')->all();
 
-                if (!empty($followerIds)) {
+                if (! empty($followerIds)) {
                     $jobs[] = new FanOutPostChunkJob(
                         postId: $post->id,
                         followerIds: $followerIds,
@@ -66,7 +74,7 @@ class FanOutPostJob implements ShouldQueue
             });
 
         // 3. Dispatch batched jobs if there are followers
-        if (!empty($jobs)) {
+        if (! empty($jobs)) {
             Bus::batch($jobs)
                 ->onQueue('feed')
                 ->name("fanout-{$this->type}-{$post->id}-actor-{$actorId}")

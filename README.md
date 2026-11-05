@@ -1,4 +1,4 @@
-# Zion Backend (PHP)
+# Zion Backend
 
 <p align="left">
   <a href="https://php.net"><img src="https://img.shields.io/badge/PHP-%3E%3D%208.4-777bb4?logo=php&logoColor=white" alt="PHP Version"></a>
@@ -8,7 +8,7 @@
   <a href="https://github.com/davidebukali/zion-backend-php/actions"><img src="https://github.com/davidebukali/zion-backend-php/actions/workflows/deploy.yml/badge.svg" alt="CI/CD"></a>
 </p>
 
-Zion Backend is a clean, modular REST API built with **Laravel 13** and **PHP 8.4+**. It leverages a decoupled modular architecture to isolate domain concerns, ensuring scalability, high performance, and ease of maintenance.
+**The core REST API powering Tsiyon: a peaceful, Christ-centered social home built for what matters most**[1][2]**. Built with Laravel 13 and PHP 8.4+ using decoupled modular domain architecture.**
 
 ---
 

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Modules\Auth\Models\User;
 use Modules\SocialGraph\Actions\AcceptFollowRequest;
 use Modules\SocialGraph\Actions\BlockUser;
+use Modules\SocialGraph\Actions\CheckNewerFeedItems;
 use Modules\SocialGraph\Actions\FollowUser;
 use Modules\SocialGraph\Actions\GetFeed;
 use Modules\SocialGraph\Actions\ListBlockedUsers;
@@ -447,6 +448,46 @@ class SocialGraphController extends Controller
                 'next_cursor' => $paginated['meta']['next_cursor'] ?? null,
                 'per_page' => $paginated['meta']['per_page'] ?? $perPage,
             ]
+        );
+    }
+
+    /**
+     * @group Social Graph
+     *
+     * @subgroup Feed
+     *
+     * @authenticated
+     *
+     * Check Newer Feed Items
+     *
+     * Checks if newer feed items exist since a given feed item ID.
+     *
+     * @queryParam after_id integer required The ID of the newest feed item currently on the client. Example: 150
+     *
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Feed check completed.",
+     *   "data": {
+     *     "new_posts_count": 3
+     *   }
+     * }
+     */
+    public function checkNewer(
+        Request $request,
+        CheckNewerFeedItems $checkNewerFeedItems
+    ) {
+        $validated = $request->validate([
+            'after_id' => ['required', 'integer', 'min:1'],
+        ]);
+
+        $count = $checkNewerFeedItems($request->user(), (int) $validated['after_id']);
+
+        return $this->success(
+            data: [
+                'new_posts_count' => $count,
+            ],
+            message: 'Feed check completed.',
+            status: 200
         );
     }
 

@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Modules\SocialGraph\Events\NewFeedItemBroadcast;
 use Modules\SocialGraph\Models\FeedItem;
 
 class FanOutPostChunkJob implements ShouldQueue
@@ -15,11 +16,7 @@ class FanOutPostChunkJob implements ShouldQueue
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @param string $postId
-     * @param array<string> $followerIds
-     * @param string $publishedAt
-     * @param string $type
-     * @param string|null $actorId
+     * @param  array<string>  $followerIds
      */
     public function __construct(
         public string $postId,
@@ -55,5 +52,13 @@ class FanOutPostChunkJob implements ShouldQueue
         }, $this->followerIds);
 
         FeedItem::insertOrIgnore($records);
+
+        NewFeedItemBroadcast::dispatch(
+            recipientUserIds: $this->followerIds,
+            postId: $this->postId,
+            type: $this->type,
+            actorId: $this->actorId,
+            publishedAt: $this->publishedAt
+        );
     }
 }

@@ -18,4 +18,5 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::get('blocks', [SocialGraphController::class, 'getBlockedUsers'])->name('blocks.index');
 
     Route::get('feed', [SocialGraphController::class, 'feed'])->name('feed.index');
+    Route::get('feed/check-newer', [SocialGraphController::class, 'checkNewer'])->name('feed.check-newer');
 });
