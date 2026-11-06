@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -30,9 +31,35 @@ class Profile extends Model
     ];
 
     protected $casts = [
-        'account_type' => AccountType::class,
         'is_private' => 'boolean',
     ];
+
+    /**
+     * Interact with the profile's account type, gracefully normalizing legacy values.
+     */
+    protected function accountType(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                if ($value === 'individual') {
+                    return AccountType::PERSONAL;
+                }
+
+                return $value !== null ? AccountType::tryFrom($value) : null;
+            },
+            set: function ($value) {
+                if ($value instanceof AccountType) {
+                    return $value->value;
+                }
+
+                if ($value === 'individual') {
+                    return AccountType::PERSONAL->value;
+                }
+
+                return $value;
+            }
+        );
+    }
 
     public function user(): BelongsTo
     {
