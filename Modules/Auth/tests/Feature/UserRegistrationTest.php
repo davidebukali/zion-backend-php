@@ -173,10 +173,18 @@ class UserRegistrationTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonPath('data.0.type', 'personal')
             ->assertJsonPath('data.0.label', 'Personal')
-            ->assertJsonFragment(['Individual', 'Believer', 'Pastor'])
             ->assertJsonPath('data.1.type', 'organization')
-            ->assertJsonPath('data.1.label', 'Organization')
-            ->assertJsonFragment(['Local Church', 'Non-Profit', 'Fellowship Group']);
+            ->assertJsonPath('data.1.label', 'Organization');
+
+        $personalCategories = $response->json('data.0.categories');
+        $this->assertContains('Individual', $personalCategories);
+        $this->assertContains('Believer', $personalCategories);
+        $this->assertContains('Pastor', $personalCategories);
+
+        $orgCategories = $response->json('data.1.categories');
+        $this->assertContains('Local Church', $orgCategories);
+        $this->assertContains('Non-Profit', $orgCategories);
+        $this->assertContains('Fellowship Group', $orgCategories);
     }
 
     public function test_registration_fails_with_invalid_category_for_account_type(): void
