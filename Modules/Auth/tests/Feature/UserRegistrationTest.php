@@ -146,4 +146,23 @@ class UserRegistrationTest extends TestCase
             'name' => 'Miracle Life Church',
         ]);
     }
+
+    public function test_user_can_register_with_personal_account_type(): void
+    {
+        $response = $this->postJson(route('api.register'), [
+            'name' => 'janedoe',
+            'email' => 'jane@example.com',
+            'password' => 'secret1234',
+            'account_type' => 'personal',
+            'category' => 'Member',
+        ]);
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('profiles', [
+            'username' => 'janedoe',
+            'account_type' => 'personal',
+            'category' => 'Member',
+        ]);
+    }
 }

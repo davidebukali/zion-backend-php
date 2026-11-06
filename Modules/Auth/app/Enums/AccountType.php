@@ -4,7 +4,7 @@ namespace Modules\Auth\Enums;
 
 enum AccountType: string
 {
-    case INDIVIDUAL = 'individual';
+    case PERSONAL = 'personal';
     case ORGANIZATION = 'organization';
 }
 

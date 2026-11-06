@@ -29,6 +29,12 @@ class AuthController extends Controller
      * @bodyParam name string required The user's full name. Example: Jane Doe
      * @bodyParam email string required The user's unique email address. Example: jane@example.com
      * @bodyParam password string required The account password (min 8 characters). Example: secret123
+     * @bodyParam account_type string The account type ('personal' or 'organization'). Example: personal
+     * @bodyParam category string Role or organization category. Example: Software Engineer
+     * @bodyParam location string Free-form location. Example: Kampala, Uganda
+     * @bodyParam church_id string The ULID of an existing church. Example: 01j98z3q4x6y7w8v9u0t1s2c01
+     * @bodyParam church_name string The name of a church to find or create inline. Example: Watoto Church
+     * @bodyParam church_location string Optional location for a new church. Example: Kampala, Uganda
      * 
      * @response 201 {
      *   "data": {
