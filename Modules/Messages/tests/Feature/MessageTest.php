@@ -3,6 +3,8 @@
 namespace Modules\Messages\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Modules\Auth\Models\User;
@@ -103,8 +105,16 @@ class MessageTest extends TestCase
         $this->assertDatabaseHas('messages', [
             'conversation_id' => $this->conversation->id,
             'sender_id' => $this->userA->id,
-            'body' => 'Hello Bob!',
         ]);
+
+        $message = Message::where('conversation_id', $this->conversation->id)->first();
+        $this->assertNotNull($message);
+        $this->assertSame('Hello Bob!', $message->body);
+
+        // Verify the raw database column stores ciphertext rather than plaintext
+        $rawBody = DB::table('messages')->where('id', $message->id)->value('body');
+        $this->assertNotSame('Hello Bob!', $rawBody);
+        $this->assertSame('Hello Bob!', Crypt::decryptString($rawBody));
     }
 
     public function test_user_can_send_message_with_up_to_4_images(): void
@@ -367,6 +377,47 @@ class MessageTest extends TestCase
             'message_id' => $msgId,
             'reason' => ReportReason::HARASSMENT->value,
         ]);
+    }
+
+    public function test_legacy_unencrypted_message_falls_back_gracefully(): void
+    {
+        // Manually insert raw plaintext directly bypassing model mutator
+        $id = (string) Str::ulid();
+        DB::table('messages')->insert([
+            'id' => $id,
+            'conversation_id' => $this->conversation->id,
+            'sender_id' => $this->userA->id,
+            'body' => 'Legacy unencrypted text',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $message = Message::find($id);
+        $this->assertNotNull($message);
+        $this->assertSame('Legacy unencrypted text', $message->body);
+    }
+
+    public function test_typing_indicator_is_rate_limited(): void
+    {
+        Sanctum::actingAs($this->userA);
+
+        // Limit is 15 per minute
+        for ($i = 0; $i < 15; $i++) {
+            $response = $this->postJson(route('api.conversations.typing', $this->conversation));
+            $response->assertStatus(200);
+        }
+
+        // 16th request exceeds limit and triggers 429
+        $response = $this->postJson(route('api.conversations.typing', $this->conversation));
+        $response->assertStatus(429)
+            ->assertJson([
+                'success' => false,
+            ])
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'retry_after',
+            ]);
     }
 }
 

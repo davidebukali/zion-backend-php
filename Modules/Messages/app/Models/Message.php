@@ -3,13 +3,17 @@
 namespace Modules\Messages\Models;
 
 use DateTimeInterface;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use Modules\Auth\Models\User;
 use Modules\Media\Models\Media;
 
@@ -30,6 +34,37 @@ class Message extends Model
         'edited_at' => 'datetime',
         'deleted_for_everyone_at' => 'datetime',
     ];
+
+    /**
+     * Interact with the message body, securely encrypting at rest with fallback.
+     */
+    protected function body(): Attribute
+    {
+        return Attribute::make(
+            get: function (?string $value) {
+                if ($value === null || $value === '') {
+                    return $value;
+                }
+
+                try {
+                    return Crypt::decryptString($value);
+                } catch (DecryptException) {
+                    Log::warning('Failed to decrypt message body, returning raw content.', [
+                        'message_id' => $this->id ?? null,
+                    ]);
+
+                    return $value;
+                }
+            },
+            set: function (?string $value) {
+                if ($value === null || $value === '') {
+                    return $value;
+                }
+
+                return Crypt::encryptString($value);
+            }
+        );
+    }
 
     public function conversation(): BelongsTo
     {
