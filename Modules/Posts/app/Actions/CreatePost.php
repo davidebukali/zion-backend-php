@@ -24,8 +24,9 @@ class CreatePost
     {
         return DB::transaction(function () use ($data, $user) {                    
             $mediaIds = $data['media_ids'] ?? [];
+            $taggedUserIds = $data['tagged_user_ids'] ?? [];
 
-            unset($data['media_ids']);
+            unset($data['media_ids'], $data['tagged_user_ids']);
 
             $post = $user->posts()->create([
                 'content' => $data['content'] ?? null,
@@ -38,7 +39,7 @@ class CreatePost
                 userId: $user->id
             );
 
-            PostCreated::dispatch($post);
+            PostCreated::dispatch($post, $taggedUserIds);
 
             return new PostResource($post->load('media'));
         });

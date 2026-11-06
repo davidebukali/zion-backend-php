@@ -6,12 +6,14 @@ use App\Http\Controllers\Concerns\RespondsWithApi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Auth\Models\User;
+use Modules\Auth\Transformers\UserResource;
 use Modules\SocialGraph\Actions\AcceptFollowRequest;
 use Modules\SocialGraph\Actions\BlockUser;
 use Modules\SocialGraph\Actions\CheckNewerFeedItems;
 use Modules\SocialGraph\Actions\FollowUser;
 use Modules\SocialGraph\Actions\GetFeed;
 use Modules\SocialGraph\Actions\ListBlockedUsers;
+use Modules\SocialGraph\Actions\ListTaggableUsers;
 use Modules\SocialGraph\Actions\RejectFollowRequest;
 use Modules\SocialGraph\Actions\UnblockUser;
 use Modules\SocialGraph\Actions\UnfollowUser;
@@ -344,6 +346,44 @@ class SocialGraphController extends Controller
             message: 'Following retrieved successfully.',
             status: 200,
             meta: $paginated['meta'] ?? []
+        );
+    }
+
+    /**
+     * @group Social Graph
+     *
+     * @subgroup Tagging
+     *
+     * @authenticated
+     *
+     * List Taggable Users
+     *
+     * Retrieve a cursor-paginated list of users eligible to be tagged (@) by the authenticated user.
+     * Includes followed users and followers (including pending), with optional autocomplete search.
+     * Blocked users are silently excluded.
+     *
+     * @queryParam q string Optional search term to filter by name, username, or display name. Example: jane
+     * @queryParam per_page integer Number of users per page. Default: 20. Example: 20
+     * @queryParam cursor string Cursor for pagination.
+     */
+    public function taggableUsers(
+        Request $request,
+        ListTaggableUsers $listTaggableUsers
+    ) {
+        $search = $request->query('q');
+        $perPage = (int) $request->query('per_page', 20);
+
+        $users = $listTaggableUsers($request->user(), $search, $perPage);
+        $paginated = UserResource::collection($users)->response()->getData(true);
+
+        return $this->success(
+            data: $paginated['data'] ?? [],
+            message: 'Taggable users retrieved successfully.',
+            status: 200,
+            meta: [
+                'links' => $paginated['links'] ?? [],
+                'meta' => $paginated['meta'] ?? [],
+            ]
         );
     }
 

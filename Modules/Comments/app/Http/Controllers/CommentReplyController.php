@@ -82,6 +82,8 @@ class CommentReplyController extends Controller
     {
         $data = $request->validate([
             'content' => ['required', 'string', 'max:5000'],
+            'tagged_user_ids' => ['nullable', 'array', 'max:20'],
+            'tagged_user_ids.*' => ['string', 'distinct', 'exists:users,id'],
         ]);
 
         if ($comment->parent_comment_id !== null) {

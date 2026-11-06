@@ -4,6 +4,7 @@ namespace Modules\Comments\Actions;
 
 use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
+use Modules\Comments\Events\CommentCreated;
 use Modules\Comments\Models\Comment;
 
 class CreateReply
@@ -14,6 +15,8 @@ class CreateReply
     public function __invoke(User $user, Comment $parentComment, array $data): Comment
     {
         return DB::transaction(function () use ($user, $parentComment, $data) {
+            $taggedUserIds = $data['tagged_user_ids'] ?? [];
+
             $reply = Comment::create([
                 'user_id' => $user->id,
                 'post_id' => $parentComment->post_id,
@@ -25,6 +28,8 @@ class CreateReply
 
             // We include replies in the comments_count
             $parentComment->post()->increment('comments_count');
+
+            CommentCreated::dispatch($reply, $taggedUserIds);
 
             return $reply->load(['user', 'media']);
         });

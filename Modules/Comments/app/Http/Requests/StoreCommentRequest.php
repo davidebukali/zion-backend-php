@@ -33,6 +33,16 @@ class StoreCommentRequest extends FormRequest
                 'string',
                 'exists:comments,id',
             ],
+            'tagged_user_ids' => [
+                'nullable',
+                'array',
+                'max:20',
+            ],
+            'tagged_user_ids.*' => [
+                'string',
+                'distinct',
+                'exists:users,id',
+            ],
         ];
     }
 

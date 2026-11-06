@@ -16,6 +16,7 @@ class CommentCreated implements ShouldDispatchAfterCommit
      * Create a new event instance.
      */
     public function __construct(
-        public readonly Comment $comment
+        public readonly Comment $comment,
+        public readonly array $taggedUserIds = []
     ) {}
 }

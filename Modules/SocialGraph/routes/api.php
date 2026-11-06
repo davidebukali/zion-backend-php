@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Modules\SocialGraph\Http\Controllers\SocialGraphController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+    Route::get('users/taggable', [SocialGraphController::class, 'taggableUsers'])->name('users.taggable');
+
     Route::post('users/{user}/follow', [SocialGraphController::class, 'follow'])->name('users.follow');
     Route::delete('users/{user}/follow', [SocialGraphController::class, 'unfollow'])->name('users.unfollow');
 

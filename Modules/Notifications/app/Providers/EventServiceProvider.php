@@ -18,6 +18,8 @@ use Modules\Notifications\Listeners\SendPostLikedNotification;
 use Modules\Notifications\Listeners\SendPostReportedNotification;
 use Modules\Notifications\Listeners\SendPostRepostedNotification;
 use Modules\Notifications\Listeners\SendPostSharedNotification;
+use Modules\Notifications\Listeners\SendUserTaggedNotification;
+use Modules\Posts\Events\PostCreated;
 use Modules\SocialGraph\Events\FollowRequestAccepted;
 use Modules\SocialGraph\Events\FollowRequested;
 use Modules\SocialGraph\Events\UserFollowed;
@@ -47,6 +49,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         CommentCreated::class => [
             SendCommentCreatedNotification::class,
+            SendUserTaggedNotification::class,
+        ],
+        PostCreated::class => [
+            SendUserTaggedNotification::class,
         ],
         UserFollowed::class => [
             SendFollowNotification::class,

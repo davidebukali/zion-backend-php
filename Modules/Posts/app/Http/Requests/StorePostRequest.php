@@ -36,6 +36,16 @@ class StorePostRequest extends FormRequest
                 'distinct',
                 'exists:media,id',
             ],
+            'tagged_user_ids' => [
+                'nullable',
+                'array',
+                'max:20',
+            ],
+            'tagged_user_ids.*' => [
+                'string',
+                'distinct',
+                'exists:users,id',
+            ],
         ];
     }
 

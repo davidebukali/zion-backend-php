@@ -75,7 +75,7 @@ class NotificationsController extends Controller
         return NotificationResource::collection(
             $request->user()
                 ->notifications()
-                ->with('actor')
+                ->with(['actor.profile.avatar'])
                 ->latest()
                 ->paginate(20)
         );

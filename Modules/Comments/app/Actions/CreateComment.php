@@ -23,8 +23,9 @@ class CreateComment
     {
         return DB::transaction(function () use ($user, $post, $data) {
             $mediaIds = $data['media_ids'] ?? [];
+            $taggedUserIds = $data['tagged_user_ids'] ?? [];
 
-            unset($data['media_ids']);
+            unset($data['media_ids'], $data['tagged_user_ids']);
 
             $comment = Comment::create([
                 'user_id' => $user->id,
@@ -41,7 +42,7 @@ class CreateComment
                 userId: $user->id
             );
 
-            CommentCreated::dispatch($comment);
+            CommentCreated::dispatch($comment, $taggedUserIds);
 
             return $comment->load(['user', 'media']);
         });

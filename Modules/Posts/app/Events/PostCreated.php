@@ -16,6 +16,7 @@ class PostCreated implements ShouldDispatchAfterCommit
      * Create a new event instance.
      */
     public function __construct(
-        public readonly Post $post
+        public readonly Post $post,
+        public readonly array $taggedUserIds = []
     ) {}
 }
