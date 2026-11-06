@@ -21,7 +21,9 @@ class UpdateProfileRequest extends FormRequest
      */
     public function rules(): array
     {
-        $profileId = $this->user()?->profile?->id;
+        $profile = $this->user()?->profile;
+        $profileId = $profile?->id;
+        $accountType = $this->input('account_type') ?? $profile?->account_type;
 
         return [
             'username' => [
@@ -33,7 +35,12 @@ class UpdateProfileRequest extends FormRequest
             'display_name' => ['nullable', 'string', 'max:255'],
             'bio' => ['nullable', 'string', 'max:1000'],
             'account_type' => ['nullable', Rule::enum(AccountType::class)],
-            'category' => ['nullable', 'string', 'max:255'],
+            'category' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::in(AccountType::categoriesFor($accountType)),
+            ],
             'location' => ['nullable', 'string', 'max:255'],
             'church_id' => ['nullable', 'string', 'exists:churches,id'],
             'church_name' => ['nullable', 'string', 'max:255'],

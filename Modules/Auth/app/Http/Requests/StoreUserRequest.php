@@ -13,12 +13,19 @@ class StoreUserRequest extends FormRequest
      */
     public function rules(): array
     {
+        $accountType = $this->input('account_type');
+
         return [
             'name' => ['nullable', 'string', 'max:255', 'unique:profiles,username'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
             'account_type' => ['nullable', Rule::enum(AccountType::class)],
-            'category' => ['nullable', 'string', 'max:255'],
+            'category' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::in(AccountType::categoriesFor($accountType)),
+            ],
             'location' => ['nullable', 'string', 'max:255'],
             'church_id' => ['nullable', 'string', 'exists:churches,id'],
             'church_name' => ['nullable', 'string', 'max:255'],

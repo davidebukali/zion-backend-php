@@ -170,19 +170,19 @@ class ProfileTest extends TestCase
 
         $response = $this->putJson(route('api.profile.update'), [
             'account_type' => 'organization',
-            'category' => 'Youth Ministry',
+            'category' => 'Fellowship Group',
             'location' => 'Kampala, Uganda',
         ]);
 
         $response->assertStatus(200)
             ->assertJsonPath('data.account_type', 'organization')
-            ->assertJsonPath('data.category', 'Youth Ministry')
+            ->assertJsonPath('data.category', 'Fellowship Group')
             ->assertJsonPath('data.location', 'Kampala, Uganda');
 
         $this->assertDatabaseHas('profiles', [
             'user_id' => $this->userA->id,
             'account_type' => 'organization',
-            'category' => 'Youth Ministry',
+            'category' => 'Fellowship Group',
             'location' => 'Kampala, Uganda',
         ]);
     }

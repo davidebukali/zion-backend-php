@@ -128,7 +128,7 @@ class UserRegistrationTest extends TestCase
             'email' => 'john@example.com',
             'password' => 'secret1234',
             'account_type' => 'organization',
-            'category' => 'Church Lead',
+            'category' => 'Local Church',
             'location' => 'Kampala, Uganda',
             'church_name' => 'Miracle Life Church',
         ]);
@@ -138,7 +138,7 @@ class UserRegistrationTest extends TestCase
         $this->assertDatabaseHas('profiles', [
             'username' => 'pastorjohn',
             'account_type' => 'organization',
-            'category' => 'Church Lead',
+            'category' => 'Local Church',
             'location' => 'Kampala, Uganda',
         ]);
 
@@ -154,7 +154,7 @@ class UserRegistrationTest extends TestCase
             'email' => 'jane@example.com',
             'password' => 'secret1234',
             'account_type' => 'personal',
-            'category' => 'Member',
+            'category' => 'Believer',
         ]);
 
         $response->assertStatus(200);
@@ -162,7 +162,34 @@ class UserRegistrationTest extends TestCase
         $this->assertDatabaseHas('profiles', [
             'username' => 'janedoe',
             'account_type' => 'personal',
-            'category' => 'Member',
+            'category' => 'Believer',
         ]);
+    }
+
+    public function test_can_fetch_account_types_and_categories(): void
+    {
+        $response = $this->getJson(route('api.account-types'));
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.0.type', 'personal')
+            ->assertJsonPath('data.0.label', 'Personal')
+            ->assertJsonFragment(['Individual', 'Believer', 'Pastor'])
+            ->assertJsonPath('data.1.type', 'organization')
+            ->assertJsonPath('data.1.label', 'Organization')
+            ->assertJsonFragment(['Local Church', 'Non-Profit', 'Fellowship Group']);
+    }
+
+    public function test_registration_fails_with_invalid_category_for_account_type(): void
+    {
+        $response = $this->postJson(route('api.register'), [
+            'name' => 'janedoe2',
+            'email' => 'jane2@example.com',
+            'password' => 'secret1234',
+            'account_type' => 'personal',
+            'category' => 'Non-Profit', // Non-Profit belongs to organization, not personal
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['category']);
     }
 }

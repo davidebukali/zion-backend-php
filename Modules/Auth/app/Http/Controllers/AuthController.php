@@ -15,6 +15,8 @@ use Modules\Auth\Http\Requests\ForgotPasswordRequest;
 use Modules\Auth\Http\Requests\VerifyResetCodeRequest;
 use Modules\Auth\Http\Requests\ResetPasswordRequest;
 use Modules\Auth\Transformers\UserResource;
+use Modules\Auth\Enums\AccountType;
+use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
@@ -57,6 +59,59 @@ class AuthController extends Controller
     public function register(StoreUserRequest $request, RegisterUser $registerUser)
     {
         return $registerUser($request->validated());
+    }
+
+    /**
+     * @group Authentication
+     * @unauthenticated
+     * 
+     * Get Account Types & Categories
+     * 
+     * Retrieve the list of supported account types (personal, organization) and their allowed categories.
+     * 
+     * @response 200 {
+     *   "data": [
+     *     {
+     *       "type": "personal",
+     *       "label": "Personal",
+     *       "categories": [
+     *         "Individual",
+     *         "Believer",
+     *         "Pastor",
+     *         "Elder",
+     *         "Fellowship Leader",
+     *         "Intercessor",
+     *         "Prophet",
+     *         "Apostle",
+     *         "Worship Leader",
+     *         "Teacher"
+     *       ]
+     *     },
+     *     {
+     *       "type": "organization",
+     *       "label": "Organization",
+     *       "categories": [
+     *         "Local Church",
+     *         "Non-Profit",
+     *         "Fellowship Group",
+     *         "Media / Publishing",
+     *         "Business",
+     *         "Charity",
+     *         "College"
+     *       ]
+     *     }
+     *   ]
+     * }
+     */
+    public function accountTypes(): JsonResponse
+    {
+        $data = array_map(fn (AccountType $type) => [
+            'type' => $type->value,
+            'label' => $type->label(),
+            'categories' => $type->categories(),
+        ], AccountType::cases());
+
+        return response()->json(['data' => $data]);
     }
 
     /**

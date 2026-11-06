@@ -5,6 +5,7 @@ use Modules\Auth\Http\Controllers\AuthController;
 use Modules\Auth\Http\Controllers\ProfileController;
 
 Route::prefix('v1')->group(function () {
+    Route::get('account-types', [AuthController::class, 'accountTypes'])->name('account-types');
     Route::post('register', [AuthController::class, 'register'])->name('register');
     Route::post('login', [AuthController::class, 'login'])->name('login');
     Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->name('password.forgot');
