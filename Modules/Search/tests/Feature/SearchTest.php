@@ -364,4 +364,87 @@ class SearchTest extends TestCase
         $responseFollower->assertStatus(200);
         $this->assertCount(1, $responseFollower->json('data'));
     }
+
+    public function test_post_search_returns_trending_posts_ranked_by_weighted_engagement(): void
+    {
+        Sanctum::actingAs($this->stranger);
+
+        // Post 1: Low engagement (4 likes * 1 = score 4)
+        $postLow = Post::create([
+            'user_id' => $this->author->id,
+            'content' => 'Trending topic post low engagement',
+            'visibility' => PostVisibility::PUBLIC->value,
+            'likes_count' => 4,
+            'comments_count' => 0,
+            'reposts_count' => 0,
+            'created_at' => now()->subDay(),
+        ]);
+
+        // Post 2: High engagement (10 likes*1 + 5 comments*2 + 2 reposts*3 = 10 + 10 + 6 = score 26)
+        // Created 60 days ago - verifies older trending posts are NOT excluded
+        $postHigh = Post::create([
+            'user_id' => $this->author->id,
+            'content' => 'Trending topic post high engagement',
+            'visibility' => PostVisibility::PUBLIC->value,
+            'likes_count' => 10,
+            'comments_count' => 5,
+            'reposts_count' => 2,
+            'created_at' => now()->subDays(60),
+        ]);
+
+        // Post 3: Mid engagement (2 likes*1 + 1 comment*2 + 1 repost*3 = 2 + 2 + 3 = score 7)
+        $postMid = Post::create([
+            'user_id' => $this->author->id,
+            'content' => 'Trending topic post mid engagement',
+            'visibility' => PostVisibility::PUBLIC->value,
+            'likes_count' => 2,
+            'comments_count' => 1,
+            'reposts_count' => 1,
+            'created_at' => now()->subHours(2),
+        ]);
+
+        // Post 4: Zero engagement, created recently (score 0)
+        $postZeroNew = Post::create([
+            'user_id' => $this->author->id,
+            'content' => 'Trending topic post zero engagement new',
+            'visibility' => PostVisibility::PUBLIC->value,
+            'likes_count' => 0,
+            'comments_count' => 0,
+            'reposts_count' => 0,
+            'created_at' => now()->subMinutes(5),
+        ]);
+
+        // Post 5: Zero engagement, created earlier (score 0, tie-breaker after postZeroNew)
+        $postZeroOld = Post::create([
+            'user_id' => $this->author->id,
+            'content' => 'Trending topic post zero engagement old',
+            'visibility' => PostVisibility::PUBLIC->value,
+            'likes_count' => 0,
+            'comments_count' => 0,
+            'reposts_count' => 0,
+            'created_at' => now()->subHours(5),
+        ]);
+
+        $response = $this->getJson(route('api.search', [
+            'q' => 'Trending topic',
+            'type' => 'posts',
+        ]));
+
+        $response->assertStatus(200);
+        $ids = collect($response->json('data'))->pluck('id')->all();
+
+        // Expected order:
+        // 1. postHigh (score 26)
+        // 2. postMid (score 7)
+        // 3. postLow (score 4)
+        // 4. postZeroNew (score 0, newer)
+        // 5. postZeroOld (score 0, older)
+        $this->assertEquals([
+            $postHigh->id,
+            $postMid->id,
+            $postLow->id,
+            $postZeroNew->id,
+            $postZeroOld->id,
+        ], $ids);
+    }
 }

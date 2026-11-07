@@ -58,6 +58,7 @@ class SearchPosts
         })
             ->with(['user.profile.avatar', 'media'])
             ->withViewerState($viewer)
+            ->orderByRaw('((likes_count * 1) + (comments_count * 2) + (reposts_count * 3)) DESC')
             ->orderByDesc('created_at')
             ->orderByDesc('id');
 
