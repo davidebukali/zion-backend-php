@@ -127,6 +127,12 @@ services:
   reverb:
     <<: *laravel
     command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
+    healthcheck:
+      test: ["CMD-SHELL", "php -r \"@fsockopen('127.0.0.1', 8080) ? exit(0) : exit(1);\""]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
     depends_on:
       redis:
         condition: service_healthy

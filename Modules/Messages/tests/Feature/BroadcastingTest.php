@@ -115,6 +115,62 @@ class BroadcastingTest extends TestCase
             ->assertJsonStructure(['auth']);
     }
 
+    public function test_participant_can_authorize_conversation_presence_channel(): void
+    {
+        Sanctum::actingAs($this->userA);
+
+        $response = $this->postJson('/api/broadcasting/auth', [
+            'channel_name' => 'presence-conversations.'.$this->conversation->id,
+            'socket_id' => '1234.5678',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['auth', 'channel_data']);
+
+        $channelData = json_decode($response->json('channel_data'), true);
+        $this->assertEquals((string) $this->userA->id, $channelData['user_id']);
+        $this->assertEquals($this->userA->name, $channelData['user_info']['name']);
+    }
+
+    public function test_non_participant_cannot_authorize_conversation_presence_channel(): void
+    {
+        Sanctum::actingAs($this->userC);
+
+        $response = $this->postJson('/api/broadcasting/auth', [
+            'channel_name' => 'presence-conversations.'.$this->conversation->id,
+            'socket_id' => '1234.5678',
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_authenticated_user_can_authorize_online_presence_channel(): void
+    {
+        Sanctum::actingAs($this->userA);
+
+        $response = $this->postJson('/api/broadcasting/auth', [
+            'channel_name' => 'presence-online',
+            'socket_id' => '1234.5678',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['auth', 'channel_data']);
+
+        $channelData = json_decode($response->json('channel_data'), true);
+        $this->assertEquals((string) $this->userA->id, $channelData['user_id']);
+        $this->assertEquals($this->userA->name, $channelData['user_info']['name']);
+    }
+
+    public function test_guest_cannot_authorize_online_presence_channel(): void
+    {
+        $response = $this->postJson('/api/broadcasting/auth', [
+            'channel_name' => 'presence-online',
+            'socket_id' => '1234.5678',
+        ]);
+
+        $response->assertStatus(401);
+    }
+
     public function test_non_participant_cannot_authorize_conversation_channel(): void
     {
         Sanctum::actingAs($this->userC);
