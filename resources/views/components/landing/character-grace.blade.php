@@ -83,7 +83,7 @@
     @if ($showSpeech)
         <div class="mb-2 flex justify-center" aria-live="polite">
             <div
-                class="relative inline-flex items-center justify-center rounded-full border border-primary/20 bg-surface-container-highest px-3.5 py-1 text-xs tracking-tight shadow-sm whitespace-nowrap min-w-[130px] sm:min-w-[140px] text-center transition-all duration-200 ease-out">
+                class="relative inline-flex items-center justify-center rounded-full border border-primary/20 bg-surface-container-highest px-3 py-1 text-xs tracking-tight shadow-sm whitespace-nowrap w-[148px] sm:w-[158px] text-center transition-colors duration-200">
                 <span
                     x-text="({!! $done !!}) ? 'God bless you' : (isInputFocused ? 'We’re praying for you' : 'Fellowship in peace')"
                     :class="(({!! $done !!}) || isInputFocused) ? 'text-primary font-semibold' : 'text-on-surface font-medium'"
@@ -103,7 +103,7 @@
         </div>
     @endif
 
-    <div class="relative aspect-[160/210] w-full max-w-[150px]">
+    <div class="relative aspect-[160/210] w-full max-w-[150px] [contain:paint_layout]">
         <svg viewBox="0 0 160 210" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-full w-full overflow-visible"
             role="img" aria-label="Grace, the Tsiyon guide, in quiet prayer with a halo above her head">
             <defs>

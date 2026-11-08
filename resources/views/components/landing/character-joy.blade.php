@@ -108,7 +108,7 @@
     @if ($showSpeech)
     <div class="mb-2 flex justify-center" aria-live="polite">
         <div
-            class="relative inline-flex items-center justify-center rounded-full border border-primary/20 bg-surface-container-highest px-3.5 py-1 text-xs tracking-tight shadow-sm whitespace-nowrap min-w-[130px] sm:min-w-[140px] text-center transition-all duration-200 ease-out">
+            class="relative inline-flex items-center justify-center rounded-full border border-primary/20 bg-surface-container-highest px-3 py-1 text-xs tracking-tight shadow-sm whitespace-nowrap w-[148px] sm:w-[158px] text-center transition-colors duration-200">
             <span
                 x-text="(status === 'success' || isCelebrating) ? 'Welcome to Tsiyon!' : (isInputFocused ? 'Almost there' : 'Reserve your spot')"
                 :class="(status === 'success' || isCelebrating || isInputFocused) ? 'text-primary font-semibold' : 'text-on-surface font-medium'"
@@ -128,7 +128,7 @@
     </div>
     @endif
 
-    <div class="relative aspect-[160/210] w-full max-w-[150px]">
+    <div class="relative aspect-[160/210] w-full max-w-[150px] [contain:paint_layout]">
         <svg viewBox="0 0 160 210" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-full w-full overflow-visible"
             role="img" aria-label="Joy, the Tsiyon guide, waving while holding a book">
             <defs>
@@ -285,10 +285,10 @@
                 <path d="M 106 115 Q 124 104 130 90" class="joy-sleeve" stroke-width="12" stroke-linecap="round"
                     fill="none" />
                 <path d="M 106 111 Q 122 101 128 88" stroke="#fff" stroke-width="3.5" stroke-linecap="round" fill="none"
-                    opacity="0.22" filter="url(#{{ $uid }}-b1)" />
+                    opacity="0.22" />
                 <circle cx="132" cy="85" r="7.5" fill="url(#{{ $uid }}-skin)" />
                 <path d="M 129 79 Q 134 73 138 78 Q 142 82 136 88" fill="url(#{{ $uid }}-skin)" />
-                <ellipse cx="130" cy="82" rx="2.5" ry="1.8" fill="#fff" opacity="0.4" filter="url(#{{ $uid }}-b1)" />
+                <ellipse cx="130" cy="82" rx="2.5" ry="1.8" fill="#fff" opacity="0.4" />
                 <path d="M 127 82 Q 130 79 133 81" class="joy-skin-ln" stroke-width="1" stroke-linecap="round"
                     fill="none" />
             </g>
