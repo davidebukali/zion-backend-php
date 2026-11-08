@@ -49,13 +49,17 @@ Alpine.data('waitlistForm', (defaultSource = 'hero') => ({
     status: 'idle', // 'idle' | 'submitting' | 'success' | 'already_registered'
     errorMessage: '',
     message: '',
+    isCelebrating: false,
     async submit(customSource) {
         if (!this.email || !this.email.includes('@')) {
             this.errorMessage = 'Please enter a valid email address.';
+            this.isCelebrating = false;
             return;
         }
         this.errorMessage = '';
         this.status = 'submitting';
+        // Trigger celebratory animation immediately upon form submission
+        this.isCelebrating = true;
 
         try {
             const response = await fetch('/api/waitlist', {
@@ -105,20 +109,25 @@ Alpine.data('waitlistForm', (defaultSource = 'hero') => ({
                 setTimeout(() => {
                     this.status = 'idle';
                     this.message = '';
+                    this.isCelebrating = false;
                 }, 8000);
             } else if (response.status === 422) {
                 this.status = 'idle';
                 this.errorMessage = data.message || 'Please provide a valid email address.';
+                this.isCelebrating = false;
             } else if (response.status === 429) {
                 this.status = 'idle';
                 this.errorMessage = 'Too many attempts. Please try again in a minute.';
+                this.isCelebrating = false;
             } else {
                 this.status = 'idle';
                 this.errorMessage = data.message || 'Something went wrong. Please try again.';
+                this.isCelebrating = false;
             }
         } catch (err) {
             this.status = 'idle';
             this.errorMessage = 'Network connection error. Please try again shortly.';
+            this.isCelebrating = false;
         }
     }
 }));

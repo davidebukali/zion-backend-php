@@ -39,12 +39,89 @@
                 </div>
 
                 <!-- Interactive Waitlist Module (Alpine.js) -->
-                <div class="w-full max-w-xl flex flex-col gap-space-xs" x-data="waitlistForm('hero')">
-                    <form @submit.prevent="submit('hero')"
+                <div class="relative w-full max-w-xl flex flex-col gap-space-xs mt-8 sm:mt-12"
+                    x-data="{
+                        ...waitlistForm('hero'),
+                        isNear: false,
+                        isInputFocused: false,
+                        isDismissed: false,
+                        lastCheck: 0,
+                        checkProximity(e) {
+                            if (this.isDismissed) {
+                                const el = this.$refs.heroFormContainer;
+                                if (el) {
+                                    const rect = el.getBoundingClientRect();
+                                    const dx = Math.max(rect.left - e.clientX, 0, e.clientX - rect.right);
+                                    const dy = Math.max(rect.top - e.clientY, 0, e.clientY - rect.bottom);
+                                    if (Math.hypot(dx, dy) > 160) {
+                                        this.isDismissed = false;
+                                    }
+                                }
+                                return;
+                            }
+                            if (this.isInputFocused || this.status === 'submitting' || this.status === 'success' || this.isCelebrating) {
+                                this.isNear = true;
+                                return;
+                            }
+                            const now = Date.now();
+                            if (now - this.lastCheck < 40) return;
+                            this.lastCheck = now;
+                            const el = this.$refs.heroFormContainer;
+                            if (!el) return;
+                            const rect = el.getBoundingClientRect();
+                            const dx = Math.max(rect.left - e.clientX, 0, e.clientX - rect.right);
+                            const dy = Math.max(rect.top - e.clientY, 0, e.clientY - rect.bottom);
+                            this.isNear = Math.hypot(dx, dy) < 140;
+                        },
+                        dismiss() {
+                            this.isDismissed = true;
+                            this.isNear = false;
+                            this.isInputFocused = false;
+                        }
+                    }"
+                    @mousemove.window="checkProximity($event)"
+                    @mouseleave.window="if (!isInputFocused && !isCelebrating && status !== 'submitting' && status !== 'success') { isNear = false; isDismissed = false; }"
+                    x-ref="heroFormContainer">
+
+                    <!-- Floating Angel Trio Stage -->
+                    <div class="absolute -top-28 sm:-top-32 right-0 sm:right-4 z-20 pointer-events-none flex items-end justify-end">
+                        <!-- Left Companion Angel (Appears upon submit/celebration) -->
+                        <div class="transition-all duration-500 ease-out transform -mr-2 sm:-mr-3 origin-bottom-right translate-x-6 translate-y-4 opacity-0 scale-50 pointer-events-none"
+                            :class="(!isDismissed && (isCelebrating || status === 'submitting' || status === 'success')) 
+                                ? 'translate-x-0 translate-y-0 opacity-100 scale-90 pointer-events-auto' 
+                                : 'translate-x-6 translate-y-4 opacity-0 scale-50 pointer-events-none'"
+                            x-cloak>
+                            <x-landing.angel role="left" class="w-16 sm:w-20" />
+                        </div>
+
+                        <!-- Lead Angel (Flies in on proximity/focus, dances running man on typing, two-step bounce on submit) -->
+                        <div class="transition-all duration-500 ease-out transform origin-bottom z-10 translate-x-32 sm:translate-x-48 -translate-y-4 opacity-0 scale-75 pointer-events-none"
+                            :class="(!isDismissed && (isNear || isInputFocused || isCelebrating || status === 'submitting' || status === 'success'))
+                                ? 'translate-x-0 translate-y-0 opacity-100 scale-100 pointer-events-auto'
+                                : 'translate-x-32 sm:translate-x-48 -translate-y-4 opacity-0 scale-75 pointer-events-none'">
+                            <x-landing.angel role="lead" class="w-20 sm:w-24" />
+                        </div>
+
+                        <!-- Right Companion Angel (Appears upon submit/celebration) -->
+                        <div class="transition-all duration-500 ease-out delay-100 transform -ml-2 sm:-ml-3 origin-bottom-left translate-x-12 translate-y-4 opacity-0 scale-50 pointer-events-none"
+                            :class="(!isDismissed && (isCelebrating || status === 'submitting' || status === 'success')) 
+                                ? 'translate-x-0 translate-y-0 opacity-100 scale-90 pointer-events-auto' 
+                                : 'translate-x-12 translate-y-4 opacity-0 scale-50 pointer-events-none'"
+                            x-cloak>
+                            <x-landing.angel role="right" class="w-16 sm:w-20" />
+                        </div>
+                    </div>
+
+                    <form @submit.prevent="isCelebrating = true; submit('hero')"
+                        @click.outside="dismiss()"
+                        @mouseenter="isDismissed = false"
                         class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-1.5 rounded-2xl sm:rounded-full bg-surface-container-highest border border-outline-variant/20 shadow-inner">
                         <div class="flex items-center pl-3.5 pr-2 py-2 flex-1 gap-2">
                             <span class="material-symbols-outlined text-outline text-[20px]">mail</span>
                             <input x-model="email"
+                                @focus="isDismissed = false; isInputFocused = true; isNear = true"
+                                @blur="isInputFocused = false"
+                                @keydown.escape="dismiss(); $el.blur()"
                                 class="bg-transparent text-on-surface placeholder:text-on-surface-variant/60 text-sm focus:outline-none w-full"
                                 placeholder="Enter your email address" required type="email"
                                 :disabled="status === 'submitting'" />

@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+[x-cloak] {
+  display: none !important;
+}
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../views/**/*.blade.php';
@@ -158,5 +162,344 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: var(--color-on-surface) !important;
   transition: background-color 5000000s ease-in-out 0s;
   caret-color: var(--color-on-surface);
+}
+
+/* Animated Character Utilities */
+@keyframes character-bob-left {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(-1.5deg);
+  }
+}
+
+@keyframes character-bob-right {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1.5deg);
+  }
+}
+
+@keyframes character-shadow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(0.84);
+    opacity: 0.18;
+  }
+}
+
+@keyframes character-arm-wave {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(18deg);
+  }
+  75% {
+    transform: rotate(-10deg);
+  }
+}
+
+@keyframes character-eye-blink {
+  0%, 46%, 50%, 96%, 100% {
+    transform: scaleY(1);
+  }
+  48%, 98% {
+    transform: scaleY(0.08);
+  }
+}
+
+@keyframes character-breathe {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(-3px) scaleY(1.02);
+  }
+}
+
+@keyframes character-halo {
+  0%, 100% {
+    opacity: 0.45;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes character-celebrate {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  25% {
+    transform: translateY(-18px) scale(1.08) rotate(4deg);
+  }
+  50% {
+    transform: translateY(-2px) scale(0.96);
+  }
+  75% {
+    transform: translateY(-12px) scale(1.05) rotate(-4deg);
+  }
+}
+
+@keyframes speech-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes sparkle-burst {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.6) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.animate-character-bob-left {
+  animation: character-bob-left 4.2s ease-in-out infinite;
+}
+
+.animate-character-bob-right {
+  animation: character-bob-right 4.8s ease-in-out infinite;
+}
+
+.animate-character-shadow {
+  animation: character-shadow 4.2s ease-in-out infinite;
+}
+
+.animate-character-arm-wave {
+  animation: character-arm-wave 2.6s ease-in-out infinite;
+}
+
+.animate-character-eye-blink {
+  animation: character-eye-blink 4.5s ease-in-out infinite;
+}
+
+.animate-character-breathe {
+  animation: character-breathe 3.6s ease-in-out infinite;
+}
+
+.animate-character-halo {
+  animation: character-halo 3.2s ease-in-out infinite;
+}
+
+.animate-character-celebrate {
+  animation: character-celebrate 0.75s ease-in-out infinite;
+}
+
+.animate-speech-float {
+  animation: speech-float 3s ease-in-out infinite;
+}
+
+.animate-sparkle-burst {
+  animation: sparkle-burst 1.6s ease-out infinite;
+}
+
+/* Accessibility: respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-character-bob-left,
+  .animate-character-bob-right,
+  .animate-character-shadow,
+  .animate-character-arm-wave,
+  .animate-character-eye-blink,
+  .animate-character-breathe,
+  .animate-character-halo,
+  .animate-character-celebrate,
+  .animate-speech-float,
+  .animate-sparkle-burst,
+  .animate-angel-wing-left,
+  .animate-angel-wing-right,
+  .animate-angel-float,
+  .animate-running-man-bounce,
+  .animate-running-man-leg-l,
+  .animate-running-man-leg-r,
+  .animate-running-man-arm-l,
+  .animate-running-man-arm-r,
+  .animate-two-step-groove,
+  .animate-two-step-arm-l,
+  .animate-two-step-arm-r {
+    animation: none !important;
+  }
+}
+
+/* Angel Flight & Dance Utilities */
+@keyframes angel-wing-left {
+  0%, 100% {
+    transform: rotate(0deg) scaleX(1);
+  }
+  50% {
+    transform: rotate(-28deg) scaleX(0.72);
+  }
+}
+
+@keyframes angel-wing-right {
+  0%, 100% {
+    transform: rotate(0deg) scaleX(1);
+  }
+  50% {
+    transform: rotate(28deg) scaleX(0.72);
+  }
+}
+
+@keyframes angel-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(-2deg);
+  }
+}
+
+@keyframes running-man-bounce {
+  0%, 50%, 100% {
+    transform: translateY(0px);
+  }
+  25%, 75% {
+    transform: translateY(5px);
+  }
+}
+
+@keyframes running-man-leg-l {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(-32deg);
+  }
+  50% {
+    transform: translateY(3px) translateX(-6px) rotate(14deg);
+  }
+  75% {
+    transform: translateY(1px) translateX(-10px) rotate(22deg);
+  }
+}
+
+@keyframes running-man-leg-r {
+  0%, 100% {
+    transform: translateY(3px) translateX(-6px) rotate(14deg);
+  }
+  25% {
+    transform: translateY(1px) translateX(-10px) rotate(22deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-10px) rotate(-32deg);
+  }
+}
+
+@keyframes running-man-arm-l {
+  0%, 100% {
+    transform: rotate(-30deg);
+  }
+  50% {
+    transform: rotate(38deg);
+  }
+}
+
+@keyframes running-man-arm-r {
+  0%, 100% {
+    transform: rotate(38deg);
+  }
+  50% {
+    transform: rotate(-30deg);
+  }
+}
+
+@keyframes two-step-groove {
+  0%, 100% {
+    transform: translateX(-10px) rotate(-4deg);
+  }
+  25% {
+    transform: translateX(-10px) translateY(5px) rotate(-2deg);
+  }
+  50% {
+    transform: translateX(10px) rotate(4deg);
+  }
+  75% {
+    transform: translateX(10px) translateY(5px) rotate(2deg);
+  }
+}
+
+@keyframes two-step-arm-l {
+  0%, 100% {
+    transform: rotate(-25deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+}
+
+@keyframes two-step-arm-r {
+  0%, 100% {
+    transform: rotate(20deg);
+  }
+  50% {
+    transform: rotate(-25deg);
+  }
+}
+
+.animate-angel-wing-left {
+  animation: angel-wing-left 0.35s ease-in-out infinite;
+}
+
+.animate-angel-wing-right {
+  animation: angel-wing-right 0.35s ease-in-out infinite;
+}
+
+.animate-angel-float {
+  animation: angel-float 2.8s ease-in-out infinite;
+}
+
+.animate-running-man-bounce {
+  animation: running-man-bounce 0.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-running-man-leg-l {
+  animation: running-man-leg-l 0.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-running-man-leg-r {
+  animation: running-man-leg-r 0.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-running-man-arm-l {
+  animation: running-man-arm-l 0.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-running-man-arm-r {
+  animation: running-man-arm-r 0.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-two-step-groove {
+  animation: two-step-groove 0.8s ease-in-out infinite;
+}
+
+.animate-two-step-arm-l {
+  animation: two-step-arm-l 0.8s ease-in-out infinite;
+}
+
+.animate-two-step-arm-r {
+  animation: two-step-arm-r 0.8s ease-in-out infinite;
 }
 
