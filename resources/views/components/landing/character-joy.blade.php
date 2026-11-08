@@ -106,16 +106,23 @@
     @endonce
 
     @if ($showSpeech)
-    <div class="mb-2" aria-live="polite">
+    <div class="mb-2 flex justify-center" aria-live="polite">
         <div
-            class="relative inline-flex items-center justify-center rounded-full border border-primary/20 bg-surface-container-highest px-3.5 py-1 text-xs font-semibold tracking-tight text-on-surface shadow-sm whitespace-nowrap">
-            <span x-show="status === 'success'" x-cloak class="text-primary font-bold">You're on the list</span>
-            <span x-show="status !== 'success' && isInputFocused" x-cloak class="text-primary font-medium">Almost there</span>
-            <span x-show="status !== 'success' && !isInputFocused" class="text-on-surface font-medium">Reserve your spot</span>
+            class="relative inline-flex items-center justify-center rounded-full border border-primary/20 bg-surface-container-highest px-3.5 py-1 text-xs tracking-tight shadow-sm whitespace-nowrap min-w-[130px] sm:min-w-[140px] text-center transition-all duration-200 ease-out">
+            <span
+                x-text="(status === 'success' || isCelebrating) ? 'Welcome to Tsiyon!' : (isInputFocused ? 'Almost there' : 'Reserve your spot')"
+                :class="(status === 'success' || isCelebrating || isInputFocused) ? 'text-primary font-semibold' : 'text-on-surface font-medium'"
+                class="transition-colors duration-200">
+                Reserve your spot
+            </span>
 
-            <!-- Seamless Tail matching bubble background without dark clipping artifacts -->
-            <div
-                class="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-primary/20 bg-surface-container-highest">
+            <!-- Seamless Tail Pointer -->
+            <div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3.5 h-1.5 pointer-events-none">
+                <svg viewBox="0 0 14 6" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full block overflow-visible">
+                    <polygon points="0,0 7,6 14,0" style="fill: var(--color-surface-container-highest);" />
+                    <polyline points="0,0 7,6 14,0" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="stroke: var(--color-primary); stroke-opacity: 0.25;" />
+                    <line x1="0.5" y1="0" x2="13.5" y2="0" stroke-width="2" style="stroke: var(--color-surface-container-highest);" />
+                </svg>
             </div>
         </div>
     </div>

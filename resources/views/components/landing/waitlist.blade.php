@@ -5,14 +5,14 @@
             ...waitlistForm('footer_cta'),
             isInputFocused: false
         }"
-        class="w-full rounded-3xl bg-surface-container border border-outline-variant/15 p-space-md sm:p-space-lg lg:p-16 text-center flex flex-col items-center gap-space-lg relative overflow-hidden shadow-[0_20px_50px_-12px_rgba(198,40,40,0.22)]">
+        class="w-full rounded-3xl bg-surface-container border border-outline-variant/15 p-space-md sm:p-space-lg lg:p-16 text-center flex flex-col items-center gap-space-lg relative isolate overflow-hidden shadow-[0_20px_50px_-12px_rgba(198,40,40,0.22)]">
         <!-- Subtle Ambient Red Glow Layer -->
         <div
-            class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary-container/20 rounded-full blur-[100px] pointer-events-none">
+            class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary-container/20 rounded-full blur-[100px] pointer-events-none -z-10">
         </div>
 
         <!-- Top Stage: Joy (Left), Tsiyon Heart Emblem (Center), Grace (Right) -->
-        <div class="w-full flex items-end justify-center gap-4 sm:gap-10 lg:gap-16 pt-2 z-10">
+        <div class="w-full flex items-end justify-center gap-4 sm:gap-10 lg:gap-16 pt-2 relative">
             <!-- Left Character: Joy (The Greeter) -->
             <div class="flex flex-col items-center">
                 <x-landing.character-joy class="w-24 sm:w-32 lg:w-36 xl:w-40" />
@@ -33,7 +33,7 @@
         </div>
 
         <!-- Section Copy -->
-        <div class="max-w-2xl space-y-space-xs z-10">
+        <div class="max-w-2xl space-y-space-xs relative">
             <div
                 class="inline-flex items-center gap-1.5 px-3.5 py-1 mb-2 rounded-full bg-surface-container-high border border-outline-variant/20 text-primary text-xs font-bold uppercase tracking-wider">
                 <span class="material-symbols-outlined text-[16px] icon-fill">rocket_launch</span>
@@ -48,7 +48,7 @@
         </div>
 
         <!-- Large Interactive Email Input Bar (Alpine.js) -->
-        <div class="w-full max-w-xl z-10 flex flex-col gap-2">
+        <div class="w-full max-w-xl relative flex flex-col gap-2">
             <form @submit.prevent="isCelebrating = true; submit('footer_cta')"
                 class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2 rounded-2xl sm:rounded-full bg-surface-container-highest border border-outline-variant/20 shadow-inner">
                 <div class="flex items-center pl-4 pr-2 py-2 flex-1 gap-2.5">
@@ -111,7 +111,7 @@
 
         <!-- Trust Badges Strip -->
         <div
-            class="flex flex-wrap items-center justify-center gap-x-space-md gap-y-2 text-on-surface-variant text-xs font-semibold uppercase tracking-wider z-10 pt-2">
+            class="flex flex-wrap items-center justify-center gap-x-space-md gap-y-2 text-on-surface-variant text-xs font-semibold uppercase tracking-wider relative pt-2">
             <span class="flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-[18px] text-primary">phone_iphone</span>
                 Early Beta Access on iOS &amp; Android
