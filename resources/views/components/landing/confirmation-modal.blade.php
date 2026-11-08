@@ -45,12 +45,12 @@
                 <div class="space-y-2">
                     <h3 id="confirmation-modal-title"
                         class="text-2xl sm:text-3xl font-extrabold text-on-surface tracking-tight"
-                        x-text="status === 'already_registered' ? 'You\'re on the Founding List!' : 'You\'re on the Founding List!'">
+                        x-text="status === 'already_registered' ? 'You\'re on the Founding List!' : 'Your Beta Spot is Reserved! 🎉'">
                     </h3>
                     <p class="text-sm sm:text-base text-on-surface-variant leading-relaxed max-w-md"
                         x-text="status === 'already_registered'
-                                ? 'Good news! Your email is already recorded for early access.'
-                                : 'Your early beta spot on iOS & Android has been reserved. Check your inbox for confirmation. God bless you!'">
+                                ? 'Good news! Your email is already recorded for our early testing cohorts on iOS & Android.'
+                                : 'We’ve saved your place in line for our early testing cohorts on iOS & Android. Watch your inbox for your unique access link.'">
                     </p>
                 </div>
             </div>
@@ -63,11 +63,10 @@
                         class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5">rocket_launch</span>
                     <div>
                         <h4 class="text-xs sm:text-sm font-bold text-on-surface uppercase tracking-wider">
-                            Help us test early
+                            Help Shape the Sanctuary &amp; Skip the Wait
                         </h4>
                         <p class="text-xs text-on-surface-variant mt-0.5 leading-relaxed">
-                            Share Tsiyon with your friends, church community, and prayer partners to help us test early
-                            and skip the beta queue.
+                            Invite friends, family, or your study group to join the beta. When three friends reserve a spot using your link, your invite moves directly to the priority testing queue.
                         </p>
                     </div>
                 </div>

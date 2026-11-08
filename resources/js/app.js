@@ -140,7 +140,7 @@ Alpine.data('waitlistConfirmationModal', () => ({
     copyToast: '',
     canNativeShare: typeof navigator !== 'undefined' && typeof navigator.share === 'function',
     shareUrl: window.location.origin || 'https://tsiyonapp.com',
-    shareText: 'I just reserved my early beta spot for Tsiyon — a distraction-free social home for believers to share Scripture and fellowship. Join the waitlist:',
+    shareText: 'I just claimed my early beta spot for Tsiyon — a peaceful, ad-free social home built for fellowship, scripture reflection, and prayer. It’s open to everyone who loves wholesome community. Claim your spot here:',
 
     init() {
         window.addEventListener('open-waitlist-confirmation', (e) => {

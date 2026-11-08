@@ -34,11 +34,16 @@
 
         <!-- Section Copy -->
         <div class="max-w-2xl space-y-space-xs z-10">
+            <div
+                class="inline-flex items-center gap-1.5 px-3.5 py-1 mb-2 rounded-full bg-surface-container-high border border-outline-variant/20 text-primary text-xs font-bold uppercase tracking-wider">
+                <span class="material-symbols-outlined text-[16px] icon-fill">rocket_launch</span>
+                <span>Founding Beta Cohort</span>
+            </div>
             <h2 class="text-3xl sm:text-4xl lg:text-[40px] font-extrabold text-on-surface tracking-tight leading-tight">
-                Be a Founding Believer in the Tsiyon Community
+                Be Part of the First Wave Inside Tsiyon
             </h2>
             <p class="text-sm sm:text-base text-on-surface-variant leading-relaxed">
-                Help us build a cleaner social home for the Body of Christ. Reserve your early beta spot on iOS &amp; Android.
+                We’re opening our doors to founding testers on iOS and Android. Reserve your spot today to help test our early features and shape an uplifting social home for everyone.
             </p>
         </div>
 
@@ -58,11 +63,11 @@
                 <button
                     class="px-8 py-3.5 rounded-full bg-primary-container text-on-primary-container text-xs uppercase tracking-wider font-bold glow-primary glow-primary-hover active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 shrink-0 disabled:opacity-50"
                     type="submit" :disabled="status === 'submitting'">
-                    <span x-show="status !== 'submitting'">Reserve Your Beta Spot</span>
+                    <span x-show="status !== 'submitting'">Claim Your Founding Beta Spot</span>
                     <span x-show="status === 'submitting'" x-cloak class="flex items-center gap-2">
                         <span
                             class="animate-spin h-3.5 w-3.5 border-2 border-on-primary-container border-t-transparent rounded-full"></span>
-                        Recording...
+                        Reserving your spot...
                     </span>
                     <span class="material-symbols-outlined text-[18px]" x-show="status !== 'submitting'">arrow_forward</span>
                 </button>
@@ -108,18 +113,18 @@
         <div
             class="flex flex-wrap items-center justify-center gap-x-space-md gap-y-2 text-on-surface-variant text-xs font-semibold uppercase tracking-wider z-10 pt-2">
             <span class="flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-[18px] text-primary">check_circle</span>
-                Instant Invitation Access
-            </span>
-            <span class="text-outline-variant hidden sm:inline">•</span>
-            <span class="flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-[18px] text-primary">phone_iphone</span>
-                Early Access on iOS &amp; Android
+                Early Beta Access on iOS &amp; Android
             </span>
             <span class="text-outline-variant hidden sm:inline">•</span>
             <span class="flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-[18px] text-primary">redeem</span>
-                100% Free Always
+                100% Free Forever
+            </span>
+            <span class="text-outline-variant hidden sm:inline">•</span>
+            <span class="flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[18px] text-primary">lock</span>
+                No Ads, Spam, or Data Selling
             </span>
         </div>
     </div>

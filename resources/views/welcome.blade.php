@@ -1,6 +1,6 @@
 <x-layouts.app>
     <x-slot:title>
-        Tsiyon — A Social Home Built for What Matters Most
+        Tsiyon — A Peaceful Social Home Built for What Matters Most
     </x-slot:title>
 
     <div class="flex flex-col w-full">

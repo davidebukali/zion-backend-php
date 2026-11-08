@@ -9,37 +9,32 @@
                     <div class="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                         <span class="material-symbols-outlined text-[26px] icon-fill">shield</span>
                     </div>
-                    <span class="text-base sm:text-lg text-on-surface font-bold tracking-tight">100% Moderated</span>
-                    <span class="text-xs sm:text-sm text-on-surface-variant leading-snug">Every post is wholesome &amp;
-                        safe</span>
+                    <span class="text-base sm:text-lg text-on-surface font-bold tracking-tight">Wholesome &amp; Protected</span>
+                    <span class="text-xs sm:text-sm text-on-surface-variant leading-snug">Smart, proactive moderation ensures your feed stays uplifting, peaceful, and family-safe.</span>
                 </div>
                 <div
                     class="flex flex-col items-center text-center gap-2 p-space-md sm:p-5 rounded-2xl bg-surface-container/60 border border-outline-variant/10 shadow-sm transition-transform duration-200 hover:-translate-y-0.5">
                     <div class="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                         <span class="material-symbols-outlined text-[26px] icon-fill">lock</span>
                     </div>
-                    <span class="text-base sm:text-lg text-on-surface font-bold tracking-tight">Zero Data Selling</span>
-                    <span class="text-xs sm:text-sm text-on-surface-variant leading-snug">Your privacy is sacred to
-                        us</span>
+                    <span class="text-base sm:text-lg text-on-surface font-bold tracking-tight">Your Privacy is Sacred</span>
+                    <span class="text-xs sm:text-sm text-on-surface-variant leading-snug">Open-source transparency with zero data selling and zero tracking cookies.</span>
                 </div>
                 <div
                     class="flex flex-col items-center text-center gap-2 p-space-md sm:p-5 rounded-2xl bg-surface-container/60 border border-outline-variant/10 shadow-sm transition-transform duration-200 hover:-translate-y-0.5">
                     <div class="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                         <span class="material-symbols-outlined text-[26px] icon-fill">church</span>
                     </div>
-                    <span class="text-base sm:text-lg text-on-surface font-bold tracking-tight">Christ-Centered</span>
-                    <span class="text-xs sm:text-sm text-on-surface-variant leading-snug">Built on Biblical
-                        values</span>
+                    <span class="text-base sm:text-lg text-on-surface font-bold tracking-tight">Christ-Centered Standard</span>
+                    <span class="text-xs sm:text-sm text-on-surface-variant leading-snug">Rooted in Biblical values, grace, and mutual encouragement for everyone who joins.</span>
                 </div>
                 <div
                     class="flex flex-col items-center text-center gap-2 p-space-md sm:p-5 rounded-2xl bg-surface-container/60 border border-outline-variant/10 shadow-sm transition-transform duration-200 hover:-translate-y-0.5">
                     <div class="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[26px] icon-fill">block</span>
+                        <span class="material-symbols-outlined text-[26px] icon-fill">auto_awesome</span>
                     </div>
-                    <span class="text-base sm:text-lg text-on-surface font-bold tracking-tight">No Rage
-                        Algorithms</span>
-                    <span class="text-xs sm:text-sm text-on-surface-variant leading-snug">No toxic engagement
-                        tricks</span>
+                    <span class="text-base sm:text-lg text-on-surface font-bold tracking-tight">Chronological &amp; Peaceful</span>
+                    <span class="text-xs sm:text-sm text-on-surface-variant leading-snug">A natural, calm feed where you only see posts from the people and communities you choose to follow.</span>
                 </div>
             </div>
         </div>
@@ -52,14 +47,13 @@
             <div
                 class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-surface-container-high border border-outline-variant/20 text-primary text-xs font-bold uppercase tracking-wider">
                 <span class="material-symbols-outlined text-[16px] icon-fill">verified</span>
-                <span>Designed With Intention</span>
+                <span>Crafted With Intention</span>
             </div>
             <h2 class="text-3xl sm:text-4xl font-extrabold text-on-surface tracking-tight">
-                Every Feature Crafted for Fellowship &amp; Faith
+                Everything You Need for Fellowship, Prayer, and Daily Peace
             </h2>
             <p class="text-base text-on-surface-variant leading-relaxed">
-                Social media reimagined from the foundation up to inspire peace, spiritual maturity, and uncompromised
-                family connectivity.
+                Social technology thoughtfully designed to encourage genuine connection, spiritual reflection, and family safety.
             </p>
         </div>
 
@@ -73,10 +67,9 @@
                         class="w-12 h-12 rounded-2xl bg-primary-container text-on-primary-container flex items-center justify-center glow-primary">
                         <span class="material-symbols-outlined text-[26px]">verified_user</span>
                     </div>
-                    <h3 class="text-xl sm:text-2xl font-bold text-on-surface">A Protected Sanctuary for Your Family</h3>
+                    <h3 class="text-xl sm:text-2xl font-bold text-on-surface">A Wholesome Sanctuary for the Whole Family</h3>
                     <p class="text-sm sm:text-base text-on-surface-variant leading-relaxed">
-                        Smart, Biblically-grounded moderation ensures your family never stumbles across toxic or
-                        explicit content, keeping your daily feed wholesome and life-giving.
+                        Smart, caring moderation helps keep your daily feed clean and edifying, so parents and individuals can browse with complete peace of mind.
                     </p>
                 </div>
 
@@ -86,8 +79,7 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary text-[20px] icon-fill">shield</span>
-                            <span class="text-xs text-on-surface uppercase tracking-wider font-bold">Christ-Centered
-                                Filter: Active</span>
+                            <span class="text-xs text-on-surface uppercase tracking-wider font-bold">Community Standard: Active &amp; Guarded</span>
                         </div>
                         <span
                             class="px-2.5 py-0.5 rounded-full bg-primary-container text-on-primary-container text-xs font-bold">100%
@@ -115,10 +107,9 @@
                         class="w-12 h-12 rounded-2xl bg-secondary-container/60 text-secondary flex items-center justify-center">
                         <span class="material-symbols-outlined text-[26px]">public</span>
                     </div>
-                    <h3 class="text-xl sm:text-2xl font-bold text-on-surface">Uplifting Community, Worldwide</h3>
+                    <h3 class="text-xl sm:text-2xl font-bold text-on-surface">An Uplifting Community, Worldwide</h3>
                     <p class="text-sm sm:text-base text-on-surface-variant leading-relaxed">
-                        Discover global faith testimonies, daily devotionals, and life-giving creators focused entirely
-                        on spiritual encouragement, free from manipulative feeds.
+                        Discover shared scripture reflections, answered prayers, and encouraging creators from around the world.
                     </p>
                 </div>
 
@@ -136,12 +127,12 @@
                     </div>
                     <div
                         class="p-3 rounded-xl bg-surface-container-high border border-outline-variant/10 flex flex-col gap-1 hover:border-primary/30 transition-colors">
-                        <span class="text-xs text-primary font-bold">#Testimonies</span>
+                        <span class="text-xs text-primary font-bold">#FaithStories</span>
                         <span class="text-[11px] text-on-surface-variant">8.4k stories</span>
                     </div>
                     <div
                         class="p-3 rounded-xl bg-surface-container-high border border-outline-variant/10 flex flex-col gap-1 hover:border-primary/30 transition-colors">
-                        <span class="text-xs text-primary font-bold">#FamilyDevotion</span>
+                        <span class="text-xs text-primary font-bold">#FamilyReflections</span>
                         <span class="text-[11px] text-on-surface-variant">12.2k families</span>
                     </div>
                 </div>
@@ -156,12 +147,9 @@
                             class="w-12 h-12 rounded-2xl bg-tertiary-container/40 text-tertiary flex items-center justify-center">
                             <span class="material-symbols-outlined text-[26px]">forum</span>
                         </div>
-                        <h3 class="text-2xl sm:text-3xl font-bold text-on-surface">Faith-Centered Fellowship &amp;
-                            Prayer Chains
-                        </h3>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-on-surface">Private Prayer Chains &amp; Encouraging Conversations</h3>
                         <p class="text-sm sm:text-base text-on-surface-variant leading-relaxed">
-                            Dedicated prayer request chains, devotionals, and encrypted circles where your prayer
-                            life isn't buried under commercial ads.
+                            Create private circles, share prayer requests, and send encouraging voice notes in a space dedicated entirely to authentic support.
                         </p>
                         <div class="flex flex-wrap gap-space-sm pt-2">
                             <span
@@ -173,7 +161,7 @@
                                 class="px-3.5 py-1.5 rounded-full bg-surface-container-high border border-outline-variant/15 text-on-surface text-xs font-medium flex items-center gap-1.5">
                                 <span
                                     class="material-symbols-outlined text-[16px] text-primary">volunteer_activism</span>
-                                <span>Direct Prayer Chains</span>
+                                <span>Dedicated Prayer Chains</span>
                             </span>
                         </div>
                     </div>
