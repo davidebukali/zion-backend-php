@@ -83,8 +83,8 @@
                     @mouseleave.window="if (!isInputFocused && !isCelebrating && status !== 'submitting' && status !== 'success') { isNear = false; isDismissed = false; }"
                     x-ref="heroFormContainer">
 
-                    <!-- Floating Angel Trio Stage -->
-                    <div class="absolute -top-28 sm:-top-32 right-0 sm:right-4 z-20 pointer-events-none flex items-end justify-end">
+                    <!-- Floating Angel Trio Stage (Hidden on mobile devices, visible on tablet & desktop) -->
+                    <div class="hidden sm:flex absolute -top-28 sm:-top-32 right-0 sm:right-4 z-20 pointer-events-none items-end justify-end">
                         <!-- Left Companion Angel (Appears upon submit/celebration) -->
                         <div class="transition-all duration-500 ease-out transform -mr-2 sm:-mr-3 origin-bottom-right translate-x-6 translate-y-4 opacity-0 scale-50 pointer-events-none"
                             :class="(!isDismissed && (isCelebrating || status === 'submitting' || status === 'success')) 
