@@ -9,6 +9,7 @@ use Modules\Interactions\Events\PostLiked;
 use Modules\Interactions\Events\PostReported;
 use Modules\Interactions\Events\PostReposted;
 use Modules\Interactions\Events\PostShared;
+use Modules\Interactions\Events\PostUnliked;
 use Modules\Notifications\Listeners\SendCommentCreatedNotification;
 use Modules\Notifications\Listeners\SendCommentLikedNotification;
 use Modules\Notifications\Listeners\SendFollowNotification;
@@ -36,6 +37,9 @@ class EventServiceProvider extends ServiceProvider
             SendCommentLikedNotification::class,
         ],
         PostLiked::class => [
+            SendPostLikedNotification::class,
+        ],
+        PostUnliked::class => [
             SendPostLikedNotification::class,
         ],
         PostReposted::class => [

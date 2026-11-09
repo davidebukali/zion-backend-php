@@ -15,6 +15,7 @@ class Notification extends Model
         'user_id',
         'actor_id',
         'type',
+        'group_key',
         'notifiable_type',
         'notifiable_id',
         'data',

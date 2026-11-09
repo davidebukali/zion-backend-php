@@ -2,12 +2,13 @@
 
 namespace Modules\Interactions\Events;
 
+use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Modules\Auth\Models\User;
 use Modules\Posts\Models\Post;
 
-class PostLiked
+class PostLiked implements ShouldDispatchAfterCommit
 {
     use Dispatchable, SerializesModels;
 

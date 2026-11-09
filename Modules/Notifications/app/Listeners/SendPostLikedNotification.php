@@ -5,7 +5,8 @@ namespace Modules\Notifications\Listeners;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Modules\Interactions\Events\PostLiked;
-use Modules\Notifications\Actions\CreateNotification;
+use Modules\Interactions\Events\PostUnliked;
+use Modules\Notifications\Actions\UpdateGroupedPostLikesNotification;
 
 class SendPostLikedNotification implements ShouldQueue
 {
@@ -14,23 +15,11 @@ class SendPostLikedNotification implements ShouldQueue
     public $queue = 'notifications';
 
     public function __construct(
-        protected CreateNotification $createNotification
+        protected UpdateGroupedPostLikesNotification $action
     ) {}
 
-    public function handle(PostLiked $event): void
+    public function handle(PostLiked|PostUnliked $event): void
     {
-        $post = $event->post;
-        $actor = $event->user;
-
-        ($this->createNotification)(
-            user: $post->user_id, // post author gets notified
-            type: 'post_liked',
-            notifiable: $post,
-            actor: $actor,
-            data: [
-                'actor_name' => $actor->name,
-                'post_id' => $post->id,
-            ]
-        );
+        ($this->action)($event->post);
     }
 }
