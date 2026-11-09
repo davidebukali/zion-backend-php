@@ -46,4 +46,8 @@ return [
         'id' => env('GOOGLE_ANALYTICS_ID'),
     ],
 
+    'expo' => [
+        'access_token' => env('EXPO_ACCESS_TOKEN'),
+    ],
+
 ];

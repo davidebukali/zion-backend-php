@@ -3,7 +3,10 @@
 namespace Modules\Notifications\Actions;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Modules\Auth\Models\User;
 use Modules\Interactions\Models\PostLike;
+use Modules\Notifications\Jobs\SendPushNotificationJob;
 use Modules\Notifications\Models\Notification;
 use Modules\Posts\Models\Post;
 
@@ -67,12 +70,39 @@ class UpdateGroupedPostLikesNotification
                 'actor_ids' => $latestActorIds,
             ];
 
-            if (! $notification->exists || $actorsCount > $previousCount) {
+            $isNewLike = ! $notification->exists || $actorsCount > $previousCount;
+
+            if ($isNewLike) {
                 $notification->read_at = null;
                 $notification->created_at = now();
             }
 
             $notification->save();
+
+            if ($isNewLike) {
+                $actorName = User::query()->whereKey($latestActorIds[0] ?? null)->value('name') ?? 'Someone';
+
+                if ($actorsCount <= 1) {
+                    $pushTitle = "{$actorName} liked your post";
+                } elseif ($actorsCount === 2) {
+                    $pushTitle = "{$actorName} and 1 other liked your post";
+                } else {
+                    $others = $actorsCount - 1;
+                    $pushTitle = "{$actorName} and {$others} others liked your post";
+                }
+
+                $pushBody = Str::limit($postRecord->content ?? '', 100) ?: 'View post activity.';
+
+                SendPushNotificationJob::dispatch(
+                    $recipientId,
+                    $pushTitle,
+                    $pushBody,
+                    [
+                        'postId' => $postRecord->id,
+                        'type' => 'post_liked',
+                    ]
+                )->afterCommit();
+            }
         });
     }
 }

@@ -4,6 +4,7 @@ namespace Modules\Auth\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,6 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Modules\Interactions\Models\Repost;
 use Modules\Messages\Models\Conversation;
 use Modules\Messages\Models\Message;
+use Modules\Notifications\Models\DeviceToken;
 use Modules\Notifications\Models\Notification;
 use Modules\Posts\Models\Post;
 use Modules\SocialGraph\Enums\FollowStatus;
@@ -68,6 +70,11 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class, 'user_id');
     }
 
+    public function deviceTokens(): HasMany
+    {
+        return $this->hasMany(DeviceToken::class, 'user_id');
+    }
+
     public function profile()
     {
         return $this->hasOne(Profile::class);
@@ -78,7 +85,7 @@ class User extends Authenticatable
         return $this->hasMany(Repost::class);
     }
 
-    public function conversations(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function conversations(): BelongsToMany
     {
         return $this->belongsToMany(Conversation::class, 'conversation_participants', 'user_id', 'conversation_id');
     }
