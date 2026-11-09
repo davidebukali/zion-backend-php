@@ -1,0 +1,24 @@
+{
+    "agents": [
+        "antigravity",
+        "kiro",
+        "opencode",
+        "zed"
+    ],
+    "cloud": false,
+    "guidelines": true,
+    "mcp": true,
+    "nightwatch": false,
+    "packages": [
+        "spatie/laravel-backup"
+    ],
+    "sail": false,
+    "skills": [
+        "infer-conventions",
+        "laravel-best-practices",
+        "testing-best-practices",
+        "configuring-horizon",
+        "tailwindcss-development",
+        "laravel-backup"
+    ]
+}
