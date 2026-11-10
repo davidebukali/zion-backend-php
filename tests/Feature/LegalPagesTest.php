@@ -10,6 +10,8 @@ class LegalPagesTest extends TestCase
     {
         parent::setUp();
 
+        $this->withoutVite();
+
         config([
             'session.driver' => 'array',
             'cache.default' => 'array',
