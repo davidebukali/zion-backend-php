@@ -6,6 +6,16 @@ use Tests\TestCase;
 
 class LegalPagesTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config([
+            'session.driver' => 'array',
+            'cache.default' => 'array',
+        ]);
+    }
+
     public function test_community_guidelines_page_is_accessible(): void
     {
         $response = $this->get(route('community-guidelines'));
