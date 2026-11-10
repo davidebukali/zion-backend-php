@@ -15,12 +15,16 @@ use Modules\SocialGraph\Actions\GetFeed;
 use Modules\SocialGraph\Actions\ListBlockedUsers;
 use Modules\SocialGraph\Actions\ListTaggableUsers;
 use Modules\SocialGraph\Actions\RejectFollowRequest;
+use Modules\SocialGraph\Actions\ReportUser;
 use Modules\SocialGraph\Actions\UnblockUser;
 use Modules\SocialGraph\Actions\UnfollowUser;
+use Modules\SocialGraph\Enums\UserReportReason;
+use Modules\SocialGraph\Http\Requests\StoreUserReportRequest;
 use Modules\SocialGraph\Models\Follow;
 use Modules\SocialGraph\Transformers\FeedItemResource;
 use Modules\SocialGraph\Transformers\FollowResource;
 use Modules\SocialGraph\Transformers\UserBlockResource;
+use Modules\SocialGraph\Transformers\UserReportResource;
 
 class SocialGraphController extends Controller
 {
@@ -642,6 +646,92 @@ class SocialGraphController extends Controller
                 'next_cursor' => $paginated['meta']['next_cursor'] ?? null,
                 'per_page' => $paginated['meta']['per_page'] ?? $perPage,
             ]
+        );
+    }
+
+    /**
+     * @group Social Graph
+     *
+     * @subgroup Reports
+     *
+     * @authenticated
+     *
+     * Get User Report Reasons
+     *
+     * Retrieve the predefined list of reasons for reporting a user.
+     *
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Report reasons retrieved successfully.",
+     *   "data": [
+     *     {
+     *       "id": "impersonation",
+     *       "label": "Impersonation",
+     *       "desc": "Pretending to be someone else, a leader, or an organization"
+     *     }
+     *   ],
+     *   "meta": null
+     * }
+     */
+    public function reportReasons()
+    {
+        return $this->success(
+            UserReportReason::options(),
+            'Report reasons retrieved successfully.'
+        );
+    }
+
+    /**
+     * @group Social Graph
+     *
+     * @subgroup Reports
+     *
+     * @authenticated
+     *
+     * Report User
+     *
+     * Submit a report against another user profile.
+     *
+     * @urlParam user string required The ULID of the user to report. Example: 01j7b9k5v6abcdef0123456789
+     *
+     * @bodyParam reason string required The report reason identifier. Example: impersonation
+     * @bodyParam description string Optional explanation or details (max 1000 characters). Example: Fake profile.
+     *
+     * @response 201 {
+     *   "success": true,
+     *   "message": "User reported successfully.",
+     *   "data": {
+     *     "id": "01j7b9k5v6abcdef0123456789",
+     *     "reporter_id": "01j7b9k5v6abcdef0123456789",
+     *     "reported_user_id": "01j7b9k5v6abcdef9876543210",
+     *     "reason": "impersonation",
+     *     "reason_label": "Impersonation",
+     *     "description": "Fake profile.",
+     *     "status": "pending",
+     *     "created_at": "2026-11-10T22:00:00.000000Z",
+     *     "updated_at": "2026-11-10T22:00:00.000000Z"
+     *   },
+     *   "meta": null
+     * }
+     * @response 422 scenario="Self-report attempt" {
+     *   "message": "You cannot report yourself."
+     * }
+     */
+    public function report(
+        StoreUserReportRequest $request,
+        User $user,
+        ReportUser $reportUser
+    ) {
+        $report = $reportUser(
+            $request->user(),
+            $user,
+            $request->validated()
+        );
+
+        return $this->success(
+            new UserReportResource($report),
+            'User reported successfully.',
+            201
         );
     }
 }

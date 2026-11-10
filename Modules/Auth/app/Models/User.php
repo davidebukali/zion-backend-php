@@ -18,6 +18,7 @@ use Modules\Posts\Models\Post;
 use Modules\SocialGraph\Enums\FollowStatus;
 use Modules\SocialGraph\Models\Follow;
 use Modules\SocialGraph\Models\UserBlock;
+use Modules\SocialGraph\Models\UserReport;
 
 class User extends Authenticatable
 {
@@ -141,6 +142,16 @@ class User extends Authenticatable
     public function blockedByUsers(): HasMany
     {
         return $this->hasMany(UserBlock::class, 'blocked_id');
+    }
+
+    public function userReportsMade(): HasMany
+    {
+        return $this->hasMany(UserReport::class, 'reporter_id');
+    }
+
+    public function userReportsReceived(): HasMany
+    {
+        return $this->hasMany(UserReport::class, 'reported_user_id');
     }
 
     public function hasBlocked(User|string|null $user): bool
