@@ -2,27 +2,16 @@
 <footer class="w-full bg-surface-container-low border-t border-outline-variant/15 mt-auto">
     <div
         class="max-w-[1200px] w-full mx-auto px-gutter py-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md">
-        <!-- Brand & Tagline -->
-        <a href="{{ route('home') }}" class="flex items-center gap-space-xs text-center sm:text-left group">
-            <img src="{{ asset('images/landing/logo.webp') }}" alt="Tsiyon Logo" width="28" height="28"
-                class="h-7 w-7 object-contain rounded-md transition-transform duration-200 group-hover:scale-105">
-            <span class="text-lg font-bold text-on-surface tracking-tight">Tsiyon</span>
-            <span class="text-outline-variant hidden lg:inline">•</span>
-            <span class="text-xs text-on-surface-variant hidden lg:inline">A social home built for what matters
-                most.</span>
-        </a>
-
         <!-- Navigation Links -->
-        <nav class="flex flex-wrap items-center justify-center gap-space-md text-xs">
+        <nav class="flex flex-wrap items-center justify-center md:justify-start gap-space-md text-xs">
+            <a href="{{ route('community-guidelines') }}"
+                class="text-on-surface-variant hover:text-primary transition-colors duration-200">Community Guidelines</a>
             <a href="{{ route('terms') }}"
-                class="text-on-surface-variant hover:text-primary transition-colors duration-200">Terms of
-                Service</a>
+                class="text-on-surface-variant hover:text-primary transition-colors duration-200">Terms of Service</a>
             <a href="{{ route('privacy') }}"
-                class="text-on-surface-variant hover:text-primary transition-colors duration-200">Privacy
-                Policy</a>
+                class="text-on-surface-variant hover:text-primary transition-colors duration-200">Privacy Policy</a>
             <a href="mailto:support@tsiyonapp.com"
-                class="text-on-surface-variant hover:text-primary transition-colors duration-200">Contact
-                Support</a>
+                class="text-on-surface-variant hover:text-primary transition-colors duration-200">Contact Support</a>
             <a href="https://github.com/davidebukali/zion-backend-php" target="_blank" rel="noopener noreferrer"
                 class="text-on-surface-variant hover:text-primary transition-colors duration-200 flex items-center gap-1">
                 <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true">

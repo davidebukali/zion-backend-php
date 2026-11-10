@@ -8,3 +8,4 @@ Route::get('/', function () {
 
 Route::view('/privacy', 'legal.privacy')->name('privacy');
 Route::view('/terms', 'legal.terms')->name('terms');
+Route::view('/community-guidelines', 'legal.community-guidelines')->name('community-guidelines');

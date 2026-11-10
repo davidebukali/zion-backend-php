@@ -181,7 +181,7 @@
                                     <li>Review, screen, flag, refuse, or remove any User-Generated Content at any time
                                         without prior notice.</li>
                                     <li>Issue warnings, temporarily restrict account features, or permanently
-                                        suspend/terminate accounts that violate these Community Guidelines.</li>
+                                        suspend/terminate accounts that violate our <a href="{{ route('community-guidelines') }}" class="text-primary hover:underline font-medium">Community Guidelines</a>.</li>
                                 </ul>
                             </div>
                         </div>
