@@ -13,8 +13,6 @@ class VerifyPasswordResetCode
     /**
      * Verify the 6-digit code for the given email with a 2-minute expiration.
      *
-     * @param array $data
-     * @return array
      * @throws ValidationException
      */
     public function __invoke(array $data): array
@@ -37,17 +35,30 @@ class VerifyPasswordResetCode
             ]);
         }
 
+        $attemptsKey = 'password_reset_attempts:'.$data['email'];
+        $attempts = (int) Cache::get($attemptsKey, 0) + 1;
+        Cache::put($attemptsKey, $attempts, now()->addMinutes(5));
+
+        if ($attempts > 5) {
+            DB::table('password_reset_tokens')->where('email', $data['email'])->delete();
+            Cache::forget($attemptsKey);
+            throw ValidationException::withMessages([
+                'code' => ['Too many invalid attempts. This verification code has been invalidated. Please request a new one.'],
+            ]);
+        }
+
         if (! Hash::check((string) $data['code'], $record->token)) {
             throw ValidationException::withMessages([
                 'code' => ['Invalid verification code.'],
             ]);
         }
 
-        // Code verified: delete used token record
+        // Code verified: delete used token record and clear attempt tracker
         DB::table('password_reset_tokens')->where('email', $data['email'])->delete();
+        Cache::forget($attemptsKey);
 
         // Mark as verified for 5 minutes to allow password update
-        Cache::put('password_reset_verified:' . $data['email'], true, now()->addMinutes(5));
+        Cache::put('password_reset_verified:'.$data['email'], true, now()->addMinutes(5));
 
         return [
             'message' => 'Verification code confirmed. You may now reset your password.',

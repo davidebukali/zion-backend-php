@@ -2,9 +2,10 @@
 
 namespace Modules\Interactions\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\RespondsWithApi;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Modules\Interactions\Actions\ShareExternalPost;
 use Modules\Interactions\Actions\ShareInternalPost;
 use Modules\Interactions\Actions\UnsharePost;
@@ -16,15 +17,17 @@ class PostShareController extends Controller
 
     /**
      * @group Interactions
+     *
      * @subgroup Shares
+     *
      * @authenticated
-     * 
+     *
      * Share Post Internally
-     * 
+     *
      * Share a post internally within the platform.
-     * 
+     *
      * @urlParam post integer required The ID of the post. Example: 1
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Post shared internally successfully"
@@ -32,6 +35,8 @@ class PostShareController extends Controller
      */
     public function internalSharePost(Request $request, Post $post, ShareInternalPost $shareInternalPost)
     {
+        Gate::authorize('view', $post);
+
         $shareInternalPost($request->user(), $post);
 
         return $this->success(message: 'Post shared internally successfully');
@@ -39,15 +44,17 @@ class PostShareController extends Controller
 
     /**
      * @group Interactions
+     *
      * @subgroup Shares
+     *
      * @authenticated
-     * 
+     *
      * Share Post Externally
-     * 
+     *
      * Record an external share action for a post.
-     * 
+     *
      * @urlParam post integer required The ID of the post. Example: 1
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Post shared externally successfully"
@@ -55,6 +62,8 @@ class PostShareController extends Controller
      */
     public function externalSharePost(Request $request, Post $post, ShareExternalPost $shareExternalPost)
     {
+        Gate::authorize('view', $post);
+
         $shareExternalPost($request->user(), $post);
 
         return $this->success(message: 'Post shared externally successfully');
@@ -62,15 +71,17 @@ class PostShareController extends Controller
 
     /**
      * @group Interactions
+     *
      * @subgroup Shares
+     *
      * @authenticated
-     * 
+     *
      * Unshare Post
-     * 
+     *
      * Remove share record for a post.
-     * 
+     *
      * @urlParam post integer required The ID of the post. Example: 1
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Post unshared successfully"

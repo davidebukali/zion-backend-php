@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\RespondsWithApi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Modules\Interactions\Actions\RepostPost;
 use Modules\Interactions\Actions\UnrepostPost;
 use Modules\Posts\Models\Post;
@@ -16,7 +17,9 @@ class RepostController extends Controller
 
     /**
      * @group Interactions
+     *
      * @subgroup Reposts
+     *
      * @authenticated
      *
      * Repost Post
@@ -36,6 +39,8 @@ class RepostController extends Controller
      */
     public function store(Request $request, Post $post, RepostPost $repostPost): JsonResponse
     {
+        Gate::authorize('view', $post);
+
         $repostPost($request->user(), $post);
 
         return $this->success(
@@ -49,7 +54,9 @@ class RepostController extends Controller
 
     /**
      * @group Interactions
+     *
      * @subgroup Reposts
+     *
      * @authenticated
      *
      * Undo Repost
@@ -80,4 +87,3 @@ class RepostController extends Controller
         );
     }
 }
-

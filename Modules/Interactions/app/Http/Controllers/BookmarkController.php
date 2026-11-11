@@ -2,9 +2,10 @@
 
 namespace Modules\Interactions\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\RespondsWithApi;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Modules\Interactions\Actions\BookmarkPost;
 use Modules\Interactions\Actions\ListBookmarks;
 use Modules\Interactions\Actions\UnbookmarkPost;
@@ -17,16 +18,18 @@ class BookmarkController extends Controller
 
     /**
      * @group Interactions
+     *
      * @subgroup Bookmarks
+     *
      * @authenticated
-     * 
+     *
      * List Bookmarked Posts
-     * 
+     *
      * Retrieve a paginated list of posts bookmarked by the authenticated user.
-     * 
+     *
      * @queryParam per_page integer Items per page. Example: 15
      * @queryParam page integer Page number. Example: 1
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "data": [
@@ -58,15 +61,17 @@ class BookmarkController extends Controller
 
     /**
      * @group Interactions
+     *
      * @subgroup Bookmarks
+     *
      * @authenticated
-     * 
+     *
      * Bookmark Post
-     * 
+     *
      * Save a post to the user's bookmarks list.
-     * 
+     *
      * @urlParam post integer required The ID of the post to bookmark. Example: 1
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Post bookmarked successfully"
@@ -74,6 +79,8 @@ class BookmarkController extends Controller
      */
     public function store(Request $request, Post $post, BookmarkPost $bookmarkPost)
     {
+        Gate::authorize('view', $post);
+
         $bookmarkPost($request->user(), $post);
 
         return $this->success(message: 'Post bookmarked successfully');
@@ -81,15 +88,17 @@ class BookmarkController extends Controller
 
     /**
      * @group Interactions
+     *
      * @subgroup Bookmarks
+     *
      * @authenticated
-     * 
+     *
      * Unbookmark Post
-     * 
+     *
      * Remove a post from the user's bookmarks list.
-     * 
+     *
      * @urlParam post integer required The ID of the post to unbookmark. Example: 1
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Post unbookmarked successfully"

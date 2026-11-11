@@ -6,10 +6,12 @@ use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
+use Modules\Posts\Enums\PostModerationStatus;
 use Modules\Posts\Enums\PostVisibility;
 use Modules\Posts\Models\Post;
 use Modules\SocialGraph\Enums\FollowStatus;
 use Modules\SocialGraph\Models\Follow;
+use Modules\SocialGraph\Models\UserBlock;
 
 class SearchPosts
 {
@@ -25,6 +27,30 @@ class SearchPosts
 
         if ($term !== '' && $term !== '*') {
             $builder->where('content', $operator, "%{$term}%");
+        }
+
+        $builder->where(function ($q) use ($viewer) {
+            if ($viewer) {
+                $q->where('moderation_status', PostModerationStatus::APPROVED)
+                    ->orWhere('user_id', $viewer->id);
+            } else {
+                $q->where('moderation_status', PostModerationStatus::APPROVED);
+            }
+        });
+
+        if ($viewer) {
+            $blockedUserIds = UserBlock::query()
+                ->where('blocker_id', $viewer->id)
+                ->pluck('blocked_id')
+                ->merge(
+                    UserBlock::query()
+                        ->where('blocked_id', $viewer->id)
+                        ->pluck('blocker_id')
+                );
+
+            if ($blockedUserIds->isNotEmpty()) {
+                $builder->whereNotIn('user_id', $blockedUserIds);
+            }
         }
 
         $builder->where(function ($q) use ($viewer) {

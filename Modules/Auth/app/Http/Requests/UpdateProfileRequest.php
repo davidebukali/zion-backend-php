@@ -5,6 +5,7 @@ namespace Modules\Auth\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Modules\Auth\Enums\AccountType;
+use Modules\Media\Enums\MediaStatus;
 
 class UpdateProfileRequest extends FormRequest
 {
@@ -45,8 +46,22 @@ class UpdateProfileRequest extends FormRequest
             'church_id' => ['nullable', 'string', 'exists:churches,id'],
             'church_name' => ['nullable', 'string', 'max:255'],
             'church_location' => ['nullable', 'string', 'max:255'],
-            'avatar_media_id' => ['nullable', 'string', 'exists:media,id'],
-            'cover_media_id' => ['nullable', 'string', 'exists:media,id'],
+            'avatar_media_id' => [
+                'nullable',
+                'string',
+                Rule::exists('media', 'id')->where(function ($query) {
+                    $query->where('user_id', $this->user()?->id)
+                        ->whereIn('status', [MediaStatus::Confirmed->value, MediaStatus::Processing->value, MediaStatus::Ready->value]);
+                }),
+            ],
+            'cover_media_id' => [
+                'nullable',
+                'string',
+                Rule::exists('media', 'id')->where(function ($query) {
+                    $query->where('user_id', $this->user()?->id)
+                        ->whereIn('status', [MediaStatus::Confirmed->value, MediaStatus::Processing->value, MediaStatus::Ready->value]);
+                }),
+            ],
             'website' => ['nullable', 'string', 'url', 'max:255'],
             'is_private' => ['nullable', 'boolean'],
         ];

@@ -2,14 +2,15 @@
 
 namespace Modules\Comments\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\RespondsWithApi;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Modules\Comments\Actions\CreateReply;
+use Modules\Comments\Actions\DeleteReply;
+use Modules\Comments\Actions\ListReplies;
 use Modules\Comments\Models\Comment;
 use Modules\Comments\Transformers\CommentResource;
-use Modules\Comments\Actions\CreateReply;
-use Modules\Comments\Actions\ListReplies;
-use Modules\Comments\Actions\DeleteReply;
-use Illuminate\Http\Request;
 
 class CommentReplyController extends Controller
 {
@@ -17,16 +18,19 @@ class CommentReplyController extends Controller
 
     /**
      * @group Comments
+     *
      * @subgroup Replies
+     *
      * @authenticated
-     * 
+     *
      * List Comment Replies
-     * 
+     *
      * Retrieve paginated replies for a specific top-level comment.
-     * 
+     *
      * @urlParam comment string required Parent comment UUID. Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+     *
      * @queryParam per_page integer Items per page. Example: 15
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "data": [
@@ -45,8 +49,11 @@ class CommentReplyController extends Controller
      */
     public function index(Comment $comment, Request $request, ListReplies $listReplies)
     {
+        Gate::authorize('view', $comment->post);
+
         $replies = $listReplies($comment, $request->integer('per_page', 15));
         $paginated = CommentResource::collection($replies)->toResponse($request)->getData(true);
+
         return $this->success(
             data: $paginated['data'],
             meta: [
@@ -58,16 +65,19 @@ class CommentReplyController extends Controller
 
     /**
      * @group Comments
+     *
      * @subgroup Replies
+     *
      * @authenticated
-     * 
+     *
      * Create Reply
-     * 
+     *
      * Create a reply to a top-level comment.
-     * 
+     *
      * @urlParam comment string required Parent comment UUID. Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+     *
      * @bodyParam content string required Reply text content. Example: I completely agree!
-     * 
+     *
      * @response 201 {
      *   "success": true,
      *   "message": "Reply created successfully",
@@ -80,6 +90,8 @@ class CommentReplyController extends Controller
      */
     public function store(Comment $comment, Request $request, CreateReply $createReply)
     {
+        Gate::authorize('view', $comment->post);
+
         $data = $request->validate([
             'content' => ['required', 'string', 'max:5000'],
             'tagged_user_ids' => ['nullable', 'array', 'max:20'],
@@ -120,15 +132,17 @@ class CommentReplyController extends Controller
 
     /**
      * @group Comments
+     *
      * @subgroup Replies
+     *
      * @authenticated
-     * 
+     *
      * Delete Reply
-     * 
+     *
      * Delete a comment reply.
-     * 
+     *
      * @urlParam comment string required Reply comment UUID to delete. Example: 9c2eeb4d-3b7d-4bad-9bdd-2b0d7b3dcb6e
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Reply deleted successfully"
