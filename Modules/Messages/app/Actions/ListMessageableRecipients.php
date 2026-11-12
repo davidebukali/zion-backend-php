@@ -23,7 +23,8 @@ class ListMessageableRecipients
                 $q->where('blocker_id', $user->id);
             })
             ->when(! empty($search), function ($query) use ($search) {
-                $searchTerm = '%'.trim($search).'%';
+                $escaped = addcslashes(trim($search), '%_\\');
+                $searchTerm = "%{$escaped}%";
                 $query->where(function ($q) use ($searchTerm) {
                     $q->where('name', 'ilike', $searchTerm)
                         ->orWhereHas('profile', function ($p) use ($searchTerm) {
@@ -38,4 +39,3 @@ class ListMessageableRecipients
             ->cursorPaginate($perPage);
     }
 }
-

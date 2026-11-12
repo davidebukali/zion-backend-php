@@ -25,7 +25,8 @@ class ListConversations
                     ->when(! $archived, fn ($q) => $q->whereNull('archived_at'));
             })
             ->when(! empty($search), function ($query) use ($user, $search) {
-                $searchTerm = '%'.trim($search).'%';
+                $escaped = addcslashes(trim($search), '%_\\');
+                $searchTerm = "%{$escaped}%";
                 $query->whereHas('participants', function ($q) use ($user, $searchTerm) {
                     $q->where('user_id', '!=', $user->id)
                         ->whereHas('user', function ($u) use ($searchTerm) {

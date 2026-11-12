@@ -15,12 +15,21 @@ class ReportControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    private User $author;
+
     private User $user;
+
     private Post $post;
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->author = User::create([
+            'name' => 'Author User',
+            'email' => 'author@example.com',
+            'password' => bcrypt('password'),
+        ]);
 
         $this->user = User::create([
             'name' => 'Test User',
@@ -28,7 +37,7 @@ class ReportControllerTest extends TestCase
             'password' => bcrypt('password'),
         ]);
 
-        $this->post = $this->user->posts()->create([
+        $this->post = $this->author->posts()->create([
             'content' => 'Test Post Content',
             'visibility' => 'public',
         ]);
@@ -64,6 +73,18 @@ class ReportControllerTest extends TestCase
                 && $event->user->id === $this->user->id
                 && $event->reason === ReportReason::SPAM->value;
         });
+    }
+
+    public function test_cannot_report_own_post(): void
+    {
+        Sanctum::actingAs($this->author);
+
+        $response = $this->postJson(route('api.report.store', ['post' => $this->post->id]), [
+            'reason' => ReportReason::SPAM->value,
+            'description' => 'Self reporting attempt.',
+        ]);
+
+        $response->assertStatus(403);
     }
 
     public function test_cannot_report_post_with_invalid_reason(): void

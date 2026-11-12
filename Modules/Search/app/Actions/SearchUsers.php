@@ -27,12 +27,13 @@ class SearchUsers
         $builder = User::query();
 
         if ($term !== '' && $term !== '*') {
-            $builder->where(function ($q) use ($term, $operator) {
-                $q->where('name', $operator, "%{$term}%")
-                    ->orWhereHas('profile', function ($pq) use ($term, $operator) {
-                        $pq->where('username', $operator, "%{$term}%")
-                            ->orWhere('display_name', $operator, "%{$term}%")
-                            ->orWhere('bio', $operator, "%{$term}%");
+            $escaped = addcslashes($term, '%_\\');
+            $builder->where(function ($q) use ($escaped, $operator) {
+                $q->where('name', $operator, "%{$escaped}%")
+                    ->orWhereHas('profile', function ($pq) use ($escaped, $operator) {
+                        $pq->where('username', $operator, "%{$escaped}%")
+                            ->orWhere('display_name', $operator, "%{$escaped}%")
+                            ->orWhere('bio', $operator, "%{$escaped}%");
                     });
             });
         }

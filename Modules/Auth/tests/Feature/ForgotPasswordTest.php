@@ -29,14 +29,20 @@ class ForgotPasswordTest extends TestCase
         ]);
     }
 
-    public function test_forgot_password_fails_if_email_does_not_exist(): void
+    public function test_forgot_password_returns_generic_success_if_email_does_not_exist(): void
     {
+        Mail::fake();
+
         $response = $this->postJson(route('api.password.forgot'), [
             'email' => 'nonexistent@example.com',
         ]);
 
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['email']);
+        $response->assertStatus(200)
+            ->assertJson([
+                'message' => 'If an account exists with this email address, a password reset code has been sent.',
+            ]);
+
+        Mail::assertNothingSent();
     }
 
     public function test_forgot_password_sends_email_and_saves_hashed_code(): void
@@ -49,7 +55,7 @@ class ForgotPasswordTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'message' => 'Password reset code has been sent to your email.',
+                'message' => 'If an account exists with this email address, a password reset code has been sent.',
             ]);
 
         $this->assertDatabaseHas('password_reset_tokens', [
@@ -122,7 +128,7 @@ class ForgotPasswordTest extends TestCase
             'email' => $this->user->email,
         ]);
 
-        $this->assertTrue(Cache::has('password_reset_verified:' . $this->user->email));
+        $this->assertTrue(Cache::has('password_reset_verified:'.$this->user->email));
     }
 
     public function test_reset_password_fails_if_code_not_verified(): void
@@ -139,7 +145,7 @@ class ForgotPasswordTest extends TestCase
 
     public function test_reset_password_fails_when_passwords_do_not_match(): void
     {
-        Cache::put('password_reset_verified:' . $this->user->email, true, now()->addMinutes(5));
+        Cache::put('password_reset_verified:'.$this->user->email, true, now()->addMinutes(5));
 
         $response = $this->postJson(route('api.password.reset'), [
             'email' => $this->user->email,
@@ -153,7 +159,7 @@ class ForgotPasswordTest extends TestCase
 
     public function test_reset_password_succeeds_and_allows_login_with_new_password(): void
     {
-        Cache::put('password_reset_verified:' . $this->user->email, true, now()->addMinutes(5));
+        Cache::put('password_reset_verified:'.$this->user->email, true, now()->addMinutes(5));
 
         $response = $this->postJson(route('api.password.reset'), [
             'email' => $this->user->email,
@@ -167,7 +173,7 @@ class ForgotPasswordTest extends TestCase
             ]);
 
         // Verify cache was consumed
-        $this->assertFalse(Cache::has('password_reset_verified:' . $this->user->email));
+        $this->assertFalse(Cache::has('password_reset_verified:'.$this->user->email));
 
         // Verify login works with new password
         $loginResponse = $this->postJson(route('api.login'), [

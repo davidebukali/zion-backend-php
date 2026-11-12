@@ -37,7 +37,8 @@ class ListTaggableUsers
             })
             // Autocomplete search by name, username, or display_name
             ->when(! empty($search), function ($query) use ($search, $operator) {
-                $searchTerm = '%'.trim($search).'%';
+                $escaped = addcslashes(trim($search), '%_\\');
+                $searchTerm = "%{$escaped}%";
                 $query->where(function ($q) use ($searchTerm, $operator) {
                     $q->where('name', $operator, $searchTerm)
                         ->orWhereHas('profile', function ($p) use ($searchTerm, $operator) {
@@ -53,4 +54,3 @@ class ListTaggableUsers
             ->cursorPaginate($perPage);
     }
 }
-

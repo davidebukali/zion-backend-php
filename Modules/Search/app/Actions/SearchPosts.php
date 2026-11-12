@@ -26,7 +26,8 @@ class SearchPosts
         $builder = Post::query();
 
         if ($term !== '' && $term !== '*') {
-            $builder->where('content', $operator, "%{$term}%");
+            $escaped = addcslashes($term, '%_\\');
+            $builder->where('content', $operator, "%{$escaped}%");
         }
 
         $builder->where(function ($q) use ($viewer) {

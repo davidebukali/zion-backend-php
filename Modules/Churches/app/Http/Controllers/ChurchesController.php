@@ -53,9 +53,10 @@ class ChurchesController extends Controller
         $query = Church::query();
 
         if ($search !== '') {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'ilike', "%{$search}%")
-                    ->orWhere('location', 'ilike', "%{$search}%");
+            $escaped = addcslashes($search, '%_\\');
+            $query->where(function ($q) use ($escaped) {
+                $q->where('name', 'ilike', "%{$escaped}%")
+                    ->orWhere('location', 'ilike', "%{$escaped}%");
             });
         }
 
@@ -72,4 +73,3 @@ class ChurchesController extends Controller
         );
     }
 }
-
