@@ -36,10 +36,10 @@ return [
     ],
 
     'moderation' => [
-        'url' => env('AI_MODERATION_SERVICE_URL', 'http://127.0.0.1:8000'),
-        'webhook_secret' => env('AI_MODERATION_WEBHOOK_SECRET'),
-        'webhook_previous_secret' => env('AI_MODERATION_WEBHOOK_PREV_SECRET'),
-        'timeout' => env('AI_MODERATION_TIMEOUT', 15),
+        'openai_api_key' => env('OPENAI_API_KEY'),
+        'url' => env('OPENAI_MODERATION_URL', 'https://api.openai.com/v1/moderations'),
+        'model' => env('OPENAI_MODERATION_MODEL', 'omni-moderation-latest'),
+        'timeout' => (int) env('AI_MODERATION_TIMEOUT', 15),
     ],
 
     'google_analytics' => [

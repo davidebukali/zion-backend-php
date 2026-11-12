@@ -3,17 +3,20 @@
 namespace Modules\Posts\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Modules\Auth\Models\User;
 use Modules\Interactions\Enums\ReportReason;
 use Modules\Interactions\Enums\ReportStatus;
+use Modules\Interactions\Listeners\UpdateReportStatusOnModeration;
 use Modules\Interactions\Models\PostReports;
-use Modules\Posts\Console\ResolveStuckModerationRequests;
 use Modules\Posts\Enums\ModerationRequestStatus;
 use Modules\Posts\Enums\PostModerationStatus;
 use Modules\Posts\Events\PostModerationEvaluated;
-use Modules\Posts\Jobs\ProcessModerationWebhookJob;
+use Modules\Posts\Jobs\SendPostToAiModeration;
 use Modules\Posts\Models\ModerationRequest;
 use Modules\Posts\Models\Post;
 use Tests\TestCase;
@@ -23,14 +26,21 @@ class PostModerationWebhookTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Post $post;
-    private string $secret = 'test-secret-at-least-32-chars-long-12345';
+
+    private string $apiKey = 'test-openai-key-12345';
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        config(['services.moderation.webhook_secret' => $this->secret]);
+        config([
+            'moderation.enabled' => true,
+            'services.moderation.openai_api_key' => $this->apiKey,
+            'services.moderation.url' => 'https://api.openai.com/v1/moderations',
+            'services.moderation.model' => 'omni-moderation-latest',
+        ]);
 
         $this->user = User::create([
             'name' => 'Author User',
@@ -45,56 +55,35 @@ class PostModerationWebhookTest extends TestCase
         ]);
     }
 
-    private function postWebhook(array $payload, ?int $timestamp = null, ?string $secret = null)
+    public function test_openai_moderation_approves_clean_post(): void
     {
-        $body = json_encode($payload);
-        $timestamp = $timestamp ?? time();
-        $secret = $secret ?? $this->secret;
-        $signature = hash_hmac('sha256', $timestamp.'.'.$body, $secret);
+        Http::preventStrayRequests();
 
-        $server = [
-            'HTTP_X_TIMESTAMP' => (string) $timestamp,
-            'HTTP_X_SIGNATURE' => $signature,
-            'CONTENT_TYPE' => 'application/json',
-            'HTTP_ACCEPT' => 'application/json',
-        ];
+        Http::fake([
+            'https://api.openai.com/v1/moderations' => Http::response([
+                'id' => 'modr-test-1',
+                'model' => 'omni-moderation-latest',
+                'results' => [
+                    [
+                        'flagged' => false,
+                        'categories' => [
+                            'sexual' => false,
+                            'hate' => false,
+                            'harassment' => false,
+                        ],
+                        'category_scores' => [
+                            'sexual' => 0.001,
+                            'hate' => 0.002,
+                            'harassment' => 0.003,
+                        ],
+                    ],
+                ],
+            ], 200),
+        ]);
 
-        return $this->call(
-            'POST',
-            route('api.internal.moderation.webhook'),
-            [],
-            [],
-            [],
-            $server,
-            $body
-        );
-    }
+        Event::fake([PostModerationEvaluated::class]);
 
-    public function test_webhook_rejects_missing_or_bad_hmac_signature(): void
-    {
-        $payload = ['request_id' => '01J9TEST', 'scores' => ['toxicity' => 0.1]];
-
-        // Missing signature
-        $this->postJson(route('api.internal.moderation.webhook'), $payload)
-            ->assertStatus(401);
-
-        // Invalid signature
-        $this->postWebhook($payload, secret: 'wrong-secret')
-            ->assertStatus(401);
-    }
-
-    public function test_webhook_rejects_expired_timestamp(): void
-    {
-        $payload = ['request_id' => '01J9TEST', 'scores' => ['toxicity' => 0.1]];
-        $expiredTime = time() - 305; // >5 minutes ago
-
-        $this->postWebhook($payload, timestamp: $expiredTime)
-            ->assertStatus(401);
-    }
-
-    public function test_webhook_accepts_valid_payload_and_queues_processing(): void
-    {
-        Queue::fake();
+        $this->post->update(['moderation_status' => PostModerationStatus::PENDING]);
 
         $request = ModerationRequest::create([
             'post_id' => $this->post->id,
@@ -104,47 +93,115 @@ class PostModerationWebhookTest extends TestCase
             'expires_at' => now()->addMinutes(15),
         ]);
 
-        $payload = [
-            'request_id' => $request->id,
-            'scores' => ['toxicity' => 0.05, 'nsfw' => 0.02],
-            'metadata' => ['model' => 'v1.0'],
-        ];
+        (new SendPostToAiModeration($request))->handle();
 
-        $response = $this->postWebhook($payload);
-
-        $response->assertStatus(202);
+        Http::assertSent(function (Request $outbound) {
+            return $outbound->hasHeader('Authorization', 'Bearer '.$this->apiKey)
+                && $outbound['model'] === 'omni-moderation-latest'
+                && $outbound['input'][0]['type'] === 'text'
+                && $outbound['input'][0]['text'] === 'Initial safe post content';
+        });
 
         $this->assertEquals(ModerationRequestStatus::COMPLETED, $request->fresh()->status);
-        Queue::assertPushed(ProcessModerationWebhookJob::class);
+        $this->assertEquals(PostModerationStatus::APPROVED, $this->post->fresh()->moderation_status);
+
+        Event::assertDispatched(PostModerationEvaluated::class, function (PostModerationEvaluated $event) {
+            return $event->post->id === $this->post->id
+                && $event->verdict === PostModerationStatus::APPROVED;
+        });
     }
 
-    public function test_webhook_is_idempotent_on_duplicate_deliveries(): void
+    public function test_openai_moderation_flags_borderline_post(): void
     {
-        Queue::fake();
+        Http::preventStrayRequests();
+
+        Http::fake([
+            'https://api.openai.com/v1/moderations' => Http::response([
+                'id' => 'modr-test-flag',
+                'model' => 'omni-moderation-latest',
+                'results' => [
+                    [
+                        'flagged' => true,
+                        'category_scores' => [
+                            'harassment' => 0.60, // Above flag threshold 0.55, below reject 0.80
+                            'sexual' => 0.01,
+                        ],
+                    ],
+                ],
+            ], 200),
+        ]);
+
+        $this->post->update(['moderation_status' => PostModerationStatus::PENDING]);
 
         $request = ModerationRequest::create([
             'post_id' => $this->post->id,
             'content_hash' => 'hash123',
-            'status' => ModerationRequestStatus::COMPLETED,
+            'status' => ModerationRequestStatus::PENDING,
             'attempts' => 1,
             'expires_at' => now()->addMinutes(15),
         ]);
 
-        $payload = [
-            'request_id' => $request->id,
-            'scores' => ['toxicity' => 0.05],
-        ];
+        (new SendPostToAiModeration($request))->handle();
 
-        $response = $this->postWebhook($payload);
-
-        $response->assertStatus(200);
-        $response->assertJson(['message' => 'Already processed']);
-        Queue::assertNotPushed(ProcessModerationWebhookJob::class);
+        $this->assertEquals(ModerationRequestStatus::COMPLETED, $request->fresh()->status);
+        $this->assertEquals(PostModerationStatus::FLAGGED, $this->post->fresh()->moderation_status);
     }
 
-    public function test_webhook_ignores_stale_request_after_post_edit(): void
+    public function test_openai_moderation_rejects_violating_post(): void
     {
-        Queue::fake();
+        Http::preventStrayRequests();
+
+        Http::fake([
+            'https://api.openai.com/v1/moderations' => Http::response([
+                'id' => 'modr-test-reject',
+                'model' => 'omni-moderation-latest',
+                'results' => [
+                    [
+                        'flagged' => true,
+                        'category_scores' => [
+                            'sexual' => 0.95, // Above reject threshold 0.65
+                        ],
+                    ],
+                ],
+            ], 200),
+        ]);
+
+        $this->post->update(['moderation_status' => PostModerationStatus::PENDING]);
+
+        $request = ModerationRequest::create([
+            'post_id' => $this->post->id,
+            'content_hash' => 'hash123',
+            'status' => ModerationRequestStatus::PENDING,
+            'attempts' => 1,
+            'expires_at' => now()->addMinutes(15),
+        ]);
+
+        (new SendPostToAiModeration($request))->handle();
+
+        $this->assertEquals(ModerationRequestStatus::COMPLETED, $request->fresh()->status);
+        $this->assertEquals(PostModerationStatus::REJECTED, $this->post->fresh()->moderation_status);
+    }
+
+    public function test_openai_moderation_ignores_stale_request_after_post_edit(): void
+    {
+        Http::preventStrayRequests();
+
+        Http::fake([
+            'https://api.openai.com/v1/moderations' => Http::response([
+                'id' => 'modr-test-stale',
+                'model' => 'omni-moderation-latest',
+                'results' => [
+                    [
+                        'flagged' => true,
+                        'category_scores' => [
+                            'sexual' => 0.99,
+                        ],
+                    ],
+                ],
+            ], 200),
+        ]);
+
+        $this->post->update(['moderation_status' => PostModerationStatus::PENDING]);
 
         $staleRequest = ModerationRequest::create([
             'post_id' => $this->post->id,
@@ -154,20 +211,33 @@ class PostModerationWebhookTest extends TestCase
             'expires_at' => now()->addMinutes(15),
         ]);
 
-        $payload = [
-            'request_id' => $staleRequest->id,
-            'scores' => ['nsfw' => 0.95],
-        ];
+        (new SendPostToAiModeration($staleRequest))->handle();
 
-        $response = $this->postWebhook($payload);
-
-        $response->assertStatus(200);
-        $response->assertJson(['message' => 'Ignored stale request']);
-        Queue::assertNotPushed(ProcessModerationWebhookJob::class);
+        // Stale request must not change the post status
+        $this->assertEquals(PostModerationStatus::PENDING, $this->post->fresh()->moderation_status);
+        $this->assertEquals(ModerationRequestStatus::STALE, $staleRequest->fresh()->status);
     }
 
     public function test_human_moderator_decision_outranks_ai_verdict(): void
     {
+        Http::preventStrayRequests();
+
+        Http::fake([
+            'https://api.openai.com/v1/moderations' => Http::response([
+                'id' => 'modr-test-human',
+                'model' => 'omni-moderation-latest',
+                'results' => [
+                    [
+                        'flagged' => true,
+                        'category_scores' => [
+                            'sexual' => 0.99,
+                            'hate' => 0.99,
+                        ],
+                    ],
+                ],
+            ], 200),
+        ]);
+
         // Human moderator explicitly approved post
         $this->post->update([
             'moderation_status' => PostModerationStatus::APPROVED,
@@ -178,21 +248,19 @@ class PostModerationWebhookTest extends TestCase
         $request = ModerationRequest::create([
             'post_id' => $this->post->id,
             'content_hash' => 'hash123',
-            'status' => ModerationRequestStatus::COMPLETED,
+            'status' => ModerationRequestStatus::PENDING,
             'attempts' => 1,
             'expires_at' => now()->addMinutes(15),
         ]);
 
-        // AI callback reports extreme violation
-        $job = new ProcessModerationWebhookJob($request, ['toxicity' => 0.99, 'nsfw' => 0.99]);
-        $job->handle();
+        (new SendPostToAiModeration($request))->handle();
 
         $freshPost = $this->post->fresh();
         // Human decision APPROVED must remain unchanged!
         $this->assertEquals(PostModerationStatus::APPROVED, $freshPost->moderation_status);
         $this->assertEquals('human', $freshPost->moderated_by_type);
         // Telemetry is saved
-        $this->assertEquals(0.99, $freshPost->moderation_metadata['scores']['toxicity']);
+        $this->assertEquals(0.99, $freshPost->moderation_metadata['scores']['sexual']);
     }
 
     public function test_global_scope_hides_unapproved_post_except_author(): void
@@ -236,13 +304,13 @@ class PostModerationWebhookTest extends TestCase
             'status' => ReportStatus::PENDING,
         ]);
 
-        $listener = new \Modules\Interactions\Listeners\UpdateReportStatusOnModeration();
+        $listener = new UpdateReportStatusOnModeration;
 
         // 1. Borderline AI score (0.35) -> Not high-confidence clean -> Must escalate to REVIEWING
         $eventBorderline = new PostModerationEvaluated(
             $this->post,
             PostModerationStatus::APPROVED,
-            ['toxicity' => 0.35, 'harassment' => 0.25],
+            ['harassment' => 0.35, 'hate' => 0.25],
             [],
             null,
             $report->id
@@ -255,7 +323,7 @@ class PostModerationWebhookTest extends TestCase
         $eventClean = new PostModerationEvaluated(
             $this->post,
             PostModerationStatus::APPROVED,
-            ['toxicity' => 0.02, 'harassment' => 0.01],
+            ['harassment' => 0.02, 'hate' => 0.01],
             [],
             null,
             $report->id
@@ -277,7 +345,7 @@ class PostModerationWebhookTest extends TestCase
             'attempts' => 1,
             'expires_at' => now()->addMinutes(15),
         ]);
-        \Illuminate\Support\Facades\DB::table('moderation_requests')
+        DB::table('moderation_requests')
             ->where('id', $stuckRetry->id)
             ->update(['created_at' => now()->subMinutes(10)]);
 
@@ -290,7 +358,7 @@ class PostModerationWebhookTest extends TestCase
             'attempts' => 3,
             'expires_at' => now()->addMinutes(15),
         ]);
-        \Illuminate\Support\Facades\DB::table('moderation_requests')
+        DB::table('moderation_requests')
             ->where('id', $stuckExhausted->id)
             ->update(['created_at' => now()->subMinutes(10)]);
 

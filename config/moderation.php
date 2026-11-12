@@ -25,14 +25,23 @@ return [
     |--------------------------------------------------------------------------
     | Category Thresholds
     |--------------------------------------------------------------------------
-    | Numerical thresholds (0.00 to 1.00) for determining moderation verdicts.
+    | Numerical thresholds (0.00 to 1.00) for determining moderation verdicts
+    | using OpenAI omni-moderation-latest native category scores.
     */
     'thresholds' => [
-        'toxicity' => ['flag' => 0.60, 'reject' => 0.85],
-        'nsfw' => ['flag' => 0.50, 'reject' => 0.80],
-        'hate_speech' => ['flag' => 0.40, 'reject' => 0.70],
+        'sexual' => ['flag' => 0.35, 'reject' => 0.65],
+        'sexual/minors' => ['flag' => 0.10, 'reject' => 0.30],
+        'hate' => ['flag' => 0.40, 'reject' => 0.70],
+        'hate/threatening' => ['flag' => 0.30, 'reject' => 0.60],
         'harassment' => ['flag' => 0.55, 'reject' => 0.80],
-        'spam' => ['flag' => 0.65, 'reject' => 0.90],
+        'harassment/threatening' => ['flag' => 0.40, 'reject' => 0.70],
+        'self-harm' => ['flag' => 0.40, 'reject' => 0.70],
+        'self-harm/intent' => ['flag' => 0.30, 'reject' => 0.60],
+        'self-harm/instructions' => ['flag' => 0.25, 'reject' => 0.50],
+        'violence' => ['flag' => 0.60, 'reject' => 0.85],
+        'violence/graphic' => ['flag' => 0.45, 'reject' => 0.75],
+        'illicit' => ['flag' => 0.60, 'reject' => 0.85],
+        'illicit/violent' => ['flag' => 0.40, 'reject' => 0.70],
     ],
 
     /*
