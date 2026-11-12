@@ -39,7 +39,7 @@ return [
         'openai_api_key' => env('OPENAI_API_KEY'),
         'url' => env('OPENAI_MODERATION_URL', 'https://api.openai.com/v1/moderations'),
         'model' => env('OPENAI_MODERATION_MODEL', 'omni-moderation-latest'),
-        'timeout' => (int) env('AI_MODERATION_TIMEOUT', 15),
+        'timeout' => (int) env('OPENAI_MODERATION_TIMEOUT', 15),
     ],
 
     'google_analytics' => [
