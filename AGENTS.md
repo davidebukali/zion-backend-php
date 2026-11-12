@@ -155,3 +155,27 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - Run `vendor/bin/phpunit` to call the test runner directly. It accepts the same file path and `--filter=testName` arguments.
 
 </laravel-boost-guidelines>
+
+=== open source security rules ===
+
+# Open Source Security Practices
+
+- **Never Commit Secrets, Credentials, or Keys:**
+  - Never commit real API keys, passwords, database credentials, tokens, or encryption keys (`APP_KEY`) to version control.
+  - Do not use hardcoded secret strings as fallback values in configuration files (e.g. `env('WEBHOOK_SECRET', 'hardcoded-fallback')`). Always use `env('WEBHOOK_SECRET')` without insecure fallbacks.
+- **Sanitized Example Environment Files:**
+  - Tracked template files (`.env.example`, `.env.docker.example`) must only contain generic placeholders (e.g. `http://localhost:3000`, `https://your-domain.com`).
+  - Never commit real origin server IP addresses, internal hostnames, or production cloud storage endpoints to git-tracked files. Keep production infrastructure details strictly in git-ignored `.env` or deployment secret managers.
+- **Access Control & IDOR/BOLA Prevention:**
+  - Always enforce explicit authorization (`Gate::authorize()`, policies, or FormRequest `authorize()`) before retrieving, modifying, interacting with, or deleting resources.
+  - When attaching media or relational entities, verify ownership (`user_id === $request->user()->id`).
+- **Data Privacy & Anti-Enumeration:**
+  - Do not reveal account existence in authentication or password reset endpoints. Always return generic status messages.
+  - Enforce content moderation filters and respect user block relationships in all public feeds and search queries.
+- **Rate Limiting & Abuse Prevention:**
+  - Apply `throttle` middleware to all unauthenticated and sensitive endpoints (authentication, password resets, verification codes, media uploads, and reports).
+- **Network & Origin Hardening:**
+  - Never allow wildcard origins (`*`) for CORS or WebSockets in production. Use environment-driven allowed origins.
+  - Avoid wildcard proxy trust (`trustProxies(at: '*')`). Restrict proxy trust to private network CIDRs or explicit proxy IPs.
+- **Query Wildcard Escaping:**
+  - Escape SQL wildcards (`%` and `_`) using `addcslashes($term, '%_\\')` in `LIKE` and `ILIKE` queries to prevent full-table scan denial-of-service.
