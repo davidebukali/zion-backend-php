@@ -34,4 +34,3 @@ class SendPostRepostedNotification implements ShouldQueue
         );
     }
 }
-

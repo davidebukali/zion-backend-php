@@ -202,4 +202,3 @@ class DeviceTokenTest extends TestCase
         ])->assertUnauthorized();
     }
 }
-

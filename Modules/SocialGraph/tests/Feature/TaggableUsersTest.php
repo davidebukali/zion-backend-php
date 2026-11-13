@@ -16,10 +16,15 @@ class TaggableUsersTest extends TestCase
     use RefreshDatabase;
 
     private User $viewer;
+
     private User $followedUser;
+
     private User $followerUser;
+
     private User $pendingFollower;
+
     private User $blockedUser;
+
     private User $stranger;
 
     protected function setUp(): void
@@ -184,4 +189,3 @@ class TaggableUsersTest extends TestCase
         $this->assertNotContains($this->followedUser->id, $returnedPeteIds);
     }
 }
-

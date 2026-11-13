@@ -15,4 +15,3 @@ class UserReported
         public readonly UserReport $userReport
     ) {}
 }
-

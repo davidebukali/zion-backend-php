@@ -17,4 +17,3 @@ class ListBlockedUsers
             ->cursorPaginate($perPage);
     }
 }
-

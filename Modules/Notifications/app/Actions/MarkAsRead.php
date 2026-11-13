@@ -9,10 +9,6 @@ class MarkAsRead
 {
     /**
      * Mark a notification as read.
-     *
-     * @param Notification $notification
-     * @param User|null $user
-     * @return Notification
      */
     public function execute(Notification $notification, ?User $user = null): Notification
     {

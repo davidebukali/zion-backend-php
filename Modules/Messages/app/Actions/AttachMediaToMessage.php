@@ -15,7 +15,7 @@ class AttachMediaToMessage
     ) {}
 
     /**
-     * @param array<int, string> $mediaIds
+     * @param  array<int, string>  $mediaIds
      */
     public function handle(
         Message $message,
@@ -63,7 +63,7 @@ class AttachMediaToMessage
     }
 
     /**
-     * @param array<int, string> $mediaIds
+     * @param  array<int, string>  $mediaIds
      */
     private function ensureMediaNotAttached(array $mediaIds): void
     {
@@ -80,4 +80,3 @@ class AttachMediaToMessage
         }
     }
 }
-

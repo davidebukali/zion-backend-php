@@ -2,27 +2,25 @@
 
 namespace Modules\Posts\Actions;
 
+use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
+use Modules\Posts\Enums\PostVisibility;
+use Modules\Posts\Events\PostCreated;
 use Modules\Posts\Models\Post;
 use Modules\Posts\Transformers\PostResource;
-use Modules\Posts\Enums\PostVisibility;
-use Illuminate\Support\Facades\DB;
-use Modules\Posts\Actions\AttachMediaToPost;
-use Modules\Posts\Events\PostCreated;
 
 class CreatePost
 {
     public function __construct(
         private readonly AttachMediaToPost $attachMediaToPost
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new post for a user.
      */
     public function __invoke(User $user, array $data): PostResource
     {
-        return DB::transaction(function () use ($data, $user) {                    
+        return DB::transaction(function () use ($data, $user) {
             $mediaIds = $data['media_ids'] ?? [];
             $taggedUserIds = $data['tagged_user_ids'] ?? [];
 

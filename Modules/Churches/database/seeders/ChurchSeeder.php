@@ -66,4 +66,3 @@ class ChurchSeeder extends Seeder
         }
     }
 }
-

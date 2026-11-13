@@ -39,4 +39,3 @@ class ReactToMessage
         return $reaction;
     }
 }
-

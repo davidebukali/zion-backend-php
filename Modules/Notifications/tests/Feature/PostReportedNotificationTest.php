@@ -16,7 +16,9 @@ class PostReportedNotificationTest extends TestCase
     use RefreshDatabase;
 
     private User $postAuthor;
+
     private User $reporter;
+
     private Post $post;
 
     protected function setUp(): void

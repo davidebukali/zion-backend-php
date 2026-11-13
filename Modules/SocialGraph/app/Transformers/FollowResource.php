@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\SocialGraph\Transformers;
 
 use Illuminate\Http\Request;

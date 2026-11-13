@@ -59,4 +59,3 @@ enum UserReportReason: string
         ], self::cases());
     }
 }
-

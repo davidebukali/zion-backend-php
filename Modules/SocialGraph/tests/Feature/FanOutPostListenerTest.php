@@ -3,13 +3,10 @@
 namespace Modules\SocialGraph\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Modules\Auth\Models\User;
-use Modules\Posts\Actions\CreatePost;
 use Modules\Posts\Enums\PostVisibility;
 use Modules\Posts\Events\PostCreated;
-use Modules\Posts\Models\Post;
 use Modules\SocialGraph\Jobs\FanOutPostJob;
 use Modules\SocialGraph\Listeners\FanOutPostListener;
 use Tests\TestCase;
@@ -34,7 +31,7 @@ class FanOutPostListenerTest extends TestCase
         ]);
 
         $event = new PostCreated($post);
-        $listener = new FanOutPostListener();
+        $listener = new FanOutPostListener;
         $listener->handle($event);
 
         Queue::assertPushed(FanOutPostJob::class, function ($job) use ($post) {

@@ -30,4 +30,3 @@ class Church extends Model
         return $this->hasMany(Profile::class);
     }
 }
-

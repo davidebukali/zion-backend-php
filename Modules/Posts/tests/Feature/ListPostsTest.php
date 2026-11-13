@@ -87,7 +87,7 @@ class ListPostsTest extends TestCase
         }
 
         // Request first page with per_page = 2
-        $firstPageResponse = $this->getJson(route('api.post.index') . '?per_page=2');
+        $firstPageResponse = $this->getJson(route('api.post.index').'?per_page=2');
 
         $firstPageResponse->assertStatus(200);
         $firstPageData = $firstPageResponse->json('data');

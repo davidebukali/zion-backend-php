@@ -4,13 +4,14 @@ namespace Modules\Posts\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Modules\Auth\Models\User;
 use Modules\Media\Enums\MediaStatus;
 use Modules\Media\Models\Media;
-use Modules\Posts\Actions\CreatePost;
 use Modules\Posts\Enums\PostVisibility;
+use Modules\Posts\Events\PostCreated;
 use Modules\Posts\Models\Post;
 use Tests\TestCase;
 
@@ -37,7 +38,7 @@ class CreatePostTest extends TestCase
             'id' => (string) Str::ulid(),
             'user_id' => $user->id,
             'disk' => 'r2',
-            'path' => 'uploads/' . $filename,
+            'path' => 'uploads/'.$filename,
             'type' => 'image',
             'mime_type' => 'image/jpeg',
             'size' => 2048,
@@ -175,7 +176,7 @@ class CreatePostTest extends TestCase
 
     public function test_post_creation_dispatches_post_created_event(): void
     {
-        \Illuminate\Support\Facades\Event::fake([\Modules\Posts\Events\PostCreated::class]);
+        Event::fake([PostCreated::class]);
 
         Sanctum::actingAs($this->user);
 
@@ -186,7 +187,7 @@ class CreatePostTest extends TestCase
 
         $response->assertStatus(201);
 
-        \Illuminate\Support\Facades\Event::assertDispatched(\Modules\Posts\Events\PostCreated::class, function ($event) {
+        Event::assertDispatched(PostCreated::class, function ($event) {
             return $event->post->content === 'Post to test event dispatching';
         });
     }

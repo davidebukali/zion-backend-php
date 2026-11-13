@@ -20,4 +20,3 @@ class UnarchiveConversation
             ->update(['archived_at' => null]);
     }
 }
-

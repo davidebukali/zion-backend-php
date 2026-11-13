@@ -77,4 +77,3 @@ class Conversation extends Model
         return $this->otherParticipant($user)?->user;
     }
 }
-

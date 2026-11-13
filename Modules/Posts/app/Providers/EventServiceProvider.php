@@ -3,12 +3,12 @@
 namespace Modules\Posts\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Modules\Posts\Events\PostCreated;
-use Modules\Posts\Events\PostUpdated;
-use Modules\Posts\Events\PostModerationEvaluated;
-use Modules\Posts\Listeners\TriggerModerationOnPostChange;
-use Modules\Interactions\Listeners\UpdateReportStatusOnModeration;
 use Modules\Interactions\Events\PostReported;
+use Modules\Interactions\Listeners\UpdateReportStatusOnModeration;
+use Modules\Posts\Events\PostCreated;
+use Modules\Posts\Events\PostModerationEvaluated;
+use Modules\Posts\Events\PostUpdated;
+use Modules\Posts\Listeners\TriggerModerationOnPostChange;
 
 class EventServiceProvider extends ServiceProvider
 {

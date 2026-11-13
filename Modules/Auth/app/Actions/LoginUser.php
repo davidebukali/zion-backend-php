@@ -3,7 +3,6 @@
 namespace Modules\Auth\Actions;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Modules\Auth\Models\User;
 use Modules\Auth\Transformers\UserResource;
@@ -24,6 +23,7 @@ class LoginUser
         $user = Auth::user();
         $user->load(['profile.avatar', 'profile.cover', 'profile.church']);
         $token = $user->createToken('auth_token')->plainTextToken;
+
         return [
             'user' => new UserResource($user),
             'token' => $token,

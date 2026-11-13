@@ -3,7 +3,6 @@
 namespace Modules\Posts\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
@@ -11,7 +10,6 @@ use Modules\Auth\Models\User;
 use Modules\Media\Enums\MediaStatus;
 use Modules\Media\Models\Media;
 use Modules\Posts\Actions\CreatePost;
-use Modules\Posts\Actions\DeletePost;
 use Modules\Posts\Enums\PostVisibility;
 use Modules\Posts\Models\Post;
 use Tests\TestCase;
@@ -21,6 +19,7 @@ class DeletePostTest extends TestCase
     use RefreshDatabase;
 
     private User $owner;
+
     private User $otherUser;
 
     protected function setUp(): void
@@ -46,7 +45,7 @@ class DeletePostTest extends TestCase
             'id' => (string) Str::ulid(),
             'user_id' => $user->id,
             'disk' => 'r2',
-            'path' => 'uploads/' . $filename,
+            'path' => 'uploads/'.$filename,
             'type' => 'image',
             'mime_type' => 'image/jpeg',
             'size' => 2048,

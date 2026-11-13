@@ -14,7 +14,9 @@ class TagUserInPostTest extends TestCase
     use RefreshDatabase;
 
     private User $author;
+
     private User $taggedUser;
+
     private User $blockedUser;
 
     protected function setUp(): void
@@ -130,4 +132,3 @@ class TagUserInPostTest extends TestCase
         ]);
     }
 }
-

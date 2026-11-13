@@ -11,15 +11,13 @@ class ResetPassword
     /**
      * Reset the user password after successful verification.
      *
-     * @param array $data
-     * @return array
      * @throws ValidationException
      */
     public function __invoke(array $data): array
     {
         $email = $data['email'];
 
-        $isVerified = Cache::pull('password_reset_verified:' . $email);
+        $isVerified = Cache::pull('password_reset_verified:'.$email);
         if (! $isVerified) {
             throw ValidationException::withMessages([
                 'email' => ['Verification code was not verified or verification session has expired. Please request a new code.'],

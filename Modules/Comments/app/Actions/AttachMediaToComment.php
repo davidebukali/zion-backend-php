@@ -11,11 +11,10 @@ class AttachMediaToComment
 {
     public function __construct(
         private readonly ValidateAttachableMedia $validateAttachableMedia
-    ) {
-    }
+    ) {}
 
     /**
-     * @param array<int, string> $mediaIds
+     * @param  array<int, string>  $mediaIds
      */
     public function handle(
         Comment $comment,
@@ -55,7 +54,7 @@ class AttachMediaToComment
     }
 
     /**
-     * @param array<int, string> $mediaIds
+     * @param  array<int, string>  $mediaIds
      */
     private function ensureMediaNotAttached(array $mediaIds): void
     {

@@ -21,4 +21,3 @@ class ReportMessageRequest extends FormRequest
         ];
     }
 }
-

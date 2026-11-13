@@ -129,22 +129,25 @@ class CleanupOrphanedMedia extends Command
     {
         if ($dryRun) {
             $this->line("  [DRY RUN] Would delete file: {$media->path} (Disk: {$media->disk}) | Record ID: {$media->id} | Status: {$media->status->value}");
+
             return true;
         }
 
         try {
-            if (!empty($media->disk) && !empty($media->path)) {
+            if (! empty($media->disk) && ! empty($media->path)) {
                 $disk = Storage::disk($media->disk);
-                 if ($disk->exists($media->path)) {
-                     $disk->delete($media->path);
+                if ($disk->exists($media->path)) {
+                    $disk->delete($media->path);
                 }
             }
 
             $media->delete();
             $this->info("  [DELETED] File: {$media->path} | Record ID: {$media->id} | Status: {$media->status->value}");
+
             return true;
         } catch (\Throwable $e) {
             $this->error("  [ERROR] Failed to delete Media ID {$media->id}: {$e->getMessage()}");
+
             return false;
         }
     }

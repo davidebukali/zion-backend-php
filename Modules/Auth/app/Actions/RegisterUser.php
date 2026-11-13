@@ -22,7 +22,7 @@ class RegisterUser
             ]);
 
             $churchId = $data['church_id'] ?? null;
-            if (!empty($data['church_name'])) {
+            if (! empty($data['church_name'])) {
                 $church = Church::firstOrCreate(
                     ['name' => trim($data['church_name'])],
                     [

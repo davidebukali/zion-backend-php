@@ -3,13 +3,14 @@
 namespace Modules\Interactions\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Interactions\Models\PostShare;
 
 class PostShareFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      */
-    protected $model = \Modules\Interactions\Models\PostShare::class;
+    protected $model = PostShare::class;
 
     /**
      * Define the model's default state.
@@ -19,4 +20,3 @@ class PostShareFactory extends Factory
         return [];
     }
 }
-

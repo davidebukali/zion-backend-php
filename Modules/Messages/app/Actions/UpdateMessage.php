@@ -40,4 +40,3 @@ class UpdateMessage
         return $message;
     }
 }
-

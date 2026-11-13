@@ -16,4 +16,3 @@ class PostUnreposted
         public User $user
     ) {}
 }
-

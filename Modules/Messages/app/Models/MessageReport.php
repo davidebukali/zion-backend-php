@@ -43,4 +43,3 @@ class MessageReport extends Model
         return $this->belongsTo(Message::class, 'message_id');
     }
 }
-

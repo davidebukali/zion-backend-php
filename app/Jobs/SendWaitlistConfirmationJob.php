@@ -55,6 +55,6 @@ class SendWaitlistConfirmationJob implements ShouldQueue
      */
     public function failed(?Throwable $exception): void
     {
-        Log::error("Failed to send waitlist confirmation to {$this->waitlistEntry->email}: " . ($exception ? $exception->getMessage() : 'Unknown error'));
+        Log::error("Failed to send waitlist confirmation to {$this->waitlistEntry->email}: ".($exception ? $exception->getMessage() : 'Unknown error'));
     }
 }

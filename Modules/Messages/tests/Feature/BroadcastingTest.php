@@ -6,7 +6,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Laravel\Sanctum\Sanctum;
 use Modules\Auth\Models\User;
-use Modules\Messages\Actions\SendMessage;
 use Modules\Messages\Actions\StartOrGetConversation;
 use Modules\Messages\Events\MessageDeleted;
 use Modules\Messages\Events\MessageReactionUpdated;
@@ -26,8 +25,11 @@ class BroadcastingTest extends TestCase
     use RefreshDatabase;
 
     private User $userA;
+
     private User $userB;
+
     private User $userC;
+
     private Conversation $conversation;
 
     protected function setUp(): void

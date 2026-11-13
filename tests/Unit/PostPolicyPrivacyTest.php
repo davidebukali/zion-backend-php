@@ -18,7 +18,7 @@ class PostPolicyPrivacyTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->policy = new PostPolicy();
+        $this->policy = new PostPolicy;
     }
 
     public function test_non_follower_is_denied_with_403_when_author_profile_is_private(): void

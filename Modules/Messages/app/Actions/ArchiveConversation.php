@@ -20,4 +20,3 @@ class ArchiveConversation
             ->update(['archived_at' => now()]);
     }
 }
-

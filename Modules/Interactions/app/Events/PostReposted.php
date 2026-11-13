@@ -16,4 +16,3 @@ class PostReposted
         public User $user
     ) {}
 }
-

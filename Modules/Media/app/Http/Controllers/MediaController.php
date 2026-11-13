@@ -18,14 +18,15 @@ class MediaController extends Controller
 
     /**
      * @group Media Management
+     *
      * @authenticated
-     * 
+     *
      * Get Media Details
-     * 
+     *
      * Retrieve metadata of a media asset owned by the authenticated user.
-     * 
+     *
      * @urlParam media string required The UUID of the media. Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Media retrieved successfully.",
@@ -54,16 +55,17 @@ class MediaController extends Controller
 
     /**
      * @group Media Management
+     *
      * @authenticated
-     * 
+     *
      * Generate Presigned Upload URL
-     * 
+     *
      * Generate an S3 direct presigned upload URL and temporary media asset record.
-     * 
+     *
      * @bodyParam filename string required Original filename including extension. Example: photo.jpg
      * @bodyParam mime_type string required Allowed MIME type (image/jpeg, image/png, image/webp). Example: image/jpeg
      * @bodyParam size integer required File size in bytes (max 10MB). Example: 5242880
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Upload URL generated.",
@@ -93,15 +95,17 @@ class MediaController extends Controller
 
     /**
      * @group Media Management
+     *
      * @authenticated
-     * 
+     *
      * Confirm Media Upload
-     * 
+     *
      * Confirm that direct file upload to storage was successful.
-     * 
+     *
      * @urlParam media string required The UUID of the media. Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+     *
      * @bodyParam checksum string Optional checksum hash of uploaded file. Example: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "message": "Media upload confirmed.",

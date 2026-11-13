@@ -2,7 +2,6 @@
 
 namespace Modules\Auth\Database\Factories;
 
-use Modules\Auth\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -40,4 +39,3 @@ class UserFactory extends Factory
         ]);
     }
 }
-

@@ -14,7 +14,9 @@ class CreateReplyTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Post $post;
+
     private Comment $parentComment;
 
     protected function setUp(): void

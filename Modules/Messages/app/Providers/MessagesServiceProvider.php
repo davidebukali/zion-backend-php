@@ -15,6 +15,7 @@ use Nwidart\Modules\Support\ModuleServiceProvider;
 class MessagesServiceProvider extends ModuleServiceProvider
 {
     protected string $name = 'Messages';
+
     protected string $nameLower = 'messages';
 
     protected array $providers = [
@@ -80,4 +81,3 @@ class MessagesServiceProvider extends ModuleServiceProvider
         });
     }
 }
-

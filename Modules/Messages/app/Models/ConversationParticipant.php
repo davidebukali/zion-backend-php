@@ -60,4 +60,3 @@ class ConversationParticipant extends Model
         return $this->hidden_at !== null;
     }
 }
-

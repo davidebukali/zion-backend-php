@@ -49,4 +49,3 @@ class DeviceTokenController extends Controller
         ], 200);
     }
 }
-

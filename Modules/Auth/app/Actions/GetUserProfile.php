@@ -9,9 +9,6 @@ class GetUserProfile
 {
     /**
      * Get the profile for a given user.
-     *
-     * @param User $user
-     * @return Profile
      */
     public function __invoke(User $user): Profile
     {

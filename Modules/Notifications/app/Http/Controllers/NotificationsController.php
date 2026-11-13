@@ -15,15 +15,16 @@ class NotificationsController extends Controller
 {
     /**
      * @group Notifications
+     *
      * @authenticated
-     * 
+     *
      * List Notifications
-     * 
+     *
      * Retrieve a paginated list of notifications for the authenticated user with actor details.
-     * 
+     *
      * @queryParam page integer The page number for pagination. Example: 1
      * @queryParam per_page integer Number of items per page. Example: 20
-     * 
+     *
      * @response 200 {
      *   "data": [
      *     {
@@ -83,14 +84,15 @@ class NotificationsController extends Controller
 
     /**
      * @group Notifications
+     *
      * @authenticated
-     * 
+     *
      * Mark Notification as Read
-     * 
+     *
      * Mark a specific unread notification belonging to the authenticated user as read.
-     * 
+     *
      * @urlParam notification string required The ULID of the notification to mark as read. Example: 01j98z3q4x6y7w8v9u0t1s2r3q
-     * 
+     *
      * @response 204 scenario="Notification marked as read successfully" {}
      * @response 403 scenario="Forbidden when notification belongs to another user" {
      *   "message": "This action is unauthorized."
@@ -108,12 +110,13 @@ class NotificationsController extends Controller
 
     /**
      * @group Notifications
+     *
      * @authenticated
-     * 
+     *
      * Mark All Notifications as Read
-     * 
+     *
      * Mark all unread notifications for the authenticated user as read.
-     * 
+     *
      * @response 204 scenario="All notifications marked as read successfully" {}
      */
     public function markAllAsRead(Request $request, MarkAllAsRead $action): Response

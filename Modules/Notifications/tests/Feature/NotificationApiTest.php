@@ -14,7 +14,9 @@ class NotificationApiTest extends TestCase
     use RefreshDatabase;
 
     private User $userA;
+
     private User $userB;
+
     private Post $post;
 
     protected function setUp(): void

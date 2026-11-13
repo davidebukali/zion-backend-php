@@ -18,4 +18,3 @@ class StartConversationRequest extends FormRequest
         ];
     }
 }
-

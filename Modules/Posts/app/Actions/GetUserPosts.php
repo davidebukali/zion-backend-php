@@ -13,11 +13,6 @@ class GetUserPosts
 {
     /**
      * Retrieve paginated posts created by a specific user with visibility filtering.
-     *
-     * @param User $targetUser
-     * @param User|null $viewer
-     * @param int $perPage
-     * @return CursorPaginator
      */
     public function __invoke(User $targetUser, ?User $viewer = null, int $perPage = 15): CursorPaginator
     {

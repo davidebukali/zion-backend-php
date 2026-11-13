@@ -79,4 +79,3 @@ class SendUserTaggedNotification implements ShouldQueue
         }
     }
 }
-

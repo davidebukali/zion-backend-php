@@ -17,4 +17,3 @@ class UnblockUser
             ->delete();
     }
 }
-

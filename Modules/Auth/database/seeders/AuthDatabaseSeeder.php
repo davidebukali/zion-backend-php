@@ -2,9 +2,9 @@
 
 namespace Modules\Auth\Database\Seeders;
 
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Modules\Auth\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class AuthDatabaseSeeder extends Seeder
 {
@@ -15,7 +15,7 @@ class AuthDatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        
+
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',

@@ -34,4 +34,3 @@ class MarkConversationAsRead
         event(new MessageRead($conversation, $user, $participant->last_read_message_id));
     }
 }
-

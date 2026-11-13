@@ -10,14 +10,10 @@ class UpdateUserProfile
 {
     /**
      * Update the profile for a given user.
-     *
-     * @param User $user
-     * @param array $data
-     * @return Profile
      */
     public function __invoke(User $user, array $data): Profile
     {
-        if (!empty($data['church_name'])) {
+        if (! empty($data['church_name'])) {
             $church = Church::firstOrCreate(
                 ['name' => trim($data['church_name'])],
                 [

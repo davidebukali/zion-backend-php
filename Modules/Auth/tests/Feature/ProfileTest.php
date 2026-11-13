@@ -4,7 +4,6 @@ namespace Modules\Auth\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
-use Modules\Auth\Models\Profile;
 use Modules\Auth\Models\User;
 use Modules\Churches\Models\Church;
 use Modules\Media\Models\Media;
@@ -15,6 +14,7 @@ class ProfileTest extends TestCase
     use RefreshDatabase;
 
     private User $userA;
+
     private User $userB;
 
     protected function setUp(): void

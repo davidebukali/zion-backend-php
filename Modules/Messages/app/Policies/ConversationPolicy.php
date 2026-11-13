@@ -29,4 +29,3 @@ class ConversationPolicy
         return ! $user->hasBlockRelationshipWith($otherParticipant->user_id);
     }
 }
-

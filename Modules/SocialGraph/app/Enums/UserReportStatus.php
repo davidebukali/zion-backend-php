@@ -9,4 +9,3 @@ enum UserReportStatus: string
     case Resolved = 'resolved';
     case Dismissed = 'dismissed';
 }
-

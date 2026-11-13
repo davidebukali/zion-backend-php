@@ -124,4 +124,3 @@ class Message extends Model
         return $this->edited_at !== null;
     }
 }
-

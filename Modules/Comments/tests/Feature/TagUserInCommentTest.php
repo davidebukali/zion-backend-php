@@ -16,9 +16,13 @@ class TagUserInCommentTest extends TestCase
     use RefreshDatabase;
 
     private User $author;
+
     private User $taggedUser;
+
     private User $blockedUser;
+
     private Post $post;
+
     private Comment $parentComment;
 
     protected function setUp(): void
@@ -155,4 +159,3 @@ class TagUserInCommentTest extends TestCase
         ]);
     }
 }
-

@@ -15,7 +15,9 @@ class PostSharedNotificationTest extends TestCase
     use RefreshDatabase;
 
     private User $postAuthor;
+
     private User $sharer;
+
     private Post $post;
 
     protected function setUp(): void

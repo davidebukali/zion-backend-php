@@ -21,4 +21,3 @@ class ChurchResource extends JsonResource
         ];
     }
 }
-

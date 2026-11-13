@@ -3,10 +3,9 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Auth\Models\User;
-use Modules\Posts\Models\Post;
-use Tests\TestCase;
 use Laravel\Sanctum\Sanctum;
+use Modules\Auth\Models\User;
+use Tests\TestCase;
 
 class PostsControllerTest extends TestCase
 {
@@ -48,7 +47,7 @@ class PostsControllerTest extends TestCase
                     'visibility',
                     'created_at',
                     'updated_at',
-                ]
+                ],
             ],
             'meta' => [
                 'links' => [
@@ -62,8 +61,8 @@ class PostsControllerTest extends TestCase
                     'per_page',
                     'next_cursor',
                     'prev_cursor',
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -87,7 +86,7 @@ class PostsControllerTest extends TestCase
                 'created_at',
                 'updated_at',
             ],
-            'meta'
+            'meta',
         ]);
 
         $this->assertDatabaseHas('posts', [
@@ -116,7 +115,7 @@ class PostsControllerTest extends TestCase
                 'created_at',
                 'updated_at',
             ],
-            'meta'
+            'meta',
         ]);
 
         $response->assertJsonPath('data.content', 'Specific Post');

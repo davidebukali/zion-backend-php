@@ -2,9 +2,12 @@
 
 namespace Modules\Posts\Providers;
 
-use Nwidart\Modules\Support\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Gate;
 use Modules\Posts\Console\ResolveStuckModerationRequests;
+use Modules\Posts\Models\Post;
+use Modules\Posts\Policies\PostPolicy;
+use Nwidart\Modules\Support\ModuleServiceProvider;
 
 class PostsServiceProvider extends ModuleServiceProvider
 {
@@ -39,8 +42,6 @@ class PostsServiceProvider extends ModuleServiceProvider
 
     /**
      * Define module schedules.
-     * 
-     * @param Schedule $schedule
      */
     protected function configureSchedules(Schedule $schedule): void
     {
@@ -54,10 +55,9 @@ class PostsServiceProvider extends ModuleServiceProvider
     {
         parent::boot();
 
-        \Illuminate\Support\Facades\Gate::policy(
-            \Modules\Posts\Models\Post::class,
-            \Modules\Posts\Policies\PostPolicy::class
+        Gate::policy(
+            Post::class,
+            PostPolicy::class
         );
     }
 }
-

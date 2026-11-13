@@ -39,4 +39,3 @@ class ReportMessage
         return $report;
     }
 }
-

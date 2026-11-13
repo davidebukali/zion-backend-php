@@ -70,4 +70,3 @@ enum AccountType: string
         return $type ? $type->categories() : self::allCategories();
     }
 }
-

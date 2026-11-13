@@ -5,8 +5,8 @@ namespace Modules\Posts\Policies;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
 use Modules\Auth\Models\User;
-use Modules\Posts\Enums\PostVisibility;
 use Modules\Posts\Enums\PostModerationStatus;
+use Modules\Posts\Enums\PostVisibility;
 use Modules\Posts\Models\Post;
 
 class PostPolicy

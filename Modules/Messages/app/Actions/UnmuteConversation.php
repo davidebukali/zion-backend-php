@@ -20,4 +20,3 @@ class UnmuteConversation
             ->update(['muted_at' => null]);
     }
 }
-

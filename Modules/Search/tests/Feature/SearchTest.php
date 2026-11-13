@@ -5,6 +5,7 @@ namespace Modules\Search\Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Modules\Auth\Models\User;
+use Modules\Posts\Enums\PostModerationStatus;
 use Modules\Posts\Enums\PostVisibility;
 use Modules\Posts\Models\Post;
 use Modules\SocialGraph\Enums\FollowStatus;
@@ -343,7 +344,7 @@ class SearchTest extends TestCase
             'user_id' => $this->author->id,
             'content' => 'Secret private profile topic',
             'visibility' => PostVisibility::PUBLIC->value,
-            'moderation_status' => \Modules\Posts\Enums\PostModerationStatus::APPROVED->value,
+            'moderation_status' => PostModerationStatus::APPROVED->value,
         ]);
 
         // Stranger (non-follower) searches

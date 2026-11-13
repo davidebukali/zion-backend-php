@@ -23,4 +23,3 @@ class UserBlockResource extends JsonResource
         ];
     }
 }
-

@@ -247,17 +247,23 @@ return [
         'production' => [
             'supervisor-general' => [
                 'minProcesses' => 1,
-                'maxProcesses' => 3,
+                'maxProcesses' => 4,
                 'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
+                'balanceCooldown' => 2,
+                'memory' => 96,
+                'maxJobs' => 500,
             ],
             'supervisor-feed' => [
                 'minProcesses' => 1,
                 'maxProcesses' => 3,
+                'memory' => 128,
+                'maxJobs' => 500,
             ],
             'supervisor-media' => [
                 'minProcesses' => 1,
                 'maxProcesses' => 2,
+                'memory' => 160,
+                'maxJobs' => 200,
             ],
         ],
 

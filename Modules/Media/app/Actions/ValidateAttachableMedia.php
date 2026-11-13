@@ -10,8 +10,7 @@ use Modules\Media\Models\Media;
 class ValidateAttachableMedia
 {
     /**
-     * @param array<int, string> $mediaIds
-     * @param int|string $userId
+     * @param  array<int, string>  $mediaIds
      */
     public function handle(
         array $mediaIds,
@@ -32,8 +31,7 @@ class ValidateAttachableMedia
         }
 
         $notReady = $media->filter(
-            fn (Media $item): bool =>
-                $item->status !== MediaStatus::Ready
+            fn (Media $item): bool => $item->status !== MediaStatus::Ready
         );
 
         if ($notReady->isNotEmpty()) {

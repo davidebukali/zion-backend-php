@@ -21,7 +21,7 @@ class Media extends Model
      */
     protected $fillable = [
         'id',
-        'user_id',        
+        'user_id',
         'disk',
         'path',
         'type',

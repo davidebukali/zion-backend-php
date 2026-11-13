@@ -2,8 +2,11 @@
 
 namespace Modules\Comments\Providers;
 
-use Nwidart\Modules\Support\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Gate;
+use Modules\Comments\Models\Comment;
+use Modules\Comments\Policies\CommentPolicy;
+use Nwidart\Modules\Support\ModuleServiceProvider;
 
 class CommentsServiceProvider extends ModuleServiceProvider
 {
@@ -36,8 +39,8 @@ class CommentsServiceProvider extends ModuleServiceProvider
 
     /**
      * Define module schedules.
-     * 
-     * @param $schedule
+     *
+     * @param  $schedule
      */
     // protected function configureSchedules(Schedule $schedule): void
     // {
@@ -51,9 +54,9 @@ class CommentsServiceProvider extends ModuleServiceProvider
     {
         parent::boot();
 
-        \Illuminate\Support\Facades\Gate::policy(
-            \Modules\Comments\Models\Comment::class,
-            \Modules\Comments\Policies\CommentPolicy::class
+        Gate::policy(
+            Comment::class,
+            CommentPolicy::class
         );
     }
 }

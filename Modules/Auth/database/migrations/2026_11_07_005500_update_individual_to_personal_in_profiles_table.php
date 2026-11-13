@@ -25,4 +25,3 @@ return new class extends Migration
             ->update(['account_type' => 'individual']);
     }
 };
-

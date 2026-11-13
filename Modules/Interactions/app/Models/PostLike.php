@@ -18,4 +18,3 @@ class PostLike extends Model
         'user_id',
     ];
 }
-

@@ -20,7 +20,9 @@ class UpdatePostTest extends TestCase
     use RefreshDatabase;
 
     private User $owner;
+
     private User $otherUser;
+
     private Post $post;
 
     protected function setUp(): void
@@ -51,7 +53,7 @@ class UpdatePostTest extends TestCase
             'id' => (string) Str::ulid(),
             'user_id' => $user->id,
             'disk' => 'r2',
-            'path' => 'uploads/' . $filename,
+            'path' => 'uploads/'.$filename,
             'type' => 'image',
             'mime_type' => 'image/jpeg',
             'size' => 2048,

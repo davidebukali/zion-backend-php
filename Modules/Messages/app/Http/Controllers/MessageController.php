@@ -39,6 +39,7 @@ class MessageController extends Controller
      * Retrieve a cursor-paginated list of messages in a conversation. Messages are returned in chronological order and automatically filtered for any messages the user has deleted for themselves or cleared prior to.
      *
      * @urlParam conversation string required The ULID of the conversation. Example: 01JBD1EXAMPLE00000000000001
+     *
      * @queryParam per_page integer Number of messages per page. Default: 30. Example: 30
      * @queryParam cursor string Cursor token for pagination. Example: eyJpZCI6MX0
      *
@@ -105,6 +106,7 @@ class MessageController extends Controller
      * Sends a new message in the conversation. Supports plain text, threaded replies, and up to 4 confirmed image attachments. Broadcasts `message.sent` over Reverb in real time.
      *
      * @urlParam conversation string required The ULID of the conversation. Example: 01JBD1EXAMPLE00000000000001
+     *
      * @bodyParam body string Text body of the message. Required unless `media_ids` is provided. Max: 5000 characters. Example: Check out these wireframes!
      * @bodyParam media_ids string[] Optional array of media ULIDs (maximum 4). Each media must belong to the sender, be of type `image`, have status `ready`, and not already be attached. Example: ["01JBD1MEDIA0000000000000001"]
      * @bodyParam reply_to_message_id string Optional ULID of the message being replied to. Must belong to the same conversation. Example: 01JBD1MSG00000000000000001
@@ -169,6 +171,7 @@ class MessageController extends Controller
      * Edits the body text of a message. Permitted only for the original author and strictly within 15 minutes of message creation. Broadcasts `message.updated` over Reverb.
      *
      * @urlParam message string required The ULID of the message to edit. Example: 01JBD1MSG00000000000000002
+     *
      * @bodyParam body string required The updated text body. Max: 5000 characters. Example: Check out these updated wireframes!
      *
      * @response 200 {
@@ -288,6 +291,7 @@ class MessageController extends Controller
      * Attaches or replaces the user's emoji reaction on a message. Each user can have at most one active reaction per message. Broadcasts `message.reaction_updated` over Reverb.
      *
      * @urlParam message string required The ULID of the message. Example: 01JBD1MSG00000000000000002
+     *
      * @bodyParam emoji string required Single emoji string. Max: 16 characters. Example: 🔥
      *
      * @response 200 {
@@ -356,6 +360,7 @@ class MessageController extends Controller
      * Submits a moderation report against a specific message.
      *
      * @urlParam message string required The ULID of the message to report. Example: 01JBD1MSG00000000000000002
+     *
      * @bodyParam reason string required Category of violation (`spam`, `harassment`, `hate_speech`, `inappropriate_content`, `violence`, `other`). Example: hate_speech
      * @bodyParam description string Optional explanation. Max: 1000 characters. Example: Offensive language.
      *
@@ -385,4 +390,3 @@ class MessageController extends Controller
         );
     }
 }
-

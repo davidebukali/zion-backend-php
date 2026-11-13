@@ -80,11 +80,12 @@ class FanOutPostJobTest extends TestCase
         // Check batch was dispatched with chunk job
         Bus::assertBatched(function ($batch) use ($post, $follower1, $follower2, $pendingFollower) {
             $chunkJob = $batch->jobs->first();
+
             return $chunkJob instanceof FanOutPostChunkJob
                 && $chunkJob->postId === $post->id
                 && in_array($follower1->id, $chunkJob->followerIds)
                 && in_array($follower2->id, $chunkJob->followerIds)
-                && !in_array($pendingFollower->id, $chunkJob->followerIds);
+                && ! in_array($pendingFollower->id, $chunkJob->followerIds);
         });
     }
 

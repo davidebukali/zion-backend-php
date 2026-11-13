@@ -2,8 +2,8 @@
 
 namespace Modules\Comments\Actions;
 
-use Modules\Comments\Models\Comment;
 use Illuminate\Pagination\CursorPaginator;
+use Modules\Comments\Models\Comment;
 
 class ListReplies
 {

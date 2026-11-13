@@ -3,31 +3,32 @@
 namespace Modules\Auth\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Modules\Auth\Actions\RegisterUser;
 use Modules\Auth\Actions\LoginUser;
+use Modules\Auth\Actions\RegisterUser;
+use Modules\Auth\Actions\ResetPassword;
 use Modules\Auth\Actions\SendPasswordResetCode;
 use Modules\Auth\Actions\VerifyPasswordResetCode;
-use Modules\Auth\Actions\ResetPassword;
-use Modules\Auth\Http\Requests\StoreUserRequest;
-use Modules\Auth\Http\Requests\LoginRequest;
-use Modules\Auth\Http\Requests\ForgotPasswordRequest;
-use Modules\Auth\Http\Requests\VerifyResetCodeRequest;
-use Modules\Auth\Http\Requests\ResetPasswordRequest;
-use Modules\Auth\Transformers\UserResource;
 use Modules\Auth\Enums\AccountType;
-use Illuminate\Http\JsonResponse;
+use Modules\Auth\Http\Requests\ForgotPasswordRequest;
+use Modules\Auth\Http\Requests\LoginRequest;
+use Modules\Auth\Http\Requests\ResetPasswordRequest;
+use Modules\Auth\Http\Requests\StoreUserRequest;
+use Modules\Auth\Http\Requests\VerifyResetCodeRequest;
+use Modules\Auth\Transformers\UserResource;
 
 class AuthController extends Controller
 {
     /**
      * @group Authentication
+     *
      * @unauthenticated
-     * 
+     *
      * Register User
-     * 
+     *
      * Register a new user account and receive an authentication API token.
-     * 
+     *
      * @bodyParam name string required The user's full name. Example: Jane Doe
      * @bodyParam email string required The user's unique email address. Example: jane@example.com
      * @bodyParam password string required The account password (min 8 characters). Example: secret123
@@ -37,7 +38,7 @@ class AuthController extends Controller
      * @bodyParam church_id string The ULID of an existing church. Example: 01j98z3q4x6y7w8v9u0t1s2c01
      * @bodyParam church_name string The name of a church to find or create inline. Example: Watoto Church
      * @bodyParam church_location string Optional location for a new church. Example: Kampala, Uganda
-     * 
+     *
      * @response 201 {
      *   "data": {
      *     "user": {
@@ -63,12 +64,13 @@ class AuthController extends Controller
 
     /**
      * @group Authentication
+     *
      * @unauthenticated
-     * 
+     *
      * Get Account Types & Categories
-     * 
+     *
      * Retrieve the list of supported account types (personal, organization) and their allowed categories.
-     * 
+     *
      * @response 200 {
      *   "data": [
      *     {
@@ -116,15 +118,16 @@ class AuthController extends Controller
 
     /**
      * @group Authentication
+     *
      * @unauthenticated
-     * 
+     *
      * User Login
-     * 
+     *
      * Authenticate with email and password to receive an API access token.
-     * 
+     *
      * @bodyParam email string required The user's registered email address. Example: jane@example.com
      * @bodyParam password string required The account password. Example: secret123
-     * 
+     *
      * @response 200 {
      *   "data": {
      *     "token": "1|sanctum_token_string"
@@ -142,14 +145,15 @@ class AuthController extends Controller
 
     /**
      * @group Authentication
+     *
      * @unauthenticated
-     * 
+     *
      * Forgot Password
-     * 
+     *
      * Request a 6-digit password reset code sent to the registered email address. The code expires in 2 minutes.
-     * 
+     *
      * @bodyParam email string required The user's registered email address. Example: jane@example.com
-     * 
+     *
      * @response 200 {
      *   "message": "Password reset code has been sent to your email."
      * }
@@ -167,15 +171,16 @@ class AuthController extends Controller
 
     /**
      * @group Authentication
+     *
      * @unauthenticated
-     * 
+     *
      * Verify Reset Code
-     * 
+     *
      * Verify the 6-digit code sent to the email address. Must be submitted within 2 minutes.
-     * 
+     *
      * @bodyParam email string required The user's registered email address. Example: jane@example.com
      * @bodyParam code string required The 6-digit verification code. Example: 482910
-     * 
+     *
      * @response 200 {
      *   "message": "Verification code confirmed. You may now reset your password."
      * }
@@ -193,16 +198,17 @@ class AuthController extends Controller
 
     /**
      * @group Authentication
+     *
      * @unauthenticated
-     * 
+     *
      * Reset Password
-     * 
+     *
      * Set a new password after successful code verification.
-     * 
+     *
      * @bodyParam email string required The user's registered email address. Example: jane@example.com
      * @bodyParam password string required The new password (min 8 characters). Example: newSecret123
      * @bodyParam password_confirmation string required Must match password. Example: newSecret123
-     * 
+     *
      * @response 200 {
      *   "message": "Password has been reset successfully."
      * }
@@ -220,12 +226,13 @@ class AuthController extends Controller
 
     /**
      * @group Authentication
+     *
      * @authenticated
-     * 
+     *
      * Get Authenticated User
-     * 
+     *
      * Retrieve details of the currently authenticated user.
-     * 
+     *
      * @response 200 {
      *   "data": {
      *     "id": 1,

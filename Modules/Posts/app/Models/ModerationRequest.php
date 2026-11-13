@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Interactions\Models\PostReports;
 use Modules\Posts\Enums\ModerationRequestStatus;
+use Modules\Posts\Scopes\PostModerationScope;
 
 class ModerationRequest extends Model
 {
@@ -35,7 +36,7 @@ class ModerationRequest extends Model
 
     public function post(): BelongsTo
     {
-        return $this->belongsTo(Post::class)->withoutGlobalScope(\Modules\Posts\Scopes\PostModerationScope::class);
+        return $this->belongsTo(Post::class)->withoutGlobalScope(PostModerationScope::class);
     }
 
     public function report(): BelongsTo

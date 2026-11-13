@@ -20,7 +20,9 @@ class ConversationTest extends TestCase
     use RefreshDatabase;
 
     private User $userA;
+
     private User $userB;
+
     private User $userC;
 
     protected function setUp(): void

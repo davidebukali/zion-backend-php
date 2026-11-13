@@ -27,6 +27,7 @@ class ResolveStuckModerationRequests extends Command
     {
         if (! config('moderation.enabled', false)) {
             $this->info('AI moderation is currently disabled.');
+
             return self::SUCCESS;
         }
 

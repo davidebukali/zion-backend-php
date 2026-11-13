@@ -3,14 +3,10 @@
 namespace Modules\Notifications\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
 use Modules\Auth\Models\User;
 use Modules\Comments\Models\Comment;
 use Modules\Interactions\Events\CommentLiked;
-use Modules\Notifications\Actions\CreateNotification;
 use Modules\Notifications\Listeners\SendCommentLikedNotification;
-use Modules\Notifications\Models\Notification;
-use Modules\Posts\Models\Post;
 use Tests\TestCase;
 
 class CommentLikedNotificationTest extends TestCase
@@ -18,7 +14,9 @@ class CommentLikedNotificationTest extends TestCase
     use RefreshDatabase;
 
     private User $commentAuthor;
+
     private User $liker;
+
     private Comment $comment;
 
     protected function setUp(): void

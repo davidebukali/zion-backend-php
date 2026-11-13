@@ -2,10 +2,9 @@
 
 namespace Modules\SocialGraph\Actions;
 
-use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
-use Modules\SocialGraph\Models\Follow;
 use Modules\SocialGraph\Enums\FollowStatus;
+use Modules\SocialGraph\Models\Follow;
 
 class RejectFollowRequest
 {

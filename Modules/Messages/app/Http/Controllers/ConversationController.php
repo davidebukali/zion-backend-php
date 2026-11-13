@@ -515,6 +515,7 @@ class ConversationController extends Controller
      * Submits a moderation report against an entire conversation thread.
      *
      * @urlParam conversation string required The ULID of the conversation to report. Example: 01JBD1EXAMPLE00000000000001
+     *
      * @bodyParam reason string required The category of violation. Must be one of: `spam`, `harassment`, `hate_speech`, `inappropriate_content`, `violence`, `other`. Example: harassment
      * @bodyParam description string Optional additional details for the moderation team. Max: 1000 characters. Example: Abusive language in thread.
      *
@@ -544,4 +545,3 @@ class ConversationController extends Controller
         );
     }
 }
-

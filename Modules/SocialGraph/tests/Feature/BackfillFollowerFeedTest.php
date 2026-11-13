@@ -4,6 +4,7 @@ namespace Modules\SocialGraph\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
 use Modules\Auth\Models\User;
 use Modules\Posts\Enums\PostVisibility;
@@ -19,6 +20,7 @@ class BackfillFollowerFeedTest extends TestCase
     use RefreshDatabase;
 
     private User $david;
+
     private User $alice;
 
     protected function setUp(): void
@@ -122,7 +124,7 @@ class BackfillFollowerFeedTest extends TestCase
 
     public function test_following_public_user_dispatches_backfill_job(): void
     {
-        \Illuminate\Support\Facades\Queue::fake();
+        Queue::fake();
 
         Sanctum::actingAs($this->david);
 
@@ -130,7 +132,7 @@ class BackfillFollowerFeedTest extends TestCase
 
         $response->assertStatus(201);
 
-        \Illuminate\Support\Facades\Queue::assertPushed(BackfillFollowerFeedJob::class, function ($job) {
+        Queue::assertPushed(BackfillFollowerFeedJob::class, function ($job) {
             return $job->followerId === $this->david->id
                 && $job->followingId === $this->alice->id;
         });

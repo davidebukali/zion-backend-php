@@ -14,7 +14,9 @@ class PostRepostedNotificationTest extends TestCase
     use RefreshDatabase;
 
     private User $postAuthor;
+
     private User $reposter;
+
     private Post $post;
 
     protected function setUp(): void
@@ -71,4 +73,3 @@ class PostRepostedNotificationTest extends TestCase
         ]);
     }
 }
-

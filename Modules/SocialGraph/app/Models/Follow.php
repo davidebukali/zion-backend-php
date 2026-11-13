@@ -2,8 +2,8 @@
 
 namespace Modules\SocialGraph\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Auth\Models\User;
 use Modules\SocialGraph\Enums\FollowStatus;
 

@@ -48,4 +48,3 @@ class GoogleAnalyticsViewTest extends TestCase
         $this->assertStringContainsString('<x-google-analytics />', $defaultLayout);
     }
 }
-

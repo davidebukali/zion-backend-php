@@ -86,4 +86,3 @@ class ConversationResource extends JsonResource
             ->first();
     }
 }
-

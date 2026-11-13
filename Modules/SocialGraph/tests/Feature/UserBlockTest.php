@@ -15,6 +15,7 @@ class UserBlockTest extends TestCase
     use RefreshDatabase;
 
     private User $userA;
+
     private User $userB;
 
     protected function setUp(): void
@@ -147,4 +148,3 @@ class UserBlockTest extends TestCase
         ]);
     }
 }
-

@@ -17,7 +17,9 @@ class DeleteCommentTest extends TestCase
     use RefreshDatabase;
 
     private User $owner;
+
     private User $otherUser;
+
     private Post $post;
 
     protected function setUp(): void

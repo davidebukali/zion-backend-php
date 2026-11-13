@@ -16,8 +16,6 @@ use Modules\Media\Models\Media;
 use Modules\Posts\Actions\AttachMediaToPost;
 use Modules\Posts\Actions\CreatePost;
 use Modules\Posts\Actions\DeletePost;
-use Modules\Posts\Models\Post;
-use Modules\Posts\Transformers\PostResource;
 use Tests\TestCase;
 
 class MediaAttachmentTest extends TestCase
@@ -45,7 +43,7 @@ class MediaAttachmentTest extends TestCase
             'id' => (string) Str::ulid(),
             'user_id' => $user->id,
             'disk' => 'r2',
-            'path' => 'uploads/' . $filename,
+            'path' => 'uploads/'.$filename,
             'type' => 'image',
             'mime_type' => 'image/jpeg',
             'size' => 2048,
@@ -158,7 +156,7 @@ class MediaAttachmentTest extends TestCase
         ]);
 
         $resource = new CommentResource($comment->load('media'));
-        $data = $resource->toArray(Request::create('/api/v1/posts/' . $post->id . '/comments', 'POST'));
+        $data = $resource->toArray(Request::create('/api/v1/posts/'.$post->id.'/comments', 'POST'));
 
         $this->assertArrayHasKey('media', $data);
         $mediaCollection = $data['media'];

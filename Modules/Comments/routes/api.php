@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Comments\Http\Controllers\CommentsController;
 use Modules\Comments\Http\Controllers\CommentReplyController;
+use Modules\Comments\Http\Controllers\CommentsController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::post('posts/{post}/comments', [CommentsController::class, 'store'])->name('comments.store');

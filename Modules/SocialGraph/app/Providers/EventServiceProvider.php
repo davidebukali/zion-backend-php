@@ -3,7 +3,6 @@
 namespace Modules\SocialGraph\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-
 use Modules\Comments\Events\CommentCreated;
 use Modules\Interactions\Events\PostLiked;
 use Modules\Interactions\Events\PostReposted;

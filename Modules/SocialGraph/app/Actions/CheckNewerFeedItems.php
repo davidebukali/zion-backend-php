@@ -19,4 +19,3 @@ class CheckNewerFeedItems
             ->count();
     }
 }
-

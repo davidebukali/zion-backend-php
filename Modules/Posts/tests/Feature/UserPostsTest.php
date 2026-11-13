@@ -16,10 +16,15 @@ class UserPostsTest extends TestCase
     use RefreshDatabase;
 
     private User $author;
+
     private User $follower;
+
     private User $nonFollower;
+
     private Post $publicPost;
+
     private Post $followersPost;
+
     private Post $privatePost;
 
     protected function setUp(): void

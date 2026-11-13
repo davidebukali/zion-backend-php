@@ -3,17 +3,18 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Auth\Models\User;
-use Modules\Posts\Models\Post;
-use Modules\Comments\Models\Comment;
-use Tests\TestCase;
 use Laravel\Sanctum\Sanctum;
+use Modules\Auth\Models\User;
+use Modules\Comments\Models\Comment;
+use Modules\Posts\Models\Post;
+use Tests\TestCase;
 
 class CommentsControllerTest extends TestCase
 {
     use RefreshDatabase;
 
     private User $user;
+
     private Post $post;
 
     protected function setUp(): void
@@ -55,7 +56,7 @@ class CommentsControllerTest extends TestCase
                 'created_at',
                 'updated_at',
             ],
-            'meta'
+            'meta',
         ]);
 
         $response->assertJsonPath('data.content', 'This is a test comment.');
@@ -152,12 +153,12 @@ class CommentsControllerTest extends TestCase
                     'replies_count',
                     'created_at',
                     'updated_at',
-                ]
+                ],
             ],
             'meta' => [
                 'links' => ['first', 'last', 'prev', 'next'],
-                'meta' => ['path', 'per_page', 'next_cursor', 'prev_cursor']
-            ]
+                'meta' => ['path', 'per_page', 'next_cursor', 'prev_cursor'],
+            ],
         ]);
 
         // Assert only top-level comments for our post are returned (count = 2)
@@ -305,7 +306,7 @@ class CommentsControllerTest extends TestCase
                 'created_at',
                 'updated_at',
             ],
-            'meta'
+            'meta',
         ]);
 
         $response->assertJsonPath('data.content', 'This is a reply to the parent comment.');
@@ -396,12 +397,12 @@ class CommentsControllerTest extends TestCase
                     'replies_count',
                     'created_at',
                     'updated_at',
-                ]
+                ],
             ],
             'meta' => [
                 'links' => ['first', 'last', 'prev', 'next'],
-                'meta' => ['path', 'per_page', 'next_cursor', 'prev_cursor']
-            ]
+                'meta' => ['path', 'per_page', 'next_cursor', 'prev_cursor'],
+            ],
         ]);
 
         // Assert only replies for our target comment are returned (count = 2)
@@ -494,4 +495,3 @@ class CommentsControllerTest extends TestCase
         $listResponse2->assertJsonCount(0, 'data');
     }
 }
-

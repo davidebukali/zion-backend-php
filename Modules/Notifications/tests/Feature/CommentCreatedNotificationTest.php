@@ -15,7 +15,9 @@ class CommentCreatedNotificationTest extends TestCase
     use RefreshDatabase;
 
     private User $postAuthor;
+
     private User $commenter;
+
     private Post $post;
 
     protected function setUp(): void

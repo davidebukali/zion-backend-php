@@ -53,4 +53,3 @@ class ReportUser
         return $report;
     }
 }
-

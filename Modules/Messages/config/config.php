@@ -3,4 +3,3 @@
 return [
     'name' => 'Messages',
 ];
-

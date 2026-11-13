@@ -16,6 +16,7 @@ class RepostControllerTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Post $post;
 
     protected function setUp(): void
@@ -127,4 +128,3 @@ class RepostControllerTest extends TestCase
         $this->deleteJson(route('api.post.unrepost', ['post' => $this->post->id]))->assertStatus(401);
     }
 }
-

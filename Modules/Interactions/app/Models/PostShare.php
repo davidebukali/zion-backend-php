@@ -27,4 +27,3 @@ class PostShare extends Model
         ];
     }
 }
-

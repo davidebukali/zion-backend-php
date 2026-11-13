@@ -2,9 +2,8 @@
 
 namespace Modules\Comments\Actions;
 
-use Modules\Posts\Models\Post;
-use Modules\Comments\Models\Comment;
 use Illuminate\Pagination\CursorPaginator;
+use Modules\Posts\Models\Post;
 
 class ListComments
 {

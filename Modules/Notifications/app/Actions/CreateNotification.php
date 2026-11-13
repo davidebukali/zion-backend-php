@@ -11,11 +11,11 @@ class CreateNotification
     /**
      * Create and persist a new notification instance.
      *
-     * @param User|string $user The recipient user or user ID
-     * @param string $type The notification type (e.g. 'comment_liked', 'post_liked')
-     * @param Model $notifiable The target polymorphic model (e.g. Comment, Post)
-     * @param User|string|null $actor The actor who triggered the notification
-     * @param array $data Additional metadata payload
+     * @param  User|string  $user  The recipient user or user ID
+     * @param  string  $type  The notification type (e.g. 'comment_liked', 'post_liked')
+     * @param  Model  $notifiable  The target polymorphic model (e.g. Comment, Post)
+     * @param  User|string|null  $actor  The actor who triggered the notification
+     * @param  array  $data  Additional metadata payload
      */
     public function __invoke(
         User|string $user,

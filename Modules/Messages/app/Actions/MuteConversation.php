@@ -20,4 +20,3 @@ class MuteConversation
             ->update(['muted_at' => now()]);
     }
 }
-

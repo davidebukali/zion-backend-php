@@ -13,6 +13,7 @@ class FollowRequestAcceptedNotificationTest extends TestCase
     use RefreshDatabase;
 
     private User $userA;
+
     private User $userB;
 
     protected function setUp(): void

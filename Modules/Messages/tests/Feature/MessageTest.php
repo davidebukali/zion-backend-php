@@ -24,7 +24,9 @@ class MessageTest extends TestCase
     use RefreshDatabase;
 
     private User $userA;
+
     private User $userB;
+
     private Conversation $conversation;
 
     protected function setUp(): void
@@ -77,7 +79,7 @@ class MessageTest extends TestCase
             'id' => (string) Str::ulid(),
             'user_id' => $user->id,
             'disk' => 'r2',
-            'path' => 'uploads/' . uniqid() . '_' . $filename,
+            'path' => 'uploads/'.uniqid().'_'.$filename,
             'type' => 'image',
             'mime_type' => 'image/jpeg',
             'size' => 1024,
@@ -420,4 +422,3 @@ class MessageTest extends TestCase
             ]);
     }
 }
-

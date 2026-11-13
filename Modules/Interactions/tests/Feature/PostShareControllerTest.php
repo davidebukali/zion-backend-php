@@ -17,6 +17,7 @@ class PostShareControllerTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Post $post;
 
     protected function setUp(): void

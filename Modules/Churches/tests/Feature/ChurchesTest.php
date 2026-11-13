@@ -4,7 +4,6 @@ namespace Modules\Churches\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Churches\Database\Seeders\ChurchSeeder;
-use Modules\Churches\Models\Church;
 use Tests\TestCase;
 
 class ChurchesTest extends TestCase
@@ -43,4 +42,3 @@ class ChurchesTest extends TestCase
         $this->assertEquals('Phaneroo Ministries International', $data[0]['name']);
     }
 }
-

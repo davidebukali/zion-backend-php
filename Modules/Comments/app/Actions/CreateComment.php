@@ -4,17 +4,15 @@ namespace Modules\Comments\Actions;
 
 use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
-use Modules\Posts\Models\Post;
-use Modules\Comments\Models\Comment;
-use Modules\Comments\Actions\AttachMediaToComment;
 use Modules\Comments\Events\CommentCreated;
+use Modules\Comments\Models\Comment;
+use Modules\Posts\Models\Post;
 
 class CreateComment
 {
     public function __construct(
         private readonly AttachMediaToComment $attachMediaToComment
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new comment for a post by a user.
