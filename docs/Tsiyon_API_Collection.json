@@ -798,37 +798,6 @@
                     ]
                 },
                 {
-                    "name": "POST api\/v1\/internal\/moderation\/webhook",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/v1\/internal\/moderation\/webhook",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/internal\/moderation\/webhook"
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"request_id\":\"architecto\",\"scores\":[]}"
-                        },
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
                     "name": "Authenticate the request for channel access.",
                     "request": {
                         "url": {

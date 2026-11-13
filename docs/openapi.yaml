@@ -1175,40 +1175,6 @@ paths:
       tags:
         - Endpoints
       security: []
-  /api/v1/internal/moderation/webhook:
-    post:
-      summary: ''
-      operationId: postApiV1InternalModerationWebhook
-      description: ''
-      parameters: []
-      responses: {}
-      tags:
-        - Endpoints
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                request_id:
-                  type: string
-                  description: ''
-                  example: architecto
-                scores:
-                  type: object
-                  description: ''
-                  example: []
-                  properties: {}
-                metadata:
-                  type: object
-                  description: ''
-                  example: null
-                  properties: {}
-              required:
-                - request_id
-                - scores
-      security: []
   /api/broadcasting/auth:
     get:
       summary: 'Authenticate the request for channel access.'

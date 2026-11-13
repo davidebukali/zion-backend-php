@@ -21,7 +21,7 @@ use Modules\Posts\Models\ModerationRequest;
 use Modules\Posts\Models\Post;
 use Tests\TestCase;
 
-class PostModerationWebhookTest extends TestCase
+class PostModerationTest extends TestCase
 {
     use RefreshDatabase;
 

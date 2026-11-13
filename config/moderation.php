@@ -6,7 +6,7 @@ return [
     | AI Moderation Pipeline Enabled
     |--------------------------------------------------------------------------
     | When disabled, posts bypass AI moderation checks and are treated as
-    | approved, preventing timeout errors until the webhook service is ready.
+    | approved.
     */
     'enabled' => (bool) env('MODERATION_ENABLED', false),
 
