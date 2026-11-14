@@ -265,7 +265,7 @@
                                 long as your account remains active or as needed to provide you with the Service.</li>
                             <li><strong class="text-on-surface">Account Deletion:</strong> You have the right to request
                                 the deletion of your account and associated personal data at any time through the app
-                                settings or by contacting our team. Upon confirmed deletion, your profile, posts, and
+                                settings, by submitting an online <a href="{{ route('account.delete.form') }}" class="text-primary hover:underline font-semibold">Account Deletion Request</a>, or by contacting our team. Upon confirmed deletion, your profile, posts, and
                                 personal data will be permanently purged or anonymized, subject to any legal obligations
                                 requiring temporary retention.</li>
                         </ul>

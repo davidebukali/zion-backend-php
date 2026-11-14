@@ -10,6 +10,8 @@
                 class="text-on-surface-variant hover:text-primary transition-colors duration-200">Terms of Service</a>
             <a href="{{ route('privacy') }}"
                 class="text-on-surface-variant hover:text-primary transition-colors duration-200">Privacy Policy</a>
+            <a href="{{ route('account.delete.form') }}"
+                class="text-on-surface-variant hover:text-primary transition-colors duration-200">Delete Account</a>
             <a href="mailto:support@tsiyonapp.com"
                 class="text-on-surface-variant hover:text-primary transition-colors duration-200">Contact Support</a>
             <a href="https://github.com/davidebukali/zion-backend-php" target="_blank" rel="noopener noreferrer"

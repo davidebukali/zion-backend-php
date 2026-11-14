@@ -33,6 +33,10 @@
   --color-on-tertiary-container: #410004;
   --color-outline: #857371;
   --color-outline-variant: #D7C1C0;
+  --color-error: #BA1A1A;
+  --color-error-container: #FFDAD6;
+  --color-on-error: #FFFFFF;
+  --color-on-error-container: #410002;
 }
 
 html.dark {
@@ -61,6 +65,10 @@ html.dark {
   --color-on-tertiary-container: #ffe0dd;
   --color-outline: #ab8985;
   --color-outline-variant: #5b403d;
+  --color-error: #FFB4AB;
+  --color-error-container: #93000A;
+  --color-on-error: #690005;
+  --color-on-error-container: #FFDAD6;
 }
 
 @theme {
@@ -96,6 +104,10 @@ html.dark {
   --color-on-tertiary-container: var(--color-on-tertiary-container);
   --color-outline: var(--color-outline);
   --color-outline-variant: var(--color-outline-variant);
+  --color-error: var(--color-error);
+  --color-error-container: var(--color-error-container);
+  --color-on-error: var(--color-on-error);
+  --color-on-error-container: var(--color-on-error-container);
 
   --color-primary-fixed: #ffdad6;
   --color-primary-fixed-dim: #ffb4ac;
