@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -24,6 +25,18 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasUlids, Notifiable;
 
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (User $user): void {
+            if (! array_key_exists('is_persistent', $user->attributes)) {
+                $user->is_persistent = ! config('beta.mode', true);
+            }
+        });
+    }
+
     protected $hidden = [
         'password',
         'remember_token',
@@ -39,6 +52,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_persistent' => 'boolean',
         ];
     }
 
@@ -49,7 +63,44 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_persistent',
     ];
+
+    /**
+     * Scope a query to only include persistent (protected) accounts.
+     */
+    public function scopePersistent(Builder $query): Builder
+    {
+        return $query->where('is_persistent', true);
+    }
+
+    /**
+     * Scope a query to only include purgeable beta tester accounts.
+     */
+    public function scopePurgeable(Builder $query): Builder
+    {
+        return $query->where('is_persistent', false);
+    }
+
+    /**
+     * Check if this user is protected from beta purging.
+     */
+    public function isPersistent(): bool
+    {
+        if ($this->is_persistent) {
+            return true;
+        }
+
+        $protectedEmails = config('beta.protected_emails', []);
+        if (in_array(strtolower($this->email), array_map('strtolower', $protectedEmails), true)) {
+            return true;
+        }
+
+        $protectedDomains = config('beta.protected_domains', []);
+        $emailDomain = substr(strrchr($this->email, '@') ?: '', 1);
+
+        return in_array(strtolower($emailDomain), array_map('strtolower', $protectedDomains), true);
+    }
 
     // protected static function newFactory(): UserFactory
     // {
