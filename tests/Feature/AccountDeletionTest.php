@@ -12,6 +12,13 @@ use Tests\TestCase;
 
 class AccountDeletionTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->withoutVite();
+    }
+
     public function test_account_deletion_page_is_accessible(): void
     {
         $response = $this->get(route('account.delete.form'));
@@ -108,4 +115,3 @@ class AccountDeletionTest extends TestCase
         $this->assertEquals('emails.account_deletion_confirmation', $userMail->content()->view);
     }
 }
-
