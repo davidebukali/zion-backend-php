@@ -282,23 +282,23 @@ class GetFeedTest extends TestCase
         $this->assertFalse($item['post']['is_reposted']);
     }
 
-    public function test_feed_includes_likes_and_comments_from_followed_users(): void
+    public function test_feed_includes_repost_interactions_with_actor(): void
     {
         $friend = User::create([
-            'name' => 'Liking Friend',
-            'email' => 'liker_friend@example.com',
+            'name' => 'Reposting Friend',
+            'email' => 'reposter_friend@example.com',
             'password' => bcrypt('password'),
         ]);
 
         $post = $this->author->posts()->create([
-            'content' => 'Post liked by friend',
+            'content' => 'Post reposted by friend',
             'visibility' => 'public',
         ]);
 
         FeedItem::create([
             'user_id' => $this->user->id,
             'post_id' => $post->id,
-            'type' => 'like',
+            'type' => 'repost',
             'actor_id' => $friend->id,
             'published_at' => now(),
         ]);
@@ -310,13 +310,13 @@ class GetFeedTest extends TestCase
         $response->assertStatus(200);
         $item = $response->json('data.0');
 
-        $this->assertEquals('like', $item['type']);
+        $this->assertEquals('repost', $item['type']);
         $this->assertEquals($friend->id, $item['actor']['id']);
-        $this->assertEquals('Liking Friend', $item['actor']['name']);
+        $this->assertEquals('Reposting Friend', $item['actor']['name']);
         $this->assertEquals($post->id, $item['post']['id']);
     }
 
-    public function test_unrepost_and_unlike_remove_interaction_from_feed(): void
+    public function test_unrepost_removes_repost_from_feed(): void
     {
         $friend = User::create([
             'name' => 'Active Friend',

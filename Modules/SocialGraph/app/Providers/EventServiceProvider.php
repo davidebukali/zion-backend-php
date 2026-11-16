@@ -3,10 +3,7 @@
 namespace Modules\SocialGraph\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Modules\Comments\Events\CommentCreated;
-use Modules\Interactions\Events\PostLiked;
 use Modules\Interactions\Events\PostReposted;
-use Modules\Interactions\Events\PostUnliked;
 use Modules\Interactions\Events\PostUnreposted;
 use Modules\Posts\Events\PostCreated;
 use Modules\SocialGraph\Events\FollowRequestAccepted;
@@ -40,16 +37,7 @@ class EventServiceProvider extends ServiceProvider
         PostReposted::class => [
             FanOutPostListener::class,
         ],
-        PostLiked::class => [
-            FanOutPostListener::class,
-        ],
-        CommentCreated::class => [
-            FanOutPostListener::class,
-        ],
         PostUnreposted::class => [
-            RemoveInteractionFromFeedListener::class,
-        ],
-        PostUnliked::class => [
             RemoveInteractionFromFeedListener::class,
         ],
     ];
