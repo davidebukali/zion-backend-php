@@ -33,6 +33,18 @@ class MessagesServiceProvider extends ModuleServiceProvider
         $this->configureRateLimiting();
     }
 
+    /**
+     * Register views.
+     */
+    protected function registerViews(): void
+    {
+        $sourcePath = module_path($this->name, 'resources/views');
+
+        if (is_dir($sourcePath)) {
+            parent::registerViews();
+        }
+    }
+
     protected function configureRateLimiting(): void
     {
         RateLimiter::for('messages.send', function ($request) {
