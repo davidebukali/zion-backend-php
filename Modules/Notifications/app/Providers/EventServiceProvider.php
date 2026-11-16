@@ -10,6 +10,7 @@ use Modules\Interactions\Events\PostReported;
 use Modules\Interactions\Events\PostReposted;
 use Modules\Interactions\Events\PostShared;
 use Modules\Interactions\Events\PostUnliked;
+use Modules\Notifications\Listeners\RemoveFollowNotificationOnUnfollow;
 use Modules\Notifications\Listeners\SendCommentCreatedNotification;
 use Modules\Notifications\Listeners\SendCommentLikedNotification;
 use Modules\Notifications\Listeners\SendFollowNotification;
@@ -24,6 +25,7 @@ use Modules\Posts\Events\PostCreated;
 use Modules\SocialGraph\Events\FollowRequestAccepted;
 use Modules\SocialGraph\Events\FollowRequested;
 use Modules\SocialGraph\Events\UserFollowed;
+use Modules\SocialGraph\Events\UserUnfollowed;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -60,6 +62,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         UserFollowed::class => [
             SendFollowNotification::class,
+        ],
+        UserUnfollowed::class => [
+            RemoveFollowNotificationOnUnfollow::class,
         ],
         FollowRequested::class => [
             SendFollowRequestedNotification::class,

@@ -16,13 +16,15 @@ class CreateNotification
      * @param  Model  $notifiable  The target polymorphic model (e.g. Comment, Post)
      * @param  User|string|null  $actor  The actor who triggered the notification
      * @param  array  $data  Additional metadata payload
+     * @param  string|null  $groupKey  Optional group key for deduplication / unique grouping
      */
     public function __invoke(
         User|string $user,
         string $type,
         Model $notifiable,
         User|string|null $actor = null,
-        array $data = []
+        array $data = [],
+        ?string $groupKey = null
     ): ?Notification {
         $userId = $user instanceof User ? $user->id : $user;
         $actorId = $actor instanceof User ? $actor->id : $actor;
@@ -30,6 +32,24 @@ class CreateNotification
         // Do not notify a user about their own actions
         if ($actorId !== null && $actorId === $userId) {
             return null;
+        }
+
+        if ($groupKey !== null) {
+            $notification = Notification::firstOrNew([
+                'user_id' => $userId,
+                'group_key' => $groupKey,
+            ]);
+
+            $notification->actor_id = $actorId;
+            $notification->type = $type;
+            $notification->notifiable_type = $notifiable->getMorphClass();
+            $notification->notifiable_id = $notifiable->getKey();
+            $notification->data = $data;
+            $notification->read_at = null;
+            $notification->created_at = now();
+            $notification->save();
+
+            return $notification;
         }
 
         return Notification::create([

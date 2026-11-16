@@ -74,4 +74,3 @@ class AccountDeletionRequest extends Model
         return $query->where('status', 'completed');
     }
 }
-

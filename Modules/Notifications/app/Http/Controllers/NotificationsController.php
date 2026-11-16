@@ -77,7 +77,8 @@ class NotificationsController extends Controller
             $request->user()
                 ->notifications()
                 ->with(['actor.profile.avatar'])
-                ->latest()
+                ->orderByDesc('created_at')
+                ->orderByDesc('id')
                 ->paginate(20)
         );
     }

@@ -41,4 +41,3 @@ class AccountDeletionSupportNotificationMail extends Mailable implements ShouldQ
         );
     }
 }
-

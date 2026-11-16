@@ -41,4 +41,3 @@ class AccountDeletionUserConfirmationMail extends Mailable implements ShouldQueu
         );
     }
 }
-

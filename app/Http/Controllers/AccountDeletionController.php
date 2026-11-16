@@ -67,4 +67,3 @@ class AccountDeletionController extends Controller
             ->with('success', 'Your account deletion request has been submitted successfully. A confirmation email has been sent to your inbox.');
     }
 }
-

@@ -35,7 +35,8 @@ class SendFollowRequestedNotification implements ShouldQueue
                 'actor_name' => $follower->name,
                 'follower_id' => $follower->id,
                 'follow_id' => $event->followId,
-            ]
+            ],
+            groupKey: 'follow_requested:'.$follower->id
         );
     }
 }
