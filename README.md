@@ -8,7 +8,7 @@
   <a href="https://github.com/davidebukali/zion-backend-php/actions"><img src="https://github.com/davidebukali/zion-backend-php/actions/workflows/deploy.yml/badge.svg" alt="CI/CD"></a>
 </p>
 
-**The core REST API powering Tsiyon: a peaceful, Christ-centered social home built for what matters most**[1][2]**. Built with Laravel 13 and PHP 8.4+ using decoupled modular domain architecture.**
+**The core REST API powering Tsiyon: a peaceful, Christ-centered social home built for what matters most. Built with Laravel 13 and PHP 8.4+ using decoupled modular domain architecture.**
 
 ---
 
