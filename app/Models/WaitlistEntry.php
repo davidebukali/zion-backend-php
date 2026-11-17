@@ -30,7 +30,28 @@ class WaitlistEntry extends Model
         'ip_address',
         'user_agent',
         'status',
+        'invited_at',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'invited_at' => 'datetime',
+        ];
+    }
+
+    /**
+     * Scope a query to only include uninvited waitlist entries.
+     */
+    public function scopeUninvited(Builder $query): Builder
+    {
+        return $query->whereNull('invited_at');
+    }
 
     /**
      * Scope a query to only include pending waitlist entries.

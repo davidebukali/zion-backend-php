@@ -50,4 +50,8 @@ return [
         'access_token' => env('EXPO_ACCESS_TOKEN'),
     ],
 
+    'google_play' => [
+        'opt_in_url' => env('GOOGLE_PLAY_OPT_IN_URL'),
+    ],
+
 ];
