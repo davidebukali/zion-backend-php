@@ -224,7 +224,7 @@ class SendBetaInvitesTest extends TestCase
         $this->assertSame("You're invited: Early Access Beta for Tsiyon on Android", $mailable->envelope()->subject);
 
         // Test view rendering
-        $mailable->assertSeeInHtml('Join the Beta & Install');
+        $mailable->assertSeeInHtml('Join the Android Beta & Install');
         $mailable->assertSeeInHtml('https://play.google.com/apps/testing/com.tsiyon.app');
         $mailable->assertSeeInHtml('Keep Installed for 14 Days');
     }
