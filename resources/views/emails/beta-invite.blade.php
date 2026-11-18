@@ -1,41 +1,38 @@
 <x-mail::message>
 # Hi {{ $recipientName ?: 'there' }},
 
-Thank you for reserving your spot to help test **Tsiyon** before our public release! Your early feedback will directly shape how this peaceful digital sanctuary feels for everyone.
+Thank you for reserving your spot to test **Tsiyon**! We're excited to invite you to our closed Android beta.
 
-### A Quick Update on iOS & Android
-We are currently rolling out our **first closed beta cohort exclusively on Android (Google Play)** while our engineering team puts the finishing touches on the iOS app.
+*(Using iPhone / iOS? No action needed today — your waitlist spot is saved, and we'll email your Apple TestFlight invite as soon as iOS opens).*
 
-* **If you have an Android device:** You can jump in and begin testing right now! Follow the four steps below.
-* **If you only use iPhone / iOS:** You don't need to take any action today. Your priority spot on our waitlist is completely safe, and we will email your Apple TestFlight invite the moment the iOS beta opens.
+### To start testing on Android:
 
----
+1. **Check your Google Account:** Make sure your Google Play Store is signed in with this exact email address.
+2. **Accept the invite:** Tap below and select **Become a Tester**.
 
-### If You're Testing on Android:
+<table class="action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin: 24px auto; text-align: center;">
+<tr>
+<td align="center">
+<table border="0" cellpadding="0" cellspacing="0" role="presentation">
+<tr>
+<td align="center" bgcolor="#18181b" style="border-radius: 6px; background-color: #18181b;">
+<a href="{{ $optInUrl }}" target="_blank" rel="noopener" style="box-sizing: border-box; display: inline-block; padding: 12px 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 600; color: #ffffff !important; text-decoration: none; border-radius: 6px; background-color: #18181b; border: none; word-break: break-all;">Join the Android Beta &amp; Install</a>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
 
-1. **Use Your Invited Google Account:** Open the Google Play Store app on your device and make sure you are signed in with the **exact email address** that received this invitation. *(If Google Play displays an "App not available" message, switching to this invited Google account resolves it immediately).*
-2. **Accept the Testing Invite:** Tap the button below to visit the Google Play beta page and choose **Become a Tester**.
-
-<x-mail::button :url="$optInUrl">
-Join the Android Beta & Install
-</x-mail::button>
-
-3. **Install Tsiyon:** Once the confirmation screen appears, tap **Download it on Google Play** to install the app.
-4. **Keep Installed for 14 Days:** To help us meet Google's verification requirements for public store approval, please keep Tsiyon installed and open it periodically over the next **14 consecutive days**.
-
----
+3. **Install & Keep Installed for 14 Days:** Download Tsiyon from Google Play and keep it installed for **14 consecutive days** to help us meet Google's store verification requirements.
 
 ### Sharing Feedback
-Whenever you notice a bug or have an idea to make Tsiyon more peaceful and encouraging, head to **Settings > Feedback** inside the app. Your device model and app version will attach automatically.
-
-If you run into any trouble during installation or have questions about iOS availability, reach out to us anytime at support@tsiyonapp.com. 
-
-We are deeply grateful for your patience and support as we build Tsiyon together!
+Found a bug or have an idea? Head to **Settings > Feedback** in the app or reach us anytime at support@tsiyonapp.com.
 
 Warmly,  
 **The Tsiyon Team**
 
 <x-mail::subcopy>
-You are receiving this update because you reserved early access to Tsiyon. If you no longer wish to participate in beta testing, email support@tsiyonapp.com to opt out.
+You received this because you joined the Tsiyon waitlist. To opt out of beta testing, email support@tsiyonapp.com.
 </x-mail::subcopy>
 </x-mail::message>
