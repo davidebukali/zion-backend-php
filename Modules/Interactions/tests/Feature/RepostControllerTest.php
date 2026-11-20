@@ -9,6 +9,9 @@ use Modules\Auth\Models\User;
 use Modules\Interactions\Events\PostReposted;
 use Modules\Interactions\Events\PostUnreposted;
 use Modules\Posts\Models\Post;
+use Modules\SocialGraph\Enums\FollowStatus;
+use Modules\SocialGraph\Models\Follow;
+use Modules\SocialGraph\Models\UserBlock;
 use Tests\TestCase;
 
 class RepostControllerTest extends TestCase
@@ -183,6 +186,100 @@ class RepostControllerTest extends TestCase
         foreach ($data as $item) {
             $this->assertTrue($item['is_reposted']);
         }
+    }
+
+    public function test_authenticated_user_can_view_reposts_of_another_user(): void
+    {
+        $viewer = User::create([
+            'name' => 'Viewer User',
+            'email' => 'viewer_repost@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $this->post->reposts()->create(['user_id' => $this->user->id]);
+
+        Sanctum::actingAs($viewer);
+
+        $response = $this->getJson(route('api.repost.index', ['user_id' => $this->user->id]));
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(1, $data);
+        $this->assertEquals($this->post->id, $data[0]['id']);
+        $this->assertFalse($data[0]['is_reposted']);
+    }
+
+    public function test_viewer_cannot_view_reposts_of_private_account_if_not_following(): void
+    {
+        $this->user->profile()->create([
+            'username' => 'private_repost_user',
+            'is_private' => true,
+        ]);
+
+        $viewer = User::create([
+            'name' => 'Viewer User',
+            'email' => 'viewer_repost2@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        Sanctum::actingAs($viewer);
+
+        $response = $this->getJson(route('api.repost.index', ['user_id' => $this->user->id]));
+
+        $response->assertStatus(403)
+            ->assertJson([
+                'success' => false,
+                'message' => 'This account is private.',
+            ]);
+    }
+
+    public function test_viewer_can_view_reposts_of_private_account_if_accepted_follower(): void
+    {
+        $this->user->profile()->create([
+            'username' => 'private_repost_user_ok',
+            'is_private' => true,
+        ]);
+
+        $viewer = User::create([
+            'name' => 'Follower Viewer',
+            'email' => 'follower_repost_viewer@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        Follow::create([
+            'follower_id' => $viewer->id,
+            'following_id' => $this->user->id,
+            'status' => FollowStatus::ACCEPTED,
+        ]);
+
+        $this->post->reposts()->create(['user_id' => $this->user->id]);
+
+        Sanctum::actingAs($viewer);
+
+        $response = $this->getJson(route('api.repost.index', ['user_id' => $this->user->id]));
+
+        $response->assertStatus(200);
+        $this->assertCount(1, $response->json('data'));
+    }
+
+    public function test_blocked_user_cannot_view_reposts(): void
+    {
+        $blockedUser = User::create([
+            'name' => 'Blocked Viewer',
+            'email' => 'blocked_repost_viewer@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        UserBlock::create([
+            'blocker_id' => $this->user->id,
+            'blocked_id' => $blockedUser->id,
+        ]);
+
+        Sanctum::actingAs($blockedUser);
+
+        $response = $this->getJson(route('api.repost.index', ['user_id' => $this->user->id]));
+
+        $response->assertStatus(403);
     }
 
     public function test_unauthenticated_user_cannot_repost_or_unrepost(): void

@@ -9,6 +9,7 @@ use Modules\Posts\Enums\PostVisibility;
 use Modules\Posts\Models\Post;
 use Modules\SocialGraph\Enums\FollowStatus;
 use Modules\SocialGraph\Models\Follow;
+use Modules\SocialGraph\Models\UserBlock;
 use Tests\TestCase;
 
 class UserPostsTest extends TestCase
@@ -244,5 +245,65 @@ class UserPostsTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonPath('data.id', $this->publicPost->id);
+    }
+
+    public function test_can_fetch_user_posts_via_query_param_on_posts_index(): void
+    {
+        Sanctum::actingAs($this->follower);
+
+        $response = $this->getJson(route('api.post.index', ['user_id' => $this->author->id]));
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(2, $data);
+        $ids = collect($data)->pluck('id')->all();
+        $this->assertContains($this->publicPost->id, $ids);
+        $this->assertContains($this->followersPost->id, $ids);
+    }
+
+    public function test_posts_index_with_user_id_respects_private_account(): void
+    {
+        $this->author->profile()->create([
+            'username' => 'author_priv_index',
+            'is_private' => true,
+        ]);
+
+        Sanctum::actingAs($this->nonFollower);
+
+        $response = $this->getJson(route('api.post.index', ['user_id' => $this->author->id]));
+
+        $response->assertStatus(403)
+            ->assertJson([
+                'success' => false,
+                'message' => 'This account is private.',
+            ]);
+    }
+
+    public function test_posts_index_with_user_id_respects_blocks(): void
+    {
+        UserBlock::create([
+            'blocker_id' => $this->author->id,
+            'blocked_id' => $this->nonFollower->id,
+        ]);
+
+        Sanctum::actingAs($this->nonFollower);
+
+        $response = $this->getJson(route('api.post.index', ['user_id' => $this->author->id]));
+
+        $response->assertStatus(403);
+    }
+
+    public function test_user_posts_route_respects_blocks(): void
+    {
+        UserBlock::create([
+            'blocker_id' => $this->author->id,
+            'blocked_id' => $this->nonFollower->id,
+        ]);
+
+        Sanctum::actingAs($this->nonFollower);
+
+        $response = $this->getJson(route('api.users.posts', $this->author));
+
+        $response->assertStatus(403);
     }
 }

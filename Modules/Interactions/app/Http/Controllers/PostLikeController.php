@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\RespondsWithApi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Modules\Auth\Models\User;
 use Modules\Interactions\Actions\LikePosts;
 use Modules\Interactions\Actions\ListLikes;
 use Modules\Interactions\Actions\UnlikePost;
@@ -25,14 +26,21 @@ class PostLikeController extends Controller
      *
      * List Liked Posts
      *
-     * Retrieve a paginated list of posts liked by the authenticated user.
+     * Retrieve a paginated list of posts liked by the user. If user_id is provided,
+     * retrieves liked posts for that user (subject to privacy & block settings).
      *
+     * @queryParam user_id string Optional user ULID to retrieve liked posts for.
      * @queryParam per_page integer Items per page. Example: 15
      * @queryParam cursor string Cursor for pagination.
      */
     public function index(Request $request, ListLikes $listLikes)
     {
-        $posts = $listLikes($request->user(), $request->integer('per_page', 15));
+        $viewer = $request->user();
+        $targetUser = $request->filled('user_id')
+            ? User::findOrFail($request->string('user_id')->toString())
+            : $viewer;
+
+        $posts = $listLikes($targetUser, $viewer, $request->integer('per_page', 15));
         $paginated = PostResource::collection($posts)->toResponse($request)->getData(true);
 
         return $this->success(

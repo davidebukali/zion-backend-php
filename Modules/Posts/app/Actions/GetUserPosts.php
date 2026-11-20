@@ -27,6 +27,10 @@ class GetUserPosts
             return $query->cursorPaginate($perPage)->withQueryString();
         }
 
+        if ($viewer && $viewer->hasBlockRelationshipWith($targetUser)) {
+            abort(403, 'You cannot view this user\'s content.');
+        }
+
         // Check if viewer is an accepted follower of targetUser
         $isFollower = false;
         if ($viewer) {

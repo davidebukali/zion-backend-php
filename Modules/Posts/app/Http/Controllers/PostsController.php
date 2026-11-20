@@ -29,8 +29,9 @@ class PostsController extends Controller
      *
      * List Posts
      *
-     * Retrieve a paginated list of posts.
+     * Retrieve a paginated list of posts. If user_id is provided, retrieves posts for that user.
      *
+     * @queryParam user_id string Optional user ULID to retrieve posts for.
      * @queryParam per_page integer Number of items per page. Example: 15
      * @queryParam page integer Page number. Example: 1
      *
@@ -54,10 +55,20 @@ class PostsController extends Controller
      *   }
      * }
      */
-    public function index(Request $request, ListPosts $listPosts)
+    public function index(Request $request, ListPosts $listPosts, GetUserPosts $getUserPosts)
     {
         $perPage = (int) ($request->query('per_page') ?? $request->input('per_page') ?? 15);
-        $posts = $listPosts($perPage, $request->user());
+        if ($request->filled('user_id')) {
+            $targetUser = User::findOrFail($request->string('user_id')->toString());
+            $posts = $getUserPosts(
+                targetUser: $targetUser,
+                viewer: $request->user('sanctum') ?? $request->user(),
+                perPage: $perPage
+            );
+        } else {
+            $posts = $listPosts($perPage, $request->user());
+        }
+
         $paginated = PostResource::collection($posts)->toResponse($request)->getData(true);
 
         return $this->success(

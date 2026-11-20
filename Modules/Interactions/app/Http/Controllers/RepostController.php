@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Modules\Auth\Models\User;
 use Modules\Interactions\Actions\ListReposts;
 use Modules\Interactions\Actions\RepostPost;
 use Modules\Interactions\Actions\UnrepostPost;
@@ -26,14 +27,21 @@ class RepostController extends Controller
      *
      * List Reposted Posts
      *
-     * Retrieve a paginated list of posts reposted by the authenticated user.
+     * Retrieve a paginated list of posts reposted by the user. If user_id is provided,
+     * retrieves reposted posts for that user (subject to privacy & block settings).
      *
+     * @queryParam user_id string Optional user ULID to retrieve reposted posts for.
      * @queryParam per_page integer Items per page. Example: 15
      * @queryParam cursor string Cursor for pagination.
      */
     public function index(Request $request, ListReposts $listReposts): JsonResponse
     {
-        $posts = $listReposts($request->user(), $request->integer('per_page', 15));
+        $viewer = $request->user();
+        $targetUser = $request->filled('user_id')
+            ? User::findOrFail($request->string('user_id')->toString())
+            : $viewer;
+
+        $posts = $listReposts($targetUser, $viewer, $request->integer('per_page', 15));
         $paginated = PostResource::collection($posts)->toResponse($request)->getData(true);
 
         return $this->success(
