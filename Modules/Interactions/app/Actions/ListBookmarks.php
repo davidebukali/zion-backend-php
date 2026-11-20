@@ -17,7 +17,7 @@ class ListBookmarks
             ->whereHas('bookmarks', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
-            ->with('user')
+            ->with(['user.profile', 'media'])
             ->withViewerState($user)
             ->orderByDesc('created_at')
             ->orderByDesc('id')
