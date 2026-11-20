@@ -27,6 +27,7 @@ class ProfileController extends Controller
      *     "username": "janedoe",
      *     "display_name": "Jane Doe",
      *     "bio": "Building scalable backend microservices.",
+     *     "is_following": false,
      *     "avatar_media_id": null,
      *     "avatar": null,
      *     "cover_media_id": null,
@@ -76,6 +77,7 @@ class ProfileController extends Controller
      *     "username": "janedoe",
      *     "display_name": "Jane Doe",
      *     "bio": "Building scalable backend microservices.",
+     *     "is_following": false,
      *     "avatar_media_id": "01j98z3q4x6y7w8v9u0t1s2r05",
      *     "avatar": {
      *       "id": "01j98z3q4x6y7w8v9u0t1s2r05",

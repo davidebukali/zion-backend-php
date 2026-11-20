@@ -38,7 +38,7 @@ class SearchController extends Controller
         $query = $request->string('q')->trim()->toString();
         $type = $request->string('type', 'all')->toString();
         $perPage = $request->integer('per_page', 15);
-        $viewer = $request->user();
+        $viewer = $request->user('sanctum') ?? $request->user();
 
         if ($type === 'users') {
             $users = ($searchUsers)($query, $viewer, $perPage);

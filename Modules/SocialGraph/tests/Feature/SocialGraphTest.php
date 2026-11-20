@@ -3,9 +3,12 @@
 namespace Modules\SocialGraph\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Laravel\Sanctum\Sanctum;
 use Modules\Auth\Models\User;
 use Modules\SocialGraph\Enums\FollowStatus;
+use Modules\SocialGraph\Events\UserFollowed;
+use Modules\SocialGraph\Events\UserUnfollowed;
 use Modules\SocialGraph\Models\Follow;
 use Tests\TestCase;
 
@@ -277,5 +280,60 @@ class SocialGraphTest extends TestCase
         $resFollowing->assertStatus(200);
         // userA does follow userB
         $this->assertTrue($resFollowing->json('data.0.following.is_following'));
+    }
+
+    public function test_following_same_user_twice_is_idempotent(): void
+    {
+        Event::fake([UserFollowed::class]);
+        Sanctum::actingAs($this->userA);
+
+        $firstResponse = $this->postJson(route('api.users.follow', $this->userB));
+        $firstResponse->assertStatus(201)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.follower_id', $this->userA->id)
+            ->assertJsonPath('data.following_id', $this->userB->id);
+
+        $secondResponse = $this->postJson(route('api.users.follow', $this->userB));
+        $secondResponse->assertSuccessful()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.id', $firstResponse->json('data.id'))
+            ->assertJsonPath('data.follower_id', $this->userA->id)
+            ->assertJsonPath('data.following_id', $this->userB->id);
+
+        $this->assertSame(
+            1,
+            Follow::where('follower_id', $this->userA->id)
+                ->where('following_id', $this->userB->id)
+                ->count()
+        );
+        Event::assertDispatchedTimes(UserFollowed::class, 1);
+    }
+
+    public function test_unfollowing_user_twice_is_idempotent(): void
+    {
+        Event::fake([UserUnfollowed::class]);
+        Follow::create([
+            'follower_id' => $this->userA->id,
+            'following_id' => $this->userB->id,
+            'status' => FollowStatus::ACCEPTED,
+        ]);
+
+        Sanctum::actingAs($this->userA);
+
+        $firstResponse = $this->deleteJson(route('api.users.unfollow', $this->userB));
+        $firstResponse->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'User unfollowed successfully.');
+
+        $secondResponse = $this->deleteJson(route('api.users.unfollow', $this->userB));
+        $secondResponse->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'User unfollowed successfully.');
+
+        $this->assertDatabaseMissing('follows', [
+            'follower_id' => $this->userA->id,
+            'following_id' => $this->userB->id,
+        ]);
+        Event::assertDispatchedTimes(UserUnfollowed::class, 1);
     }
 }

@@ -14,13 +14,18 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $viewer = $request->user('sanctum') ?? $request->user();
+        $viewer = $request->user('sanctum') ?? $request->user() ?? auth('sanctum')->user() ?? auth()->user();
+        $isFollowing = $this->resolveIsFollowing($viewer);
+
+        if ($this->relationLoaded('profile') && $this->profile !== null) {
+            $this->profile->setAttribute('is_following', $isFollowing);
+        }
 
         return [
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'is_following' => $this->resolveIsFollowing($viewer),
+            'is_following' => $isFollowing,
             'profile' => new ProfileResource($this->whenLoaded('profile')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

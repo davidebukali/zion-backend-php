@@ -15,7 +15,7 @@ class ProfileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $viewer = $request->user('sanctum') ?? $request->user();
+        $viewer = $request->user('sanctum') ?? $request->user() ?? auth('sanctum')->user() ?? auth()->user();
 
         return [
             'id' => $this->id,
@@ -44,6 +44,14 @@ class ProfileResource extends JsonResource
     {
         if (! $viewer || $viewer->id === $this->user_id) {
             return false;
+        }
+
+        if ($this->getAttribute('is_following') !== null) {
+            return (bool) $this->getAttribute('is_following');
+        }
+
+        if ($this->relationLoaded('user') && $this->user?->getAttribute('is_following') !== null) {
+            return (bool) $this->user->getAttribute('is_following');
         }
 
         return $viewer->isFollowing($this->user_id);

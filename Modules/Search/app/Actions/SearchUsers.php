@@ -21,6 +21,8 @@ class SearchUsers
             $viewer = null;
         }
 
+        $viewer ??= auth('sanctum')->user() ?? auth()->user();
+
         $term = trim($query);
         $operator = DB::connection()->getDriverName() === 'pgsql' ? 'ILIKE' : 'like';
 
@@ -39,7 +41,13 @@ class SearchUsers
         }
 
         if ($viewer) {
-            $builder->where('id', '!=', $viewer->id);
+            $builder->where('id', '!=', $viewer->id)
+                ->whereDoesntHave('blockedByUsers', function ($q) use ($viewer) {
+                    $q->where('blocker_id', $viewer->id);
+                })
+                ->whereDoesntHave('blockedUsers', function ($q) use ($viewer) {
+                    $q->where('blocked_id', $viewer->id);
+                });
         }
 
         $builder->with(['profile.avatar', 'profile.cover'])

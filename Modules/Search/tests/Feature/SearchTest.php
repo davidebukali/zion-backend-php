@@ -3,6 +3,7 @@
 namespace Modules\Search\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Modules\Auth\Models\User;
 use Modules\Posts\Enums\PostModerationStatus;
@@ -10,6 +11,7 @@ use Modules\Posts\Enums\PostVisibility;
 use Modules\Posts\Models\Post;
 use Modules\SocialGraph\Enums\FollowStatus;
 use Modules\SocialGraph\Models\Follow;
+use Modules\SocialGraph\Models\UserBlock;
 use Tests\TestCase;
 
 class SearchTest extends TestCase
@@ -451,5 +453,135 @@ class SearchTest extends TestCase
             $postZeroNew->id,
             $postZeroOld->id,
         ], $ids);
+    }
+
+    public function test_wildcard_user_search_excludes_self_and_returns_is_following_without_n_plus_one(): void
+    {
+        $token = $this->follower->createToken('discover-test')->plainTextToken;
+
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $response = $this->withToken($token)->getJson(route('api.search', [
+            'type' => 'users',
+            'q' => '*',
+            'per_page' => 20,
+        ]));
+
+        $queries = DB::getQueryLog();
+        DB::disableQueryLog();
+
+        $response->assertOk()
+            ->assertJsonPath('success', true);
+
+        $users = collect($response->json('data'));
+        $this->assertCount(2, $users);
+        $this->assertNotContains($this->follower->id, $users->pluck('id')->all());
+
+        $authorItem = $users->firstWhere('id', $this->author->id);
+        $strangerItem = $users->firstWhere('id', $this->stranger->id);
+
+        $this->assertNotNull($authorItem);
+        $this->assertTrue($authorItem['is_following']);
+        $this->assertTrue($authorItem['profile']['is_following']);
+
+        $this->assertNotNull($strangerItem);
+        $this->assertFalse($strangerItem['is_following']);
+        $this->assertFalse($strangerItem['profile']['is_following']);
+
+        $followsQueries = collect($queries)->filter(
+            fn (array $log): bool => str_contains($log['query'], 'follows')
+        );
+        $this->assertCount(1, $followsQueries);
+    }
+
+    public function test_unified_search_wildcard_excludes_self_and_includes_is_following(): void
+    {
+        $token = $this->follower->createToken('discover-all-test')->plainTextToken;
+
+        $response = $this->withToken($token)->getJson(route('api.search', [
+            'type' => 'all',
+            'q' => '*',
+        ]));
+
+        $response->assertOk()
+            ->assertJsonPath('success', true);
+
+        $users = collect($response->json('data.users'));
+        $this->assertCount(2, $users);
+        $this->assertNotContains($this->follower->id, $users->pluck('id')->all());
+
+        $authorItem = $users->firstWhere('id', $this->author->id);
+        $strangerItem = $users->firstWhere('id', $this->stranger->id);
+
+        $this->assertNotNull($authorItem);
+        $this->assertTrue($authorItem['is_following']);
+        $this->assertTrue($authorItem['profile']['is_following']);
+
+        $this->assertNotNull($strangerItem);
+        $this->assertFalse($strangerItem['is_following']);
+        $this->assertFalse($strangerItem['profile']['is_following']);
+    }
+
+    public function test_user_search_excludes_blocked_and_blocking_users(): void
+    {
+        $blockedByViewer = User::create([
+            'name' => 'Blocked By Viewer',
+            'email' => 'blocked_by_viewer@example.com',
+            'password' => bcrypt('password'),
+        ]);
+        $blockedByViewer->profile()->create([
+            'username' => 'blocked_by_viewer',
+            'display_name' => 'Blocked By Viewer',
+        ]);
+
+        $blockerOfViewer = User::create([
+            'name' => 'Blocker Of Viewer',
+            'email' => 'blocker_of_viewer@example.com',
+            'password' => bcrypt('password'),
+        ]);
+        $blockerOfViewer->profile()->create([
+            'username' => 'blocker_of_viewer',
+            'display_name' => 'Blocker Of Viewer',
+        ]);
+
+        UserBlock::create([
+            'blocker_id' => $this->follower->id,
+            'blocked_id' => $blockedByViewer->id,
+        ]);
+
+        UserBlock::create([
+            'blocker_id' => $blockerOfViewer->id,
+            'blocked_id' => $this->follower->id,
+        ]);
+
+        Sanctum::actingAs($this->follower);
+
+        $usersResponse = $this->getJson(route('api.search', [
+            'type' => 'users',
+            'q' => '*',
+            'per_page' => 20,
+        ]));
+
+        $usersResponse->assertOk();
+        $returnedUserIds = collect($usersResponse->json('data'))->pluck('id')->all();
+
+        $this->assertNotContains($this->follower->id, $returnedUserIds);
+        $this->assertNotContains($blockedByViewer->id, $returnedUserIds);
+        $this->assertNotContains($blockerOfViewer->id, $returnedUserIds);
+        $this->assertContains($this->author->id, $returnedUserIds);
+        $this->assertContains($this->stranger->id, $returnedUserIds);
+
+        $allResponse = $this->getJson(route('api.search', [
+            'type' => 'all',
+            'q' => '*',
+        ]));
+
+        $allResponse->assertOk();
+        $returnedAllIds = collect($allResponse->json('data.users'))->pluck('id')->all();
+
+        $this->assertNotContains($this->follower->id, $returnedAllIds);
+        $this->assertNotContains($blockedByViewer->id, $returnedAllIds);
+        $this->assertNotContains($blockerOfViewer->id, $returnedAllIds);
     }
 }

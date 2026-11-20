@@ -270,4 +270,27 @@ class ProfileTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonPath('data.is_private', true);
     }
+
+    public function test_user_profile_returns_accurate_is_following_for_authenticated_viewer(): void
+    {
+        $token = $this->userA->createToken('profile-test')->plainTextToken;
+
+        $beforeResponse = $this->withToken($token)->getJson(route('api.users.profile', $this->userB));
+        $beforeResponse->assertOk()
+            ->assertJsonPath('data.is_following', false);
+
+        $this->withToken($token)->postJson(route('api.users.follow', $this->userB))
+            ->assertCreated();
+
+        $afterFollowResponse = $this->withToken($token)->getJson(route('api.users.profile', $this->userB));
+        $afterFollowResponse->assertOk()
+            ->assertJsonPath('data.is_following', true);
+
+        $this->withToken($token)->deleteJson(route('api.users.unfollow', $this->userB))
+            ->assertOk();
+
+        $afterUnfollowResponse = $this->withToken($token)->getJson(route('api.users.profile', $this->userB));
+        $afterUnfollowResponse->assertOk()
+            ->assertJsonPath('data.is_following', false);
+    }
 }

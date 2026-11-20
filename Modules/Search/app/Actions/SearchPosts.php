@@ -83,7 +83,10 @@ class SearchPosts
                 }
             }
         })
-            ->with(['user.profile.avatar', 'media'])
+            ->with([
+                'user' => fn ($q) => $q->with(['profile.avatar'])->withViewerFollowStatus($viewer),
+                'media',
+            ])
             ->withViewerState($viewer)
             ->orderByRaw('((likes_count * 1) + (comments_count * 2) + (reposts_count * 3)) DESC')
             ->orderByDesc('created_at')

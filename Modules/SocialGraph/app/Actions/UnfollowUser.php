@@ -12,11 +12,13 @@ class UnfollowUser
         User $follower,
         User $following
     ): void {
-        Follow::query()
+        $deleted = Follow::query()
             ->where('follower_id', $follower->id)
             ->where('following_id', $following->id)
             ->delete();
 
-        UserUnfollowed::dispatch($follower->id, $following->id);
+        if ($deleted > 0) {
+            UserUnfollowed::dispatch($follower->id, $following->id);
+        }
     }
 }
