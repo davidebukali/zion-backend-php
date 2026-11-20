@@ -11,9 +11,11 @@ use Modules\Interactions\Http\Controllers\RepostController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::post('/posts/{post}/like', [PostLikeController::class, 'likePost'])->name('post.like');
     Route::delete('/posts/{post}/like', [PostLikeController::class, 'unlikePost'])->name('post.unlike');
+    Route::get('/likes', [PostLikeController::class, 'index'])->name('like.index');
 
     Route::post('/posts/{post}/repost', [RepostController::class, 'store'])->name('post.repost');
     Route::delete('/posts/{post}/repost', [RepostController::class, 'destroy'])->name('post.unrepost');
+    Route::get('/reposts', [RepostController::class, 'index'])->name('repost.index');
 
     Route::post('/posts/{post}/internal-share', [PostShareController::class, 'internalSharePost'])->name('post.internal-share');
     Route::post('/posts/{post}/external-share', [PostShareController::class, 'externalSharePost'])->name('post.external-share');
